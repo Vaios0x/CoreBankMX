@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useOracle } from '../hooks/useOracle'
@@ -38,11 +38,13 @@ export default function Borrow() {
   const borrow = watch('borrowAmount') || 0
   const collateralUsd = collateral * (price ?? 0)
   const health = useHealth(collateralUsd, borrow)
-  const { targetLtv } = useMarketStore()
+  const { targetLtv, originationFeeBps, minBorrowAmount } = useMarketStore()
   const maxBorrowAtTarget = collateralUsd * (targetLtv || 0.6)
 
   const { push } = useToastStore()
   const { approve, borrow: borrowTx } = useTx()
+  const feeUsd = useMemo(() => (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0), [borrow, originationFeeBps])
+  const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : false), [borrow, minBorrowAmount])
   const onSubmit = (_data: FormValues) => {
     // Mocks: approve + borrow
     push({ type: 'info', message: t('borrow.toast_approving') })
@@ -52,7 +54,7 @@ export default function Borrow() {
     }, 800)
   }
 
-  const isBorrowDisabled = health.hf < 1.2
+  const isBorrowDisabled = health.hf < 1.2 || belowMin
 
   // Prefill from URL query once on mount
   useEffect(() => {
@@ -120,6 +122,12 @@ export default function Borrow() {
         </div>
         <div className="mt-2"><HealthBar value={Math.min(2, health.hf) / 2} /></div>
         <div className="mt-2 text-xs text-gray-400">{t('borrow.liquidation_ltv')}: {((useMarketStore.getState().liquidationLtv || 0.8) * 100).toFixed(0)}%</div>
+        {originationFeeBps ? (
+          <div className="mt-1 text-xs text-gray-400">Fee: {originationFeeBps} bps (~{formatUSD(feeUsd)})</div>
+        ) : null}
+        {belowMin && (
+          <Alert variant="warning" className="mt-2 text-xs">Min borrow: {formatUSD(minBorrowAmount || 0)}</Alert>
+        )}
         {health.hf < 1.5 && (
           <Alert variant={health.hf < 1.2 ? 'danger' : 'warning'} className="mt-2 text-xs">
             {health.hf < 1.2 ? t('borrow.error_ltv') : t('borrow.warning_hf')}

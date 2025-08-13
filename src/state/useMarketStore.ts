@@ -5,6 +5,8 @@ type MarketParams = {
   targetLtv: number
   liquidationLtv: number
   tvlUsd: number
+  originationFeeBps?: number
+  minBorrowAmount?: number
 }
 
 type MarketState = MarketParams & {
@@ -16,6 +18,8 @@ export const useMarketStore = create<MarketState>((set) => ({
   targetLtv: 0.6,
   liquidationLtv: 0.8,
   tvlUsd: 1_000_000,
+  originationFeeBps: 0,
+  minBorrowAmount: 0,
   setParams: (p) => set((s) => ({ ...s, ...p })),
 }))
 

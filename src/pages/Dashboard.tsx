@@ -37,7 +37,7 @@ export default function Dashboard() {
         const json = await res.json()
         if (!mounted) return
         if (json && typeof json.baseRate === 'number') {
-          setParams({ baseRate: json.baseRate, targetLtv: json.targetLtv, liquidationLtv: json.liquidationLtv })
+          setParams({ baseRate: json.baseRate, targetLtv: json.targetLtv, liquidationLtv: json.liquidationLtv, originationFeeBps: json.originationFeeBps, minBorrowAmount: json.minBorrowAmount })
         }
       } catch {}
     })()

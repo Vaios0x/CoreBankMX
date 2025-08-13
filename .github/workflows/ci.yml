@@ -26,6 +26,16 @@ jobs:
         run: |
           cd packages/contracts
           npx hardhat test --report-gas
+      - name: Coverage contracts
+        run: |
+          cd packages/contracts
+          npx hardhat coverage
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: solidity-coverage
+          path: packages/contracts/coverage
+          if-no-files-found: ignore
       - name: Typecheck API
         run: |
           cd services/api
@@ -38,5 +48,7 @@ jobs:
           pnpm build
       - name: Frontend typecheck
         run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
 
 

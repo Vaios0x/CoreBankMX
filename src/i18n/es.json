@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Panel",
+    "borrow": "Pedir préstamo",
+    "repay": "Repagar",
+    "positions": "Posiciones",
+    "liquidity": "Liquidez",
+    "admin": "Admin"
+  },
+  "borrow": {
+    "collateral_label": "Colateral (BTC)",
+    "collateral_tip": "Monto de BTC a bloquear como colateral",
+    "borrow_label": "Préstamo (USDT)",
+    "borrow_tip": "Monto de USDT a recibir",
+    "error_amount": "Ingresa un monto válido",
+    "warning_hf": "Riesgo elevado: el factor de salud es bajo",
+    "error_ltv": "LTV supera el umbral de liquidación",
+    "suggested_ltv_prefix": "Sugerido (target LTV",
+    "collateral_usd": "Colateral USD",
+    "ltv_label": "LTV",
+    "health_label": "Salud",
+    "liquidation_ltv": "LTV de liquidación",
+    "learn_ltv": "Aprender sobre LTV",
+    "toast_approving": "Aprobando colateral…",
+    "toast_approve_sent_base": "Approve tx enviada:",
+    "toast_approve_failed": "Fallo al aprobar",
+    "approve_button": "Aprobar",
+    "toast_borrowing": "Enviando préstamo…",
+    "toast_borrow_sent_base": "Borrow tx enviada:",
+    "toast_borrow_failed": "Fallo al pedir préstamo",
+    "borrow_button": "Pedir préstamo",
+    "disabled_reason": "No puedes pedir préstamo: el factor de salud está por debajo de 1.2. Reduce LTV aumentando colateral o solicitando menos.",
+    "why_disabled": "¿Por qué está deshabilitado?",
+    "copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado al portapapeles",
+    "reset_filters": "Resetear filtros"
+  },
+  "repay": {
+    "repay_label": "Repago (USDT)",
+    "repay_tip": "Monto de USDT a repagar",
+    "withdraw_label": "Retiro (BTC)",
+    "withdraw_tip": "BTC a retirar al repagar",
+    "error_amount": "Ingresa un monto válido",
+    "repay_slider_label": "Atajo de monto",
+    "max_withdraw_label": "Retiro máximo seguro",
+    "use_max": "Usar máximo",
+    "after_collateral_usd": "Colateral USD (post-acción)",
+    "after_ltv": "LTV (post-acción)",
+    "after_health": "Salud (post-acción)",
+    "after_health_warning": "Advertencia: el factor de salud queda bajo tras esta operación.",
+    "after_health_danger": "Peligro: el factor de salud quedaría en zona de liquidación.",
+    "withdraw_exceeds_max": "El retiro propuesto excede el máximo seguro.",
+    "withdraw_disabled_reason": "No puedes retirar más: superarías el LTV seguro tras el repago.",
+    "submitting": "Enviando repago…",
+    "tx_sent_base": "Repay tx enviada:",
+    "failed": "Repay falló",
+    "repay_button": "Repagar",
+    "copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado al portapapeles",
+    "reset_filters": "Resetear filtros"
+  },
+  "positions": {
+    "actions": "Acciones",
+    "empty": "Sin posiciones",
+    "add_collateral": "Añadir colateral",
+    "repay": "Repagar",
+    "note_prices": "Precio BTC/USD actual",
+    "note_prices_suffix": "(referencial para calcular LTV/HF)"
+  },
+  "dashboard": {
+    "subtitle": "Resumen de salud del mercado y métricas clave",
+    "oracle_stale": "Datos del oráculo potencialmente desactualizados",
+    "recalculate": "Recalcular",
+    "loading": "Cargando…"
+  },
+  "header": {
+    "network_aria": "Estado de red actual",
+    "switch_to_mainnet": "Cambiar a Mainnet",
+    "switch_to_testnet": "Cambiar a Testnet",
+    "to_mainnet": "Mainnet",
+    "to_testnet": "Testnet"
+  }
+}
+

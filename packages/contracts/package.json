@@ -1,0 +1,34 @@
+{
+  "name": "@core-neobank/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "coverage": "hardhat coverage",
+    "deploy:testnet2": "hardhat run scripts/deploy.ts --network coreTestnet2",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network coreMainnet",
+    "verify:testnet2": "hardhat run scripts/verify.ts --network coreTestnet2",
+    "verify:mainnet": "hardhat run scripts/verify.ts --network coreMainnet",
+    "set:params": "hardhat run scripts/setParams.ts",
+    "seed:mock": "hardhat run scripts/seedMock.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.8",
+    "chai": "^5.1.2",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.13",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.5.4",
+    "solidity-coverage": "^0.8.12",
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}
+
+

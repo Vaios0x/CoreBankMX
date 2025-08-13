@@ -1,0 +1,26 @@
+{
+  "name": "@core-neobank/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-esm src/server.ts",
+    "start": "node --enable-source-maps dist/server.js",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "zod": "^3.25.6",
+    "pino": "^9.5.0",
+    "dotenv": "^16.4.5",
+    "undici": "^6.19.8",
+    "viem": "^2.33.3",
+    "ethers": "^6.13.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "ts-node": "^10.9.2"
+  }
+}
+
+

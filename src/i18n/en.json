@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "borrow": "Borrow",
+    "repay": "Repay",
+    "positions": "Positions",
+    "liquidity": "Liquidity",
+    "admin": "Admin"
+  },
+  "borrow": {
+    "collateral_label": "Collateral (BTC)",
+    "collateral_tip": "BTC amount to lock as collateral",
+    "borrow_label": "Borrow (USDT)",
+    "borrow_tip": "USDT amount to receive",
+    "error_amount": "Enter a valid amount",
+    "warning_hf": "High risk: low health factor",
+    "error_ltv": "LTV exceeds liquidation threshold",
+    "suggested_ltv_prefix": "Suggested (target LTV",
+    "collateral_usd": "Collateral USD",
+    "ltv_label": "LTV",
+    "health_label": "Health",
+    "liquidation_ltv": "Liquidation LTV",
+    "learn_ltv": "Learn about LTV",
+    "toast_approving": "Approving collateral…",
+    "toast_approve_sent_base": "Approve tx sent:",
+    "toast_approve_failed": "Approve failed",
+    "approve_button": "Approve",
+    "toast_borrowing": "Sending borrow…",
+    "toast_borrow_sent_base": "Borrow tx sent:",
+    "toast_borrow_failed": "Borrow failed",
+    "borrow_button": "Borrow",
+    "disabled_reason": "Borrow is disabled: health factor is below 1.2. Lower LTV by increasing collateral or requesting less.",
+    "why_disabled": "Why is it disabled?",
+    "copy_link": "Copy link",
+    "link_copied": "Link copied to clipboard",
+    "reset_filters": "Reset filters"
+  },
+  "repay": {
+    "repay_label": "Repay (USDT)",
+    "repay_tip": "USDT amount to repay",
+    "withdraw_label": "Withdraw (BTC)",
+    "withdraw_tip": "BTC to withdraw on repayment",
+    "error_amount": "Enter a valid amount",
+    "repay_slider_label": "Amount shortcut",
+    "max_withdraw_label": "Safe max withdraw",
+    "use_max": "Use max",
+    "after_collateral_usd": "Collateral USD (post-action)",
+    "after_ltv": "LTV (post-action)",
+    "after_health": "Health (post-action)",
+    "after_health_warning": "Warning: health factor will be low after this action.",
+    "after_health_danger": "Danger: health factor will be in liquidation zone.",
+    "withdraw_exceeds_max": "Proposed withdrawal exceeds safe maximum.",
+    "withdraw_disabled_reason": "You cannot withdraw more: you would exceed safe LTV after repayment.",
+    "submitting": "Submitting repayment…",
+    "tx_sent_base": "Repay tx sent:",
+    "failed": "Repay failed",
+    "repay_button": "Repay",
+    "copy_link": "Copy link",
+    "link_copied": "Link copied to clipboard",
+    "reset_filters": "Reset filters"
+  },
+  "positions": {
+    "actions": "Actions",
+    "empty": "No positions",
+    "add_collateral": "Add collateral",
+    "repay": "Repay",
+    "note_prices": "Current BTC/USD price",
+    "note_prices_suffix": "(reference for LTV/HF calculation)"
+  },
+  "dashboard": {
+    "subtitle": "Market health and key metrics",
+    "oracle_stale": "Oracle data may be stale",
+    "recalculate": "Recalculate",
+    "loading": "Loading…"
+  },
+  "header": {
+    "network_aria": "Current network status",
+    "switch_to_mainnet": "Switch to Mainnet",
+    "switch_to_testnet": "Switch to Testnet",
+    "to_mainnet": "Mainnet",
+    "to_testnet": "Testnet"
+  }
+}
+

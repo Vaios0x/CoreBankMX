@@ -33,8 +33,9 @@ describe('Vault/Loan/Liquidations', () => {
     // Try to borrow 0.8 BTC worth (assuming 1:1 for mock) -> targetLtv=0.6, should revert
     await expect(loan.connect(user).borrow(ethers.parseEther('0.8'))).to.be.reverted
 
-    // Borrow 0.5 ok
-    await (await loan.connect(user).borrow(ethers.parseEther('0.5'))).wait()
+    // Borrow 0.5 ok (captures fee event)
+    const tx = await loan.connect(user).borrow(ethers.parseEther('0.5'))
+    await tx.wait()
     const data = await loan.getAccountData(await user.getAddress())
     expect(data[1]).to.equal(ethers.parseEther('0.5'))
 

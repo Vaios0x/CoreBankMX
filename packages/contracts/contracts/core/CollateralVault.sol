@@ -27,14 +27,15 @@ contract CollateralVault is IVault, Roles, Pausable, ReentrancyGuard {
     function unpause() external onlyRole(ROLE_PAUSER) { _unpause(); }
 
     function deposit(uint256 amount) external nonReentrant whenNotPaused {
-        require(amount > 0, "amount");
+        if (amount == 0) revert AmountZero();
         asset.safeTransferFrom(msg.sender, address(this), amount);
         balances[msg.sender] += amount;
         emit DepositCollateral(msg.sender, amount);
     }
 
     function withdraw(uint256 amount) external nonReentrant whenNotPaused {
-        require(amount > 0 && amount <= balances[msg.sender], "amount");
+        if (amount == 0) revert AmountZero();
+        if (amount > balances[msg.sender]) revert InsufficientBalance();
         // If linked to a LoanManager, enforce post-withdraw health (approx by proportionality)
         if (address(loanManager) != address(0)) {
             uint256 bal = balances[msg.sender];
@@ -44,7 +45,7 @@ contract CollateralVault is IVault, Roles, Pausable, ReentrancyGuard {
                 // newHF ~= hf * (newCollateral / oldCollateral)
                 require(bal > 0, "collateral");
                 uint256 newHf = (hf * newCol) / bal;
-                require(newHf >= 1e18, "hf");
+                if (newHf < 1e18) revert UnsafeWithdraw();
             }
         }
         balances[msg.sender] -= amount;
@@ -58,7 +59,8 @@ contract CollateralVault is IVault, Roles, Pausable, ReentrancyGuard {
 
     // Seize function for liquidations authorized by keeper role
     function seize(address user, address to, uint256 amount) external onlyRole(ROLE_KEEPER) nonReentrant {
-        require(amount > 0 && amount <= balances[user], "amount");
+        if (amount == 0) revert AmountZero();
+        if (amount > balances[user]) revert InsufficientBalance();
         balances[user] -= amount;
         asset.safeTransfer(to, amount);
     }

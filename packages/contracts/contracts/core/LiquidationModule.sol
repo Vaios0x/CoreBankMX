@@ -26,8 +26,8 @@ contract LiquidationModule is Roles {
 
     function liquidate(address user, uint256 repayAmount) external onlyRole(ROLE_KEEPER) {
         (, uint256 debt, uint256 hf) = loanManager.getAccountData(user);
-        require(hf < 1e18, "healthy");
-        require(repayAmount > 0 && repayAmount <= debt, "amount");
+        if (hf >= 1e18) revert HealthyPosition();
+        if (repayAmount == 0 || repayAmount > debt) revert AmountZero();
         // Transfer repay from keeper to this module, then approve LoanManager and repay on user's behalf
         debtAsset.safeTransferFrom(msg.sender, address(this), repayAmount);
         debtAsset.forceApprove(address(loanManager), 0);

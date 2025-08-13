@@ -12,6 +12,7 @@ async function main() {
 
   const CollateralVault = await ethers.getContractFactory('CollateralVault')
   const LoanManager = await ethers.getContractFactory('LoanManager')
+  const FeeController = await ethers.getContractFactory('FeeController')
   const LiquidationModule = await ethers.getContractFactory('LiquidationModule')
   const DualStakingVault = await ethers.getContractFactory('DualStakingVault')
   const OracleRouter = await ethers.getContractFactory('OracleRouter')
@@ -49,6 +50,13 @@ async function main() {
   const stake = await DualStakingVault.deploy(admin, lstbtc)
   await stake.waitForDeployment()
 
+  // Deploy FeeController and wire it
+  const feeCollector = admin
+  const minBorrow = ethers.parseEther('50')
+  const fee = await FeeController.deploy(admin, feeCollector, minBorrow)
+  await fee.waitForDeployment()
+  await (await loan.setFeeController(await fee.getAddress(), feeCollector)).wait()
+
   // Wire oracle in LoanManager (collateral token is lstbtc)
   await (await loan.setOracle(await router.getAddress(), lstbtc)).wait()
   // Backref LoanManager in Vault for withdraw/LTV checks
@@ -65,6 +73,7 @@ async function main() {
     LoanManager: await loan.getAddress(),
     LiquidationModule: await liq.getAddress(),
     DualStakingVault: await stake.getAddress(),
+    FeeController: await fee.getAddress(),
     admin,
   }
   console.log('Deployed:', out)

@@ -16,6 +16,10 @@ contract LoanManager is Roles, Pausable, ReentrancyGuard, ILoanManager {
     IVault public immutable collateralVault;
     IOracle public oracle; // optional
     address public collateralToken; // for oracle lookup
+    // Fees
+    address public feeController; // optional
+    address public feeCollector; // cached from fee controller when set
+
 
     uint256 public targetLtv = 6000; // bps 60%
     uint256 public liquidationLtv = 7500; // bps 75%
@@ -27,6 +31,7 @@ contract LoanManager is Roles, Pausable, ReentrancyGuard, ILoanManager {
     mapping(address => uint256) public userIndex; // last index applied to user's debt
 
     event UpdateRates(uint256 baseRateBps);
+    event SetFeeController(address indexed controller);
     event AccrueInterest(uint256 newIndex, uint256 dt);
 
     constructor(address admin, IERC20 _debtAsset, IVault _vault) Roles(admin) {
@@ -46,17 +51,35 @@ contract LoanManager is Roles, Pausable, ReentrancyGuard, ILoanManager {
         emit UpdateRates(baseRateBps);
     }
 
+    function setFeeController(address controller, address collector) external onlyRole(ROLE_ADMIN) {
+        feeController = controller;
+        feeCollector = collector;
+        emit SetFeeController(controller);
+    }
+
     function borrow(uint256 amount) external nonReentrant whenNotPaused {
-        require(amount > 0, "amount");
+        if (amount == 0) revert AmountZero();
         _applyInterest(msg.sender);
         (uint256 c, uint256 d, ) = getAccountData(msg.sender);
         uint256 newDebt = d + amount;
-        require(_ltv(c, newDebt) <= targetLtv, "ltv");
+        if (_ltv(c, newDebt) > targetLtv) revert LtvTooHigh();
+        // Fees: originación si hay feeController
+        uint256 fee;
+        if (feeController != address(0) && feeCollector != address(0)) {
+            (bool ok, bytes memory data) = feeController.staticcall(abi.encodeWithSignature("getBorrowFee(address,uint256)", msg.sender, amount));
+            if (ok && data.length >= 64) {
+                (uint256 f, address collector) = abi.decode(data, (uint256, address));
+                fee = f;
+                if (fee > 0 && collector != address(0)) {
+                    debtAsset.safeTransfer(collector, fee);
+                }
+            }
+        }
         // update user principal using current index
         principalDebt[msg.sender] = _toPrincipal(newDebt);
         userIndex[msg.sender] = interestIndex;
         debtAsset.safeTransfer(msg.sender, amount);
-        emit Borrow(msg.sender, amount);
+        emit Borrow(msg.sender, amount, fee);
     }
 
     function repay(uint256 amount) external nonReentrant whenNotPaused {
@@ -68,7 +91,7 @@ contract LoanManager is Roles, Pausable, ReentrancyGuard, ILoanManager {
     }
 
     function _repayFrom(address payer, address user, uint256 amount) internal {
-        require(amount > 0, "amount");
+        if (amount == 0) revert AmountZero();
         _applyInterest(user);
         debtAsset.safeTransferFrom(payer, address(this), amount);
         uint256 d = _debtOf(user);

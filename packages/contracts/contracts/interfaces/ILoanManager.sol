@@ -2,7 +2,12 @@
 pragma solidity ^0.8.24;
 
 interface ILoanManager {
-    event Borrow(address indexed user, uint256 amount);
+    error AmountZero();
+    error LtvTooHigh();
+    error HealthyPosition();
+    error NotEnoughCollateral();
+
+    event Borrow(address indexed user, uint256 amount, uint256 fee);
     event Repay(address indexed user, uint256 amount);
     event UpdateParams(uint256 targetLtv, uint256 liquidationLtv, uint256 baseRate);
 

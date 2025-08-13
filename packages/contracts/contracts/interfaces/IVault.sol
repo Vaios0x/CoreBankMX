@@ -2,6 +2,9 @@
 pragma solidity ^0.8.24;
 
 interface IVault {
+    error AmountZero();
+    error InsufficientBalance();
+    error UnsafeWithdraw();
     event DepositCollateral(address indexed user, uint256 amount);
     event WithdrawCollateral(address indexed user, uint256 amount);
 

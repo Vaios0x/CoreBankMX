@@ -13,6 +13,7 @@ export const loanAbi = [
   { inputs: [], name: 'targetLtv', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'liquidationLtv', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'baseRateBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [{ name: 'user', type: 'address' }], name: 'getAccountData', outputs: [{ type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' },
 ]
 
 export const feeAbi = [
@@ -67,6 +68,36 @@ export async function estimateBorrowFee(amount: number, user?: `0x${string}`) {
   }
   const feeWei = (amountWei * BigInt(effectiveBps)) / 10_000n
   return { fee: Number(feeWei) / 1e18, bps: effectiveBps, minBorrow: Number(minBorrow) / 1e18, pro: Boolean(isPro) }
+}
+
+export async function readMetricsForUsers(users: string[]) {
+  const rpc = cfg.CORE_RPC_TESTNET
+  const chainId = cfg.CORE_CHAIN_ID_TESTNET
+  const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
+  const loanAddr = (addresses as any).LoanManager as `0x${string}` | undefined
+  const routerAddr = (addresses as any).OracleRouter as `0x${string}` | undefined
+  const collateralToken = (addresses as any).LSTBTC as `0x${string}` | undefined
+  if (!loanAddr) return { activePositions: 0, tvlUsd: 0 }
+  const loan = getContract({ address: loanAddr, abi: loanAbi, client })
+  // leer precio del router si existe
+  let price = 0
+  if (routerAddr && collateralToken) {
+    try {
+      const res = await (getContract({ address: routerAddr, abi: [{ inputs: [{ name: 'token', type: 'address' }], name: 'getPrice', outputs: [{ type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' }], client }) as any).read.getPrice([collateralToken])
+      price = Number((res as [bigint, bigint])[0]) / 1e18
+    } catch {}
+  }
+  let active = 0
+  let tvlUsd = 0
+  for (const u of users) {
+    if (!/^0x[a-fA-F0-9]{40}$/.test(u)) continue
+    try {
+      const [collateral, debt] = (await loan.read.getAccountData([u as `0x${string}`])) as unknown as [bigint, bigint, bigint]
+      if (debt > 0n) active++
+      if (price > 0) tvlUsd += (Number(collateral) / 1e18) * price
+    } catch {}
+  }
+  return { activePositions: active, tvlUsd }
 }
 
 

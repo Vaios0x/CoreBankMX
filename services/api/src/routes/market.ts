@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { getPrice } from '../lib/oracleCache'
-import { readMarketParams, estimateBorrowFee } from '../lib/onchain'
+import { readMarketParams, estimateBorrowFee, readMetricsForUsers } from '../lib/onchain'
 
 export async function marketRoutes(app: FastifyInstance) {
   let cache: any = null
@@ -40,12 +40,11 @@ export async function marketRoutes(app: FastifyInstance) {
     return { symbol: symbol.toUpperCase(), points }
   })
 
-  // Métricas agregadas mock
+  // Métricas agregadas (demo: usuarios de MONITOR_USERS)
   app.get('/market/metrics', async () => {
-    return {
-      activePositions: 12,
-      liquidations24h: 0,
-    }
+    const users = (process.env.MONITOR_USERS || '').split(',').map((s) => s.trim()).filter(Boolean)
+    const m = await readMetricsForUsers(users)
+    return { ...m, liquidations24h: 0 }
   })
 
   // Histórico de TVL (mock)

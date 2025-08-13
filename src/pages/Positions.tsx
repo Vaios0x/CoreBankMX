@@ -34,6 +34,38 @@ export default function Positions() {
     })()
     return () => { mounted = false }
   }, [address])
+
+  // Fallback on-chain directo si la API no está disponible
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      if (!address || positions.length > 0) return
+      try {
+        const loanAddr = env.LOAN_MANAGER as `0x${string}`
+        if (!loanAddr || loanAddr === '0x0000000000000000000000000000000000000000') return
+        const fn = new Function('env', 'return [' +
+          `import('viem').then(m=>m), import('wagmi').then(m=>m)` +
+        ']') as (env: any) => Promise<any[]>
+        const [viemMod, wagmiMod] = await fn(env)
+        const { createPublicClient, http } = viemMod
+        const { getContract } = viemMod
+        const chainId = env.CHAIN_ID_TESTNET
+        const rpc = env.RPC_TESTNET
+        const chain = { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any
+        const client = createPublicClient({ transport: http(rpc), chain })
+        const abi = [{ inputs: [{ name: 'user', type: 'address' }], name: 'getAccountData', outputs: [{ type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' }] as const
+        const contract = getContract({ address: loanAddr, abi: abi as any, client })
+        const result = await contract.read.getAccountData([address])
+        if (cancelled) return
+        const collateral = Number((result as any)[0]) / 1e18
+        const debt = Number((result as any)[1]) / 1e18
+        if (Number.isFinite(collateral) && Number.isFinite(debt)) {
+          usePositionsStore.getState().setPositions([{ id: 'current', collateralBtc: collateral, debtUsdt: debt }])
+        }
+      } catch {}
+    })()
+    return () => { cancelled = true }
+  }, [address, positions.length])
   return (
     <div>
       <h1 className="mb-4 text-xl font-semibold">{t('nav.positions')}</h1>

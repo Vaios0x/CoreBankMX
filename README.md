@@ -112,6 +112,7 @@ API_PORT=8081
 - API
   - pnpm --filter services/api dev  servidor local (status, market, prices)
   - pnpm --filter services/api build  compila (tsc)
+  - pnpm --filter services/api oracle:cron  empuja precios sintéticos a adapters (usar ALLOW_ORACLE_PUSH_CRON=1 y LSTBTC_ADDRESS)
 - Web
   - pnpm dev en pps/web  dApp local
 

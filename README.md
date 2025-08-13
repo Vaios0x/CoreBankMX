@@ -1,99 +1,121 @@
-# Core Neobank MX — Frontend (SPA)
+﻿# Core Neobank MX  Remesas y Préstamos con BTC como Colateral
 
-SPA en React + Vite + TypeScript para “Core Neobank MX: Remesas y Préstamos con BTC como colateral”.
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) 
+[![React](https://img.shields.io/badge/React-20232a?logo=react&logoColor=61DAFB)](https://react.dev/) 
+[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/) 
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![PostCSS](https://img.shields.io/badge/PostCSS-DD3A0A?logo=postcss&logoColor=white)](https://postcss.org/)
+[![Framer Motion](https://img.shields.io/badge/Framer%20Motion-0055FF?logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Wagmi](https://img.shields.io/badge/wagmi-000000?logo=ethereum&logoColor=white)](https://wagmi.sh/)
+[![viem](https://img.shields.io/badge/viem-363636?logo=vercel&logoColor=white)](https://viem.sh/)
+[![Web3Modal](https://img.shields.io/badge/Web3Modal-ec5990?logo=walletconnect&logoColor=white)](https://web3modal.com/)
+[![Hardhat](https://img.shields.io/badge/Hardhat-F4D03F?logo=ethereum&logoColor=000)](https://hardhat.org/)
+[![Solidity](https://img.shields.io/badge/Solidity-363636?logo=solidity&logoColor=white)](https://soliditylang.org/)
+[![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin-4E5EE4?logo=openzeppelin&logoColor=white)](https://www.openzeppelin.com/)
+[![Fastify](https://img.shields.io/badge/Fastify-000000?logo=fastify&logoColor=white)](https://fastify.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-43853D?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![Core DAO](https://img.shields.io/badge/Core%20DAO%20EVM-1116%20%2F%201114-ff7a00)](https://coredao.org/)
 
-## Requisitos
-- Node 18+
+> Build What Matters, Build on Core  Proyecto listo para el Core Connect Global Buildathon 2025.
 
-## Scripts
-- `npm run dev`: desarrollo
-- `npm run build`: build
-- `npm run preview`: servidor de preview
-- `npm run typecheck`: `tsc --noEmit`
+## Pitch (estilo itch.io)
+- **Qué es**: Un neobanco no-custodial sobre Core que permite usar BTC puenteado como garantía para obtener préstamos en stablecoins, enviar remesas a MX y generar rendimiento con dual staking.
+- **Por qué importa**: Remesas a México alcanzan máximos históricos; muchos usuarios tienen BTC o ingresos cripto pero carecen de crédito formal. Ofrecemos crédito y pagos con transparencia on-chain y costos competitivos.
+- **Para quién**: Receptores de remesas, gig-workers, PYMEs con BTC en tesorería y usuarios cripto-first en México.
+- **Ventaja en Core**: Integración nativa con Core (chainId 1116/1114), gas rebates, staking CORE/stCORE, y enfoque BTCfi.
+- **Demo rápida (30s)**: Deposita BTC-wrapped  pide préstamo en USDT  envía remesa (stub on/off-ramp)  gana rendimiento con dual staking  monitorea salud y liquida posiciones de riesgo automáticamente.
 
-## Configuración .env
-Copiar `.env.example` a `.env` y ajustar:
-```
-VITE_CORE_CHAIN_ID_MAINNET=1116
-VITE_CORE_CHAIN_ID_TESTNET=1114
-VITE_CORE_RPC_MAINNET=https://rpc.coredao.org
-VITE_CORE_RPC_TESTNET=https://rpc.test2.btcs.network
-VITE_EXPLORER_MAINNET=https://scan.coredao.org
-VITE_EXPLORER_TESTNET=https://scan.test2.btcs.network
-VITE_CONTRACT_COLLATERAL_VAULT=0x...
-VITE_CONTRACT_LOAN_MANAGER=0x...
-VITE_CONTRACT_STAKING_VAULT=0x...
-VITE_WALLETCONNECT_PROJECT_ID=your_project_id
-```
+## Funcionalidades clave
+- Préstamos con colateral BTC (wrapper/lstBTC) y préstamos en USDT/wrapped.
+- LTV dinámico por mercado (p. ej. 60% target / 75% liquidación) y penalidades configurables.
+- Oráculos con tolerancias: RedStone (primario) / Pyth (fallback) + circuit breakers por staleness/deviation.
+- Liquidaciones on-chain con incentivo para el liquidador (keeper off-chain incluido).
+- Dual Staking Compounding (ERC4626) para depositantes con función compound() incentivable.
+- Panel admin-readonly (parámetros, tasas), accesibilidad A11y, i18n EN/ES.
+- Integración on/off-ramp MXN (Bitso) como stub documentado fuera del contrato (no-custodial).
 
-## Notas
-- Accesibilidad: focus rings visibles, navegación por teclado.
-- Animaciones: Motion-safe, respetando `prefers-reduced-motion`.
-- Web3: Chains Core Mainnet/Testnet2, auto-connect, Web3Modal.
+## Arquitectura
+- pps/web: React + Vite + TypeScript + Tailwind + Wagmi/viem + Web3Modal + Framer Motion.
+- packages/contracts: Solidity + Hardhat + OpenZeppelin + TypeChain + tests (Mocha/Chai).
+- services/keeper: Node TS que monitorea HF y ejecuta liquidaciones/compounding.
+- services/api: Fastify TS con caché de oráculos, stubs KYC/KYB y on/off-ramp, métricas.
 
+`mermaid
+flowchart LR
+  A[Web dApp] -->|wagmi/viem| B(Core RPC 1114/1116)
+  A --> C(API Fastify: prices, status, stubs)
+  C --> D[Oracles: RedStone/Pyth]
+  B --> E[Smart Contracts (Vault/Loan/Oracle/Staking)]
+  F[Keeper] -->|liquidate/compound| E
+`
 
-Currently, two official plugins are available:
+## Redes Core
+- Mainnet: chainId 1116  RPC https://rpc.coredao.org  Explorer https://scan.coredao.org/
+- Testnet2: chainId 1114  RPC https://rpc.test2.btcs.network  Explorer https://scan.test2.btcs.network/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Variables de entorno (root y servicios)
+Crea .env desde .env.example (no se versiona):
+`
+CORE_RPC_MAINNET=https://rpc.coredao.org
+CORE_RPC_TESTNET=https://rpc.test2.btcs.network
+CORE_CHAIN_ID_MAINNET=1116
+CORE_CHAIN_ID_TESTNET=1114
+EXPLORER_MAINNET=https://scan.coredao.org
+EXPLORER_TESTNET=https://scan.test2.btcs.network
+DEPLOYER_PRIVATE_KEY=
+SAFE_ADMIN_ADDRESS=
+KEEPER_PRIVATE_KEY=
+API_KEY_ADMIN=
+ORACLE_PRIMARY=redstone # redstone|pyth
+REDSTONE_URL=https://oracle-gateway-1.a.redstone.finance
+PYTH_URL=https://hermes.pyth.network
+LSTBTC_ADDRESS=0x...
+USDT_ADDRESS=0x...
+`
 
-## Expanding the ESLint configuration
+## Scripts rápidos
+- Contratos
+  - pnpm --filter packages/contracts test  pruebas
+  - pnpm --filter packages/contracts deploy:testnet2  despliegue 1114
+  - pnpm --filter packages/contracts verify:testnet2  verificación en Core Scan
+- Keeper
+  - pnpm --filter services/keeper start  cron monitor/compound
+- API
+  - pnpm --filter services/api dev  servidor local (status, market, prices)
+- Web
+  - pnpm dev en pps/web  dApp local
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Calidad, seguridad y accesibilidad
+- CEI pattern, ReentrancyGuard, AccessControl (roles: ADMIN/KEEPER/PAUSER), pausas granulares.
+- Oráculos con ventanas de validez y desviación máxima; modo pausa de mercado.
+- UI con navegación por teclado, ria-*, focus visible, motion-safe para animaciones.
+- CI con pruebas de contratos y typecheck (GitHub Actions).
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Contratos principales
+- CollateralVault.sol: depósitos/retiros colateral y consulta de posiciones.
+- LoanManager.sol: orrow/repay, ccrueInterest, healthFactor, parámetros LTV/tasas/penalties.
+- LiquidationModule.sol: liquidaciones e incentivos.
+- OracleRouter.sol + adapters RedStone/Pyth: getPrice() con circuit breakers.
+- DualStakingVault.sol (ERC4626): deposit/withdraw, compound().
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Cumplimiento y alcance
+- Diseño no-custodial on-chain; rieles fiat sólo vía integraciones off-chain (stubs documentados).
+- KYC/KYB y travel rule se ejecutan en la capa de aplicación cuando aplique (fuera de contratos).
+- Este repositorio es material de demostración para el Core Connect Global Buildathon (entregables en inglés).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Roadmap (breve)
+- v0: Demo pública en Testnet2, contratos verificados, video y slides.
+- v1: Lanzamiento Mainnet ( 2 semanas tras juicio), auditoría, gas rebates.
+- v1.1: Más mercados de colateral, dashboard de riesgo avanzado, integración on/off-ramp real.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Recursos Core y hackathon
+- Buildathon: https://coredao.org/initiatives/core-connect-buildathon
+- Docs Core: https://docs.coredao.org/  API: https://docs.coredao.org/docs/api
+- Explorers: Mainnet https://scan.coredao.org/  Testnet2 https://scan.test2.btcs.network/
+- Faucet Testnet2: https://scan.test2.btcs.network/faucet
+- Staking: Mainnet https://stake.coredao.org/  Testnet2 https://stake.test2.btcs.network/
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Licencia
+MIT

@@ -6,6 +6,7 @@ import { formatUSD } from '../lib/format'
 import { useEffect, useState } from 'react'
 import { env } from '../lib/env'
 import Sparkline from '../components/ui/Sparkline'
+import ExplorerLink from '../components/web3/ExplorerLink'
 import { motion } from 'framer-motion'
 
 export default function Dashboard() {
@@ -182,9 +183,10 @@ export default function Dashboard() {
               {liqs.slice(0, 5).map((it) => (
                 <li key={it.tx} className="rounded border border-ui bg-ui-surface p-2">
                   <div className="flex items-center justify-between">
-                    <span className="truncate" title={it.user}>{it.user.slice(0, 6)}…{it.user.slice(-4)}</span>
+                    <span className="truncate" title={it.user}><ExplorerLink hash={it.user} type="address" /></span>
                     <span className="text-ui-muted">#{it.blockNumber}</span>
                   </div>
+                  <div className="mt-1 text-ui-muted">tx: <ExplorerLink hash={it.tx} type="tx" /></div>
                   <div className="mt-1 text-ui-muted">repay: {it.repayAmount.toFixed(4)} | seized: {it.collateralSeized.toFixed(4)}</div>
                 </li>
               ))}

@@ -2,9 +2,20 @@ import type { FastifyBaseLogger } from 'fastify'
 import { ethers } from 'ethers'
 
 export async function monitorPositions(log: FastifyBaseLogger) {
-  // Lee lista de usuarios monitor a partir de ENV (coma separada)
-  const usersEnv = process.env.MONITOR_USERS || ''
-  if (!usersEnv) return log.info('No MONITOR_USERS set')
+  // Lee lista de usuarios desde API o ENV
+  let users: string[] = []
+  try {
+    const res = await fetch(`${process.env.API_URL || 'http://localhost:8080'}/positions`)
+    if (res.ok) {
+      const json = await res.json()
+      users = Array.isArray(json?.users) ? json.users : []
+    }
+  } catch {}
+  if (users.length === 0) {
+    const usersEnv = process.env.MONITOR_USERS || ''
+    users = usersEnv.split(',').map((s) => s.trim()).filter(Boolean)
+  }
+  if (users.length === 0) return log.info('No MONITOR_USERS provided')
   let addresses: any = {}
   try { addresses = require('../../../../packages/contracts/addresses.testnet2.json') } catch {}
   const loan = addresses.LoanManager
@@ -17,8 +28,7 @@ export async function monitorPositions(log: FastifyBaseLogger) {
   const erc20Abi = [ 'function allowance(address,address) view returns (uint256)','function approve(address,uint256) returns (bool)' ]
   const loanC = new ethers.Contract(loan, loanAbi, provider)
   const liqC = new ethers.Contract(liq, liqAbi, wallet)
-  for (const u of usersEnv.split(',')) {
-    const user = u.trim()
+  for (const user of users) {
     if (!user) continue
     const [ , debt, hf ] = await loanC.getAccountData(user)
     if (debt > 0n && hf < 1_000000000000000000n) {

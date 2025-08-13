@@ -7,6 +7,8 @@ const loanAbi = [
 ] as const
 
 export async function positionsRoutes(app: FastifyInstance) {
+  // Demo: lista simple de usuarios en memoria, configurable por ENV
+  const demoUsers = (process.env.MONITOR_USERS || '').split(',').map((s) => s.trim()).filter(Boolean)
   app.get<{ Params: { address: `0x${string}` } }>('/positions/:address', async (req, res) => {
     const addr = (req.params.address || '') as `0x${string}`
     if (!/^0x[a-fA-F0-9]{40}$/.test(addr)) return res.status(400).send({ error: 'bad_address' })
@@ -21,6 +23,11 @@ export async function positionsRoutes(app: FastifyInstance) {
     const debt = (result as unknown as [bigint, bigint, bigint])[1]
     const hf = (result as unknown as [bigint, bigint, bigint])[2]
     return { address: addr, collateral: collateral.toString(), debt: debt.toString(), healthFactor: hf.toString() }
+  })
+
+  app.get('/positions', async () => {
+    // Endpoint simple que devuelve la lista de usuarios monitor (para keeper/demo)
+    return { users: demoUsers }
   })
 }
 

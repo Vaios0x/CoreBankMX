@@ -34,17 +34,22 @@ contract OracleRouter is Roles {
 
     function getPrice(address token) external view returns (uint256 price, uint256 updatedAt) {
         (uint256 p1, uint256 t1) = primary.getPrice(token);
+        (uint256 p2, uint256 t2) = fallbackOracle.getPrice(token);
         bool fresh1 = block.timestamp - t1 <= maxStaleness;
-        if (fresh1) {
+        bool fresh2 = block.timestamp - t2 <= maxStaleness;
+        if (fresh1 && fresh2) {
+            if (p1 == 0 && p2 == 0) revert("zero");
+            if (p1 == 0) return (p2, t2);
+            if (p2 == 0) return (p1, t1);
+            uint256 dev = p1 > p2 ? ((p1 - p2) * 10_000) / p1 : ((p2 - p1) * 10_000) / p2;
+            // Si la desviación excede el umbral, preferimos fallback
+            if (dev > maxDeviationBps) {
+                return (p2, t2);
+            }
             return (p1, t1);
         }
-        (uint256 p2, uint256 t2) = fallbackOracle.getPrice(token);
-        bool fresh2 = block.timestamp - t2 <= maxStaleness;
+        if (fresh1) return (p1, t1);
         require(fresh2, "stale");
-        if (p1 > 0 && p2 > 0) {
-            uint256 dev = p1 > p2 ? ((p1 - p2) * 10_000) / p1 : ((p2 - p1) * 10_000) / p2;
-            require(dev <= maxDeviationBps, "deviation");
-        }
         return (p2, t2);
     }
 }

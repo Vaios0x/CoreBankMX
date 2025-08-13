@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node-esm src/server.ts",
     "start": "node --enable-source-maps dist/server.js",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "oracle:cron": "ts-node-esm src/scripts/oracle-cron.ts"
   },
   "dependencies": {
     "fastify": "^4.28.1",

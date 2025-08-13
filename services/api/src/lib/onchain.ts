@@ -15,14 +15,58 @@ export const loanAbi = [
   { inputs: [], name: 'baseRateBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
 ]
 
+export const feeAbi = [
+  { inputs: [], name: 'originationFeeBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'exchangeFeeBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'proDiscountBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'minBorrowAmount', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [{ name: 'user', type: 'address' }], name: 'isPro', outputs: [{ type: 'bool' }], stateMutability: 'view', type: 'function' },
+]
+
 export async function readMarketParams() {
   const rpc = cfg.CORE_RPC_TESTNET
   const chainId = cfg.CORE_CHAIN_ID_TESTNET
   const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
   const addr = (addresses as any).LoanManager as `0x${string}`
   const contract = getContract({ address: addr, abi: loanAbi, client })
-  const [t, l, r] = await Promise.all([contract.read.targetLtv(), contract.read.liquidationLtv(), contract.read.baseRateBps()])
-  return { targetLtv: Number(t) / 10_000, liquidationLtv: Number(l) / 10_000, baseRate: Number(r) / 10_000 }
+  const feeAddr = (addresses as any).FeeController as `0x${string}` | undefined
+  const fee = feeAddr ? getContract({ address: feeAddr, abi: feeAbi, client }) : null
+  const [t, l, r, obps, minBorrow] = await Promise.all([
+    contract.read.targetLtv(),
+    contract.read.liquidationLtv(),
+    contract.read.baseRateBps(),
+    fee ? fee.read.originationFeeBps() : Promise.resolve(0n),
+    fee ? fee.read.minBorrowAmount() : Promise.resolve(0n),
+  ])
+  return {
+    targetLtv: Number(t) / 10_000,
+    liquidationLtv: Number(l) / 10_000,
+    baseRate: Number(r) / 10_000,
+    originationFeeBps: Number(obps),
+    minBorrowAmount: Number(minBorrow) / 1e18,
+  }
+}
+
+export async function estimateBorrowFee(amount: number, user?: `0x${string}`) {
+  const rpc = cfg.CORE_RPC_TESTNET
+  const chainId = cfg.CORE_CHAIN_ID_TESTNET
+  const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
+  const feeAddr = (addresses as any).FeeController as `0x${string}` | undefined
+  if (!feeAddr) return { fee: 0, bps: 0, minBorrow: 0, pro: false }
+  const fee = getContract({ address: feeAddr, abi: feeAbi, client })
+  const [bps, minBorrow, isPro] = await Promise.all([
+    fee.read.originationFeeBps(),
+    fee.read.minBorrowAmount(),
+    user ? fee.read.isPro([user]) : Promise.resolve(false),
+  ])
+  const amountWei = BigInt(Math.floor((amount || 0) * 1e18))
+  let effectiveBps = Number(bps)
+  if (isPro) {
+    const disc = Number(await fee.read.proDiscountBps())
+    effectiveBps = Math.max(0, effectiveBps - disc)
+  }
+  const feeWei = (amountWei * BigInt(effectiveBps)) / 10_000n
+  return { fee: Number(feeWei) / 1e18, bps: effectiveBps, minBorrow: Number(minBorrow) / 1e18, pro: Boolean(isPro) }
 }
 
 

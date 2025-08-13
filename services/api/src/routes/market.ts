@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { getPrice } from '../lib/oracleCache'
-import { readMarketParams } from '../lib/onchain'
+import { readMarketParams, estimateBorrowFee } from '../lib/onchain'
 
 export async function marketRoutes(app: FastifyInstance) {
   let cache: any = null
@@ -12,6 +12,12 @@ export async function marketRoutes(app: FastifyInstance) {
     cache = { ...data, penalty: 0.08 }
     cachedAt = now
     return cache
+  })
+
+  app.get<{ Querystring: { amount?: string; user?: `0x${string}` } }>('/market/fee', async (req) => {
+    const amount = Number(req.query.amount || '0')
+    const user = req.query.user
+    return estimateBorrowFee(amount, user)
   })
 
   app.get<{ Params: { symbol: string } }>('/market/prices/:symbol', async (req) => {

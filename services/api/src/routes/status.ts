@@ -10,6 +10,7 @@ try {
 
 export async function statusRoutes(app: FastifyInstance) {
   app.get('/status', async () => {
+    const startedAt = Number(process.env.BOOT_TIME || Date.now())
     return {
       ok: true,
       chain: {
@@ -18,6 +19,9 @@ export async function statusRoutes(app: FastifyInstance) {
       },
       keeper: { ok: true },
       contracts: addresses,
+      metrics: {
+        uptimeSec: Math.floor((Date.now() - startedAt) / 1000),
+      },
     }
   })
 }

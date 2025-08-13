@@ -15,6 +15,8 @@ import Input from '../components/ui/Input'
 import { useMarketStore } from '../state/useMarketStore'
 import { useI18n } from '../i18n/i18n'
 import { Alert } from '../components/ui/Alert'
+import { useAccount } from 'wagmi'
+import { useFeeEstimate } from '../hooks/useFee'
 
 const Schema = z.object({
   collateralAmount: z.coerce.number().positive(),
@@ -39,12 +41,14 @@ export default function Borrow() {
   const collateralUsd = collateral * (price ?? 0)
   const health = useHealth(collateralUsd, borrow)
   const { targetLtv, originationFeeBps, minBorrowAmount } = useMarketStore()
+  const { address } = useAccount()
+  const feeEst = useFeeEstimate(borrow, address as `0x${string}` | undefined)
   const maxBorrowAtTarget = collateralUsd * (targetLtv || 0.6)
 
   const { push } = useToastStore()
   const { approve, borrow: borrowTx } = useTx()
-  const feeUsd = useMemo(() => (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0), [borrow, originationFeeBps])
-  const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : false), [borrow, minBorrowAmount])
+  const feeUsd = useMemo(() => (typeof feeEst.data?.fee === 'number' ? feeEst.data.fee : (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0)), [borrow, originationFeeBps, feeEst.data])
+  const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : (typeof feeEst.data?.minBorrow === 'number' ? borrow < feeEst.data.minBorrow : false)), [borrow, minBorrowAmount, feeEst.data])
   const onSubmit = (_data: FormValues) => {
     // Mocks: approve + borrow
     push({ type: 'info', message: t('borrow.toast_approving') })
@@ -122,9 +126,9 @@ export default function Borrow() {
         </div>
         <div className="mt-2"><HealthBar value={Math.min(2, health.hf) / 2} /></div>
         <div className="mt-2 text-xs text-gray-400">{t('borrow.liquidation_ltv')}: {((useMarketStore.getState().liquidationLtv || 0.8) * 100).toFixed(0)}%</div>
-        {originationFeeBps ? (
-          <div className="mt-1 text-xs text-gray-400">Fee: {originationFeeBps} bps (~{formatUSD(feeUsd)})</div>
-        ) : null}
+        <div className="mt-1 text-xs text-gray-400">
+          Fee: {feeEst.data?.bps ?? originationFeeBps ?? 0} bps (~{formatUSD(feeUsd)}) {feeEst.data?.pro ? <span className="ml-1 rounded bg-green-900/40 px-1 py-0.5 text-green-300">Pro</span> : null}
+        </div>
         {belowMin && (
           <Alert variant="warning" className="mt-2 text-xs">Min borrow: {formatUSD(minBorrowAmount || 0)}</Alert>
         )}

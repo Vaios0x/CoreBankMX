@@ -36,17 +36,12 @@ contract CollateralVault is IVault, Roles, Pausable, ReentrancyGuard {
     function withdraw(uint256 amount) external nonReentrant whenNotPaused {
         if (amount == 0) revert AmountZero();
         if (amount > balances[msg.sender]) revert InsufficientBalance();
-        // If linked to a LoanManager, enforce post-withdraw health (approx by proportionality)
+        // If linked to a LoanManager, enforce post-withdraw health using simulation
         if (address(loanManager) != address(0)) {
             uint256 bal = balances[msg.sender];
             uint256 newCol = bal - amount;
-            (, uint256 debt, uint256 hf) = loanManager.getAccountData(msg.sender);
-            if (debt > 0) {
-                // newHF ~= hf * (newCollateral / oldCollateral)
-                require(bal > 0, "collateral");
-                uint256 newHf = (hf * newCol) / bal;
-                if (newHf < 1e18) revert UnsafeWithdraw();
-            }
+            (uint256 hf, ) = loanManager.simulateHealthAfter(msg.sender, newCol);
+            if (hf < 1e18) revert UnsafeWithdraw();
         }
         balances[msg.sender] -= amount;
         asset.safeTransfer(msg.sender, amount);

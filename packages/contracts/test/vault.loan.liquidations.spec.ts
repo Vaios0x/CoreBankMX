@@ -39,7 +39,7 @@ describe('Vault/Loan/Liquidations', () => {
     const data = await loan.getAccountData(await user.getAddress())
     expect(data[1]).to.equal(ethers.parseEther('0.5'))
 
-    // Attempt to withdraw that would break HF should revert
+    // Attempt to withdraw that would break HF should revert with UnsafeWithdraw
     await expect(vault.connect(user).withdraw(ethers.parseEther('0.6'))).to.be.reverted
 
     // Liquidation module end-to-end

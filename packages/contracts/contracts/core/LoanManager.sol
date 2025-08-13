@@ -128,6 +128,19 @@ contract LoanManager is Roles, Pausable, ReentrancyGuard, ILoanManager {
         healthFactor = (maxDebt * 1e18) / _debt;
     }
 
+    function simulateHealthAfter(address user, uint256 newCollateral) external view returns (uint256 healthFactor, uint256 ltvBps) {
+        uint256 d = _debtOf(user);
+        if (d == 0) return (type(uint256).max, 0);
+        uint256 colUsd = newCollateral;
+        if (address(oracle) != address(0) && collateralToken != address(0)) {
+            (uint256 price, ) = oracle.getPrice(collateralToken);
+            colUsd = (newCollateral * price) / 1e18;
+        }
+        uint256 maxDebt = (colUsd * liquidationLtv) / 10_000;
+        healthFactor = (maxDebt * 1e18) / d;
+        ltvBps = (d * 10_000) / (colUsd == 0 ? 1 : colUsd);
+    }
+
     function debtOf(address user) external view returns (uint256) {
         return _debtOf(user);
     }

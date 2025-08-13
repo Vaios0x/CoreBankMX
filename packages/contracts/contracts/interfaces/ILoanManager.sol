@@ -16,6 +16,7 @@ interface ILoanManager {
     function repayFrom(address payer, address user, uint256 amount) external;
     function getAccountData(address user) external view returns (uint256 collateral, uint256 debt, uint256 healthFactor);
     function debtOf(address user) external view returns (uint256);
+    function simulateHealthAfter(address user, uint256 newCollateral) external view returns (uint256 healthFactor, uint256 ltvBps);
 }
 
 

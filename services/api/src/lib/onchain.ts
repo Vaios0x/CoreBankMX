@@ -100,4 +100,33 @@ export async function readMetricsForUsers(users: string[]) {
   return { activePositions: active, tvlUsd }
 }
 
+export async function readRecentLiquidations(maxItems = 20, lookbackBlocks = 200_000) {
+  const rpc = cfg.CORE_RPC_TESTNET
+  const chainId = cfg.CORE_CHAIN_ID_TESTNET
+  const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
+  const lm = (addresses as any).LiquidationModule as `0x${string}` | undefined
+  if (!lm) return []
+  const current = await client.getBlockNumber()
+  const from = current > BigInt(lookbackBlocks) ? current - BigInt(lookbackBlocks) : 0n
+  const eventAbi = {
+    type: 'event',
+    name: 'Liquidate',
+    inputs: [
+      { indexed: true, name: 'user', type: 'address' },
+      { indexed: false, name: 'repayAmount', type: 'uint256' },
+      { indexed: false, name: 'collateralSeized', type: 'uint256' },
+      { indexed: false, name: 'incentive', type: 'uint256' },
+    ],
+  } as const
+  const logs = await client.getLogs({ address: lm, event: eventAbi as any, fromBlock: from, toBlock: current })
+  return logs.slice(-maxItems).reverse().map((l: any) => ({
+    tx: String(l.transactionHash),
+    user: String((l.args as any)?.user),
+    repayAmount: Number((l.args as any)?.repayAmount) / 1e18,
+    collateralSeized: Number((l.args as any)?.collateralSeized) / 1e18,
+    incentive: Number((l.args as any)?.incentive) / 1e18,
+    blockNumber: Number(l.blockNumber),
+  }))
+}
+
 

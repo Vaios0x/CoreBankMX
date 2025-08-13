@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { getPrice } from '../lib/oracleCache'
-import { readMarketParams, estimateBorrowFee, readMetricsForUsers } from '../lib/onchain'
+import { readMarketParams, estimateBorrowFee, readMetricsForUsers, readRecentLiquidations } from '../lib/onchain'
 
 export async function marketRoutes(app: FastifyInstance) {
   let cache: any = null
@@ -57,6 +57,11 @@ export async function marketRoutes(app: FastifyInstance) {
       return { t, v }
     })
     return { metric: 'TVL', points }
+  })
+
+  app.get('/market/liquidations', async () => {
+    const items = await readRecentLiquidations(20)
+    return { items }
   })
 }
 

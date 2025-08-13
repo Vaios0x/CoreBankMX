@@ -47,6 +47,9 @@ export default function Dashboard() {
         const json = await res.json()
         if (!mounted) return
         setMetrics({ activePositions: json?.activePositions ?? 0, liquidations24h: json?.liquidations24h ?? 0 })
+        if (typeof json?.tvlUsd === 'number') {
+          setParams({ tvlUsd: json.tvlUsd })
+        }
       } catch {
         if (mounted) setMetrics({ activePositions: 0, liquidations24h: 0 })
       }

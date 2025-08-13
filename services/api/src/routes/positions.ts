@@ -24,6 +24,27 @@ export async function positionsRoutes(app: FastifyInstance) {
     const hf = (result as unknown as [bigint, bigint, bigint])[2]
     return { address: addr, collateral: collateral.toString(), debt: debt.toString(), healthFactor: hf.toString() }
   })
+  // Batch por query param ?addresses=0x..,0x..
+  app.get('/positions', async (req, res) => {
+    const q = new URL(req.url, 'http://localhost').searchParams.get('addresses') || ''
+    const addrs = q.split(',').map((s) => s.trim()).filter((s) => /^0x[a-fA-F0-9]{40}$/.test(s))
+    if (addrs.length === 0) return res.send({ items: [] })
+    let addresses: any = {}
+    try { addresses = require('../../../packages/contracts/addresses.testnet2.json') } catch {}
+    const loan = addresses.LoanManager as `0x${string}` | undefined
+    if (!loan) return res.status(400).send({ error: 'no_loan' })
+    const client = createPublicClient({ transport: http(cfg.CORE_RPC_TESTNET), chain: { id: cfg.CORE_CHAIN_ID_TESTNET, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [cfg.CORE_RPC_TESTNET] } } } as any })
+    const contract = getContract({ address: loan, abi: loanAbi as any, client })
+    const items: any[] = []
+    for (const a of addrs) {
+      try {
+        const result = await contract.read.getAccountData([a as `0x${string}`])
+        const [c, d, h] = result as unknown as [bigint, bigint, bigint]
+        items.push({ address: a, collateral: c.toString(), debt: d.toString(), healthFactor: h.toString() })
+      } catch {}
+    }
+    return { items }
+  })
 
   app.get('/positions', async () => {
     // Endpoint simple que devuelve la lista de usuarios monitor (para keeper/demo)

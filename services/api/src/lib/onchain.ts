@@ -39,12 +39,14 @@ export async function readMarketParams() {
     fee ? fee.read.originationFeeBps() : Promise.resolve(0n),
     fee ? fee.read.minBorrowAmount() : Promise.resolve(0n),
   ])
+  // Derivar datos extra: parámetros de riesgo, dirección de contratos y timestamps
   return {
     targetLtv: Number(t) / 10_000,
     liquidationLtv: Number(l) / 10_000,
     baseRate: Number(r) / 10_000,
     originationFeeBps: Number(obps),
     minBorrowAmount: Number(minBorrow) / 1e18,
+    addresses,
   }
 }
 

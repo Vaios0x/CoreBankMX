@@ -21,6 +21,18 @@ async function main() {
   await app.register(onrampRoutes)
   await app.register(oracleRoutes)
   await app.register(interestRoutes)
+  // Ad-hoc accrue cron si está activado
+  if (process.env.ACCRUE_CRON_SEC) {
+    const every = Number(process.env.ACCRUE_CRON_SEC)
+    setInterval(async () => {
+      try {
+        await fetch(`http://localhost:${cfg.API_PORT}/interest/accrue`, { method: 'POST', headers: { 'x-api-key': process.env.API_KEY_ADMIN || '' } })
+        app.log.info('Accrued interest')
+      } catch (e: any) {
+        app.log.error({ err: e?.message }, 'Accrue failed')
+      }
+    }, Math.max(10, every) * 1000)
+  }
   await app.register(positionsRoutes)
   await app.listen({ port: cfg.API_PORT, host: '0.0.0.0' })
 }

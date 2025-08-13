@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [priceHistory, setPriceHistory] = useState<number[]>([])
   const [tvlHistory, setTvlHistory] = useState<number[]>([])
   const [metrics, setMetrics] = useState<{ activePositions: number; liquidations24h: number } | null>(null)
+  const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
   useEffect(() => {
     let mounted = true
     ;(async () => {
@@ -52,6 +53,16 @@ export default function Dashboard() {
         }
       } catch {
         if (mounted) setMetrics({ activePositions: 0, liquidations24h: 0 })
+      }
+    })()
+    ;(async () => {
+      try {
+        const res = await fetch(`${env.API_URL}/market/liquidations`, { cache: 'no-store' })
+        const json = await res.json()
+        if (!mounted) return
+        setLiqs(Array.isArray(json?.items) ? json.items : [])
+      } catch {
+        if (mounted) setLiqs([])
       }
     })()
     ;(async () => {
@@ -161,6 +172,24 @@ export default function Dashboard() {
               <div className="mt-1 text-2xl font-medium">{m.value}</div>
             </div>
           ))}
+        </div>
+        <div className="mt-5">
+          <h3 className="text-xs font-medium text-ui-muted">Liquidations (recent)</h3>
+          {liqs.length === 0 ? (
+            <div className="mt-2 text-xs text-ui-muted">{t('dashboard.loading')}</div>
+          ) : (
+            <ul className="mt-2 space-y-2 text-xs">
+              {liqs.slice(0, 5).map((it) => (
+                <li key={it.tx} className="rounded border border-ui bg-ui-surface p-2">
+                  <div className="flex items-center justify-between">
+                    <span className="truncate" title={it.user}>{it.user.slice(0, 6)}…{it.user.slice(-4)}</span>
+                    <span className="text-ui-muted">#{it.blockNumber}</span>
+                  </div>
+                  <div className="mt-1 text-ui-muted">repay: {it.repayAmount.toFixed(4)} | seized: {it.collateralSeized.toFixed(4)}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">

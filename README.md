@@ -56,8 +56,8 @@ flowchart LR
 - Testnet2: chainId 1114  RPC https://rpc.test2.btcs.network  Explorer https://scan.test2.btcs.network/
 
 ## Variables de entorno (root y servicios)
-Crea .env desde .env.example (no se versiona):
-`
+Crea `.env` raíz desde `.env.example` (no se versiona):
+```
 CORE_RPC_MAINNET=https://rpc.coredao.org
 CORE_RPC_TESTNET=https://rpc.test2.btcs.network
 CORE_CHAIN_ID_MAINNET=1116
@@ -73,7 +73,34 @@ REDSTONE_URL=https://oracle-gateway-1.a.redstone.finance
 PYTH_URL=https://hermes.pyth.network
 LSTBTC_ADDRESS=0x...
 USDT_ADDRESS=0x...
-`
+```
+
+Archivos `.env.example` adicionales:
+- `packages/contracts/.env.example`
+```
+CORE_RPC_MAINNET=https://rpc.coredao.org
+CORE_RPC_TESTNET=https://rpc.test2.btcs.network
+CORE_CHAIN_ID_MAINNET=1116
+CORE_CHAIN_ID_TESTNET=1114
+DEPLOYER_PRIVATE_KEY=
+SAFE_ADMIN_ADDRESS=
+LSTBTC_ADDRESS=
+USDT_ADDRESS=
+```
+- `services/api/.env.example`
+```
+CORE_RPC_TESTNET=https://rpc.test2.btcs.network
+CORE_CHAIN_ID_TESTNET=1114
+API_PORT=8080
+API_KEY_ADMIN=
+KEEPER_PRIVATE_KEY=
+```
+- `services/keeper/.env.example`
+```
+CORE_RPC_TESTNET=https://rpc.test2.btcs.network
+CORE_CHAIN_ID_TESTNET=1114
+API_PORT=8081
+```
 
 ## Scripts rápidos
 - Contratos
@@ -84,6 +111,7 @@ USDT_ADDRESS=0x...
   - pnpm --filter services/keeper start  cron monitor/compound
 - API
   - pnpm --filter services/api dev  servidor local (status, market, prices)
+  - pnpm --filter services/api build  compila (tsc)
 - Web
   - pnpm dev en pps/web  dApp local
 

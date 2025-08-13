@@ -16,13 +16,16 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - run: pnpm i -g hardhat
       - run: pnpm i --frozen-lockfile=false
       - name: Compile contracts
         run: |
           cd packages/contracts
           pnpm i --frozen-lockfile=false
           npx hardhat compile
+      - name: Test contracts
+        run: |
+          cd packages/contracts
+          npx hardhat test --report-gas
       - name: Typecheck API
         run: |
           cd services/api
@@ -33,5 +36,7 @@ jobs:
           cd services/keeper
           pnpm i --frozen-lockfile=false
           pnpm build
+      - name: Frontend typecheck
+        run: pnpm typecheck
 
 

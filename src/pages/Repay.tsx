@@ -51,20 +51,20 @@ export default function Repay() {
   const onSubmit = async (_data: FormValues) => {
     try {
       if (withdrawTooHigh) {
-        push({ type: 'info', message: t('repay.withdraw_disabled_reason') })
+        push({ type: 'info', message: t('repay.withdraw_disabled_reason') as string })
         return
       }
-      push({ type: 'info', message: t('repay.submitting') })
+      push({ type: 'info', message: t('repay.submitting') as string })
       const hash = await repay(repayAmount)
       track('repay_submitted', { amount: repayAmount })
-      push({ type: 'success', message: `${t('repay.tx_sent_base')} ${String(hash).slice(0, 10)}…` })
+      push({ type: 'success', message: `${t('repay.tx_sent_base') as string} ${String(hash).slice(0, 10)}…` })
       if (withdrawAmount && withdrawAmount > 0) {
         const wtx = await withdraw(withdrawAmount)
         track('withdraw_submitted', { amount: withdrawAmount })
-        push({ type: 'success', message: `${t('repay.withdraw_sent_base') ?? 'Withdraw sent:'} ${String(wtx).slice(0, 10)}…` })
+        push({ type: 'success', message: `${(t('repay.withdraw_sent_base') as string) ?? 'Withdraw sent:'} ${String(wtx).slice(0, 10)}…` })
       }
     } catch (e: any) {
-      push({ type: 'error', message: e?.message ?? t('repay.failed') })
+      push({ type: 'error', message: e?.message ?? (t('repay.failed') as string) })
     }
   }
   // Prefill from URL query once on mount
@@ -87,17 +87,17 @@ export default function Repay() {
   }, [repayAmount, withdrawAmount, setSearchParams])
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-4" aria-label="Repay form">
-      <h1 className="text-xl font-semibold">{t('nav.repay')}</h1>
+      <h1 className="text-xl font-semibold">{t('nav.repay') as string}</h1>
       <div>
         <Input
           name="repayAmount"
-          label={t('repay.repay_label')}
+          label={t('repay.repay_label') as string}
           type="number"
           step="any"
           value={repayAmount}
           onChange={(v) => setValue('repayAmount', Number(v || 0), { shouldValidate: true, shouldDirty: true })}
-          error={errors.repayAmount ? t('repay.error_amount') : undefined}
-          tooltip={t('repay.repay_tip')}
+          error={errors.repayAmount ? (t('repay.error_amount') as string) : undefined}
+          tooltip={t('repay.repay_tip') as string}
         />
         <div className="mt-3">
           <Slider
@@ -106,20 +106,20 @@ export default function Repay() {
             min={0}
             max={currentDebtUsd}
             step={10}
-            label={t('repay.repay_slider_label')}
+            label={t('repay.repay_slider_label') as string}
           />
         </div>
       </div>
       <div>
         <Input
           name="withdrawAmount"
-          label={t('repay.withdraw_label')}
+          label={t('repay.withdraw_label') as string}
           type="number"
           step="any"
           value={withdrawAmount}
           onChange={(v) => setValue('withdrawAmount', Number(v || 0), { shouldValidate: true, shouldDirty: true })}
-          tooltip={t('repay.withdraw_tip')}
-          error={withdrawTooHigh ? t('repay.withdraw_exceeds_max') : undefined}
+          tooltip={t('repay.withdraw_tip') as string}
+          error={withdrawTooHigh ? (t('repay.withdraw_exceeds_max') as string) : undefined}
           suffix="BTC"
         />
         <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">

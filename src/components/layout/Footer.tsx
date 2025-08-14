@@ -36,30 +36,30 @@ export function Footer() {
         <nav aria-label={t('footer.product') as string} className="grid grid-rows-[auto_1fr] gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.product') as string}</h3>
           <ul className="space-y-1">
-            <li><Link to="/dashboard" className="link">{t('nav.dashboard') as string}</Link></li>
-            <li><Link to="/borrow" className="link">{t('nav.borrow') as string}</Link></li>
-            <li><Link to="/repay" className="link">{t('nav.repay') as string}</Link></li>
-            <li><Link to="/positions" className="link">{t('nav.positions') as string}</Link></li>
+            <li><Link to="/dashboard" className="link">{t('footer.product_links.dashboard') as string}</Link></li>
+            <li><Link to="/borrow" className="link">{t('footer.product_links.borrow') as string}</Link></li>
+            <li><Link to="/repay" className="link">{t('footer.product_links.repay') as string}</Link></li>
+            <li><Link to="/positions" className="link">{t('footer.product_links.positions') as string}</Link></li>
           </ul>
         </nav>
 
         <nav aria-label={t('footer.developers') as string} className="grid grid-rows-[auto_1fr] gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.developers') as string}</h3>
           <ul className="space-y-1">
-            <li><Link to="/docs" className="link">{t('footer.developers.docs') as string}</Link></li>
-            <li><a href={env.API_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.api') as string}</a></li>
-            <li><a href={env.STATUS_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.status') as string}</a></li>
-            <li><a href={env.GITHUB_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.github') as string}</a></li>
+            <li><Link to="/docs" className="link">{t('footer.developers_links.docs') as string}</Link></li>
+            <li><a href={env.API_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers_links.api') as string}</a></li>
+            <li><a href={env.STATUS_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers_links.status') as string}</a></li>
+            <li><a href={env.GITHUB_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers_links.github') as string}</a></li>
           </ul>
         </nav>
 
         <nav aria-label={t('footer.company') as string} className="grid grid-rows-[auto_1fr] gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.company') as string}</h3>
           <ul className="space-y-1">
-            <li><a href="#" className="link">{t('footer.company.about') as string}</a></li>
-            <li><a href="#" className="link">{t('footer.company.press') as string}</a></li>
-            <li><a href="#" className="link">{t('footer.company.contact') as string}</a></li>
-            <li><a href="#" className="link">{t('footer.company.careers') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company_links.about') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company_links.press') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company_links.contact') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company_links.careers') as string}</a></li>
           </ul>
         </nav>
 

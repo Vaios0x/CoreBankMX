@@ -149,19 +149,19 @@
     "product": "Producto",
     "developers": "Desarrolladores",
     "status": "Estado",
-    "product": {
+    "product_links": {
       "dashboard": "Dashboard",
       "borrow": "Pedir préstamo",
       "repay": "Repagar",
       "positions": "Posiciones"
     },
-    "developers": {
+    "developers_links": {
       "docs": "Docs",
       "api": "API",
       "status": "Estado",
       "github": "GitHub"
     },
-    "company": {
+    "company_links": {
       "about": "Acerca",
       "press": "Prensa",
       "contact": "Contacto",

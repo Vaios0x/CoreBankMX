@@ -161,12 +161,12 @@ export default function Dashboard() {
       </div>
 
       <section className="card p-5">
-        <h2 className="text-sm font-medium">Métricas 24h</h2>
+        <h2 className="text-sm font-medium">{t('dashboard.metrics_24h')}</h2>
         <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[{
-            label: 'Posiciones activas', value: metrics ? String(metrics.activePositions) : t('dashboard.loading')
+            label: t('dashboard.active_positions') as string, value: metrics ? String(metrics.activePositions) : t('dashboard.loading') as string
           },{
-            label: 'Liquidaciones 24h', value: metrics ? String(metrics.liquidations24h) : t('dashboard.loading')
+            label: t('dashboard.liquidations_24h') as string, value: metrics ? String(metrics.liquidations24h) : t('dashboard.loading') as string
           }].map((m) => (
             <div key={m.label} className="kpi-card">
               <div className="text-xs uppercase tracking-wide text-ui-muted">{m.label}</div>
@@ -175,7 +175,7 @@ export default function Dashboard() {
           ))}
         </div>
         <div className="mt-5">
-          <h3 className="text-xs font-medium text-ui-muted">Liquidations (recent)</h3>
+          <h3 className="text-xs font-medium text-ui-muted">{t('dashboard.liquidations_recent')}</h3>
           {liqs.length === 0 ? (
             <div className="mt-2 text-xs text-ui-muted">{t('dashboard.loading')}</div>
           ) : (
@@ -247,7 +247,7 @@ export default function Dashboard() {
       </div>
 
       <section className="card p-5">
-        <h2 className="text-sm font-medium">Contratos desplegados</h2>
+        <h2 className="text-sm font-medium">{t('dashboard.deployed_contracts') as string}</h2>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {contracts ? Object.entries(contracts).map(([name, addr]: any) => (
             <div key={name as string} className="rounded border border-ui bg-ui-surface p-3 text-xs">
@@ -255,7 +255,7 @@ export default function Dashboard() {
               <div className="mt-1 truncate" title={String(addr)}>{String(addr)}</div>
             </div>
           )) : (
-            <div className="text-sm text-ui-muted">{t('dashboard.loading')}</div>
+            <div className="text-sm text-ui-muted">{t('dashboard.loading') as string}</div>
           )}
         </div>
       </section>

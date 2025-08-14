@@ -1,40 +1,45 @@
+import { useI18n } from '../i18n/i18n'
+
+// Solo lectura de parámetros; mock simple
 export default function Admin() {
-  // Solo lectura de parámetros; mock simple
-  const params = [
-    { key: 'Base Rate', value: '5% APR' },
-    { key: 'Target LTV', value: '60%' },
-    { key: 'Liquidation LTV', value: '80%' },
-  ]
+  const t = useI18n()
+  
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Admin (read-only)</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto divide-y divide-gray-800 dark:divide-ui">
-          <caption className="sr-only">Parámetros de mercado (solo lectura)</caption>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('admin.title') as string}</h1>
+        <p className="mt-1 text-ui-muted">{t('admin.subtitle') as string}</p>
+      </div>
+
+      <section className="card p-5">
+        <table className="w-full text-sm">
+          <caption className="sr-only">{t('admin.market_params') as string}</caption>
           <thead>
-            <tr>
-              <th scope="col" className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-ui-muted">Param</th>
-              <th scope="col" className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-ui-muted">Value</th>
+            <tr className="border-b border-ui">
+              <th className="text-left py-2 font-medium">Parámetro</th>
+              <th className="text-right py-2 font-medium">Valor</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800 dark:divide-ui">
-            {params.map((p) => (
-              <tr key={p.key}>
-                <th scope="row" className="px-4 py-2 text-sm font-medium">{p.key}</th>
-                <td className="px-4 py-2 text-sm">
-                  <span>{p.value}</span>
-                  <button
-                    className="ml-2 btn-outline px-2 py-0.5 text-xs motion-press"
-                    onClick={() => navigator.clipboard.writeText(p.value)}
-                  >
-                    Copy
-                  </button>
-                </td>
-              </tr>
-            ))}
+          <tbody>
+            <tr className="border-b border-ui/50">
+              <td className="py-2">Base Rate</td>
+              <td className="py-2 text-right">5.00%</td>
+            </tr>
+            <tr className="border-b border-ui/50">
+              <td className="py-2">Target LTV</td>
+              <td className="py-2 text-right">60%</td>
+            </tr>
+            <tr className="border-b border-ui/50">
+              <td className="py-2">Liquidation LTV</td>
+              <td className="py-2 text-right">75%</td>
+            </tr>
+            <tr>
+              <td className="py-2">Origination Fee</td>
+              <td className="py-2 text-right">0.5%</td>
+            </tr>
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
   )
 }

@@ -8,6 +8,49 @@
     "liquidity": "Liquidez",
     "admin": "Admin"
   },
+  "home": {
+    "badge": "Build on Core DAO • BTCfi • DeFi • Web3",
+    "title": "Neobanco Web3 en Core: remesas y préstamos con BTC como colateral",
+    "subtitle": "Bloquea BTC puenteado en un vault no-custodial y recibe USDT. LTV dinámico con oráculos (Pyth/RedStone), auto-liquidaciones seguras, y opción de Dual Staking para componer rendimientos.",
+    "start_button": "Comenzar",
+    "dashboard_button": "Ver Dashboard",
+    "connect_hint": "Conecta tu wallet para empezar",
+    "features": {
+      "remittances": "Remesas + Off-ramp MXN",
+      "remittances_desc": "Envíos rápidos y on/off-ramp vía integraciones (p. ej., Bitso) fuera del contrato.",
+      "loans": "Préstamos con BTC",
+      "loans_desc": "Bloquea BTC/lstBTC como colateral para recibir USDT con LTV dinámico.",
+      "staking": "Dual Staking",
+      "staking_desc": "Opción para depositantes: componer rendimientos y mejorar APR.",
+      "oracles": "Oráculos y Circuit Breakers",
+      "oracles_desc": "Pyth/RedStone, staleness y desviación controladas para seguridad.",
+      "compliance": "Cumplimiento",
+      "compliance_desc": "KYC/KYB en app cuando hay fiat, geofencing y travel rule.",
+      "gas_rebates": "Gas Rebates",
+      "gas_rebates_desc": "Aprovecha incentivos de Core para reducir costos de transacción."
+    },
+    "steps": {
+      "step1": "Conecta tu wallet",
+      "step1_desc": "Compatible con Web3Modal/Wagmi.",
+      "step2": "Bloquea BTC",
+      "step2_desc": "Usa bridge y deposita colateral en el vault.",
+      "step3": "Toma tu préstamo",
+      "step3_desc": "Recibe USDT y gestiona tu LTV.",
+      "step4": "Compón y paga",
+      "step4_desc": "Dual Staking opcional; repaga cuando quieras."
+    },
+    "note": "Nota: este producto funciona en Core (Mainnet/Testnet). Las integraciones fiat (KYC/KYB y on/off-ramp) ocurren en la capa de app y no forman parte del contrato.",
+    "beta": "Beta",
+    "view_metrics": "Ver métricas",
+    "ltv_title": "¿Cómo calculamos el LTV y el Health Factor?",
+    "ltv_desc": "El LTV (Loan-to-Value) indica qué porcentaje del valor de tu colateral está prestado.",
+    "ltv_points": [
+      "LTV = deuda / valor del colateral en USD. El valor del colateral se obtiene con oráculos (Pyth/RedStone) con protecciones de staleness y desviación.",
+      "Hay un LTV de liquidación configurado en el mercado. Si tu LTV lo supera, tu posición puede liquidarse parcialmente para volver a un nivel seguro.",
+      "Health Factor (HF) agrega un margen de seguridad sobre el LTV. Si HF < 1, la cuenta es liquidable. Recomendamos mantener HF ≥ 1.5 para condiciones normales de mercado.",
+      "Para mejorar tu HF: aporta más colateral o reduce tu deuda (repaga). En el flujo de 'Borrow' verás alertas y el botón se deshabilita si HF < 1.2."
+    ]
+  },
   "borrow": {
     "collateral_label": "Colateral (BTC)",
     "collateral_tip": "Monto de BTC a bloquear como colateral",
@@ -72,14 +115,81 @@
     "subtitle": "Resumen de salud del mercado y métricas clave",
     "oracle_stale": "Datos del oráculo potencialmente desactualizados",
     "recalculate": "Recalcular",
-    "loading": "Cargando…"
+    "loading": "Cargando…",
+    "metrics_24h": "Métricas 24h",
+    "active_positions": "Posiciones activas",
+    "liquidations_24h": "Liquidaciones 24h",
+    "liquidations_recent": "Liquidaciones (recientes)",
+    "deployed_contracts": "Contratos desplegados"
   },
   "header": {
     "network_aria": "Estado de red actual",
     "switch_to_mainnet": "Cambiar a Mainnet",
     "switch_to_testnet": "Cambiar a Testnet",
     "to_mainnet": "Mainnet",
-    "to_testnet": "Testnet"
+    "to_testnet": "Testnet",
+    "copy_address": "Copiar dirección",
+    "disconnect": "Desconectar"
+  },
+  "footer": {
+    "description": "Remesas y préstamos con BTC como colateral sobre Core. Seguridad, rendimiento y UX simple.",
+    "company": "Compañía",
+    "subscribe": "Suscríbete",
+    "email_label": "Correo electrónico",
+    "subscribe_button": "Suscribirse",
+    "email_error": "Ingresa un email válido",
+    "terms": "Términos",
+    "privacy": "Privacidad"
+  },
+  "docs": {
+    "title": "Documentación",
+    "subtitle": "Guías rápidas, referencias y enlaces útiles del proyecto.",
+    "protocol": {
+      "title": "Protocolo",
+      "subtitle": "Arquitectura on-chain, oráculos y parámetros de mercado.",
+      "contracts": [
+        "CollateralVault: gestiona depósitos y retiros.",
+        "LoanManager: gestiona préstamos y LTV.",
+        "LiquidationModule: maneja liquidaciones e incentivos.",
+        "OracleRouter: enruta solicitudes de precio con circuit breakers."
+      ],
+      "key_params": "Parámetros clave",
+      "params": [
+        "Umbrales Target/Liquidation LTV.",
+        "Umbrales Staleness/Deviation para oráculos.",
+        "Tasas de interés y comisiones."
+      ],
+      "external_docs": "Documentación externa:"
+    },
+    "api": {
+      "title": "API",
+      "subtitle": "Endpoints REST API para datos de mercado y precios de oráculos.",
+      "endpoints": [
+        "GET /market/params: parámetros del mercado.",
+        "GET /market/prices/:symbol: precio por símbolo (usa caché/oráculo).",
+        "GET /market/metrics: métricas agregadas.",
+        "GET /oracle/status: estado del router de oráculos."
+      ]
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Parámetros de mercado solo lectura",
+    "market_params": "Parámetros de mercado (solo lectura)"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
   }
 }
 

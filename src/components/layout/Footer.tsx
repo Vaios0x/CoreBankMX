@@ -3,15 +3,18 @@ import { useState } from 'react'
 import { useToastStore } from '../ui/Toast'
 import Input from '../ui/Input'
 import { env } from '../../lib/env'
+import { useI18n } from '../../i18n/i18n'
 
 export function Footer() {
   const { push } = useToastStore()
   const [email, setEmail] = useState('')
+  const t = useI18n()
+  
   const subscribe = (e: React.FormEvent) => {
     e.preventDefault()
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     if (!ok) {
-      push({ type: 'error', message: 'Ingresa un email válido' })
+      push({ type: 'error', message: t('footer.email_error') as string })
       return
     }
     push({ type: 'success', message: 'Gracias por suscribirte' })
@@ -26,7 +29,7 @@ export function Footer() {
             <span className="font-semibold tracking-tight">Core Neobank MX</span>
           </div>
           <p className="text-ui-muted">
-            Remesas y préstamos con BTC como colateral sobre Core. Seguridad, rendimiento y UX simple.
+            {t('footer.description') as string}
           </p>
         </div>
 
@@ -50,8 +53,8 @@ export function Footer() {
           </ul>
         </nav>
 
-        <nav aria-label="Compañía" className="grid grid-rows-[auto_1fr] gap-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">Compañía</h3>
+        <nav aria-label={t('footer.company') as string} className="grid grid-rows-[auto_1fr] gap-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.company') as string}</h3>
           <ul className="space-y-1">
             <li><a href="#" className="link">Acerca</a></li>
             <li><a href="#" className="link">Prensa</a></li>
@@ -61,17 +64,17 @@ export function Footer() {
         </nav>
 
         <div className="grid grid-rows-[auto_1fr] gap-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">Suscríbete</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.subscribe') as string}</h3>
           <form onSubmit={subscribe} className="space-y-2">
             <Input
               name="newsletter_email"
-              label="Correo electrónico"
+              label={t('footer.email_label') as string}
               value={email}
               onChange={setEmail}
               placeholder="tucorreo@dominio.com"
               type="text"
             />
-            <button type="submit" className="btn-primary w-full">Suscribirme</button>
+            <button type="submit" className="btn-primary w-full">{t('footer.subscribe_button') as string}</button>
           </form>
           <p className="text-[11px] text-ui-muted">Sin spam. Cancela cuando quieras.</p>
         </div>
@@ -80,9 +83,9 @@ export function Footer() {
       <div className="border-t border-ui">
         <div className="container mx-auto flex flex-col items-start justify-between gap-3 px-4 py-4 text-xs text-ui-muted md:flex-row md:items-center">
           <div className="flex flex-wrap items-center gap-3">
-            <a href="#" className="link">Privacidad</a>
+            <a href="#" className="link">{t('footer.privacy') as string}</a>
             <span aria-hidden>·</span>
-            <a href="#" className="link">Términos</a>
+            <a href="#" className="link">{t('footer.terms') as string}</a>
             <span aria-hidden>·</span>
             <a href="#" className="link">Cookies</a>
           </div>

@@ -8,6 +8,49 @@
     "liquidity": "Liquidity",
     "admin": "Admin"
   },
+  "home": {
+    "badge": "Build on Core DAO • BTCfi • DeFi • Web3",
+    "title": "Web3 Neobank on Core: remittances and loans with BTC as collateral",
+    "subtitle": "Lock bridged BTC in a non-custodial vault and receive USDT. Dynamic LTV with oracles (Pyth/RedStone), secure auto-liquidations, and Dual Staking option to compound yields.",
+    "start_button": "Get Started",
+    "dashboard_button": "View Dashboard",
+    "connect_hint": "Connect your wallet to start",
+    "features": {
+      "remittances": "Remittances + Off-ramp MXN",
+      "remittances_desc": "Fast transfers and on/off-ramp via integrations (e.g., Bitso) outside the contract.",
+      "loans": "BTC Loans",
+      "loans_desc": "Lock BTC/lstBTC as collateral to receive USDT with dynamic LTV.",
+      "staking": "Dual Staking",
+      "staking_desc": "Option for depositors: compound yields and improve APR.",
+      "oracles": "Oracles and Circuit Breakers",
+      "oracles_desc": "Pyth/RedStone, controlled staleness and deviation for security.",
+      "compliance": "Compliance",
+      "compliance_desc": "KYC/KYB in app when there's fiat, geofencing and travel rule.",
+      "gas_rebates": "Gas Rebates",
+      "gas_rebates_desc": "Leverage Core incentives to reduce transaction costs."
+    },
+    "steps": {
+      "step1": "Connect your wallet",
+      "step1_desc": "Compatible with Web3Modal/Wagmi.",
+      "step2": "Lock BTC",
+      "step2_desc": "Use bridge and deposit collateral in the vault.",
+      "step3": "Take your loan",
+      "step3_desc": "Receive USDT and manage your LTV.",
+      "step4": "Compound and pay",
+      "step4_desc": "Optional Dual Staking; repay when you want."
+    },
+    "note": "Note: this product works on Core (Mainnet/Testnet). Fiat integrations (KYC/KYB and on/off-ramp) happen at the app layer and are not part of the contract.",
+    "beta": "Beta",
+    "view_metrics": "View metrics",
+    "ltv_title": "How do we calculate LTV and Health Factor?",
+    "ltv_desc": "LTV (Loan-to-Value) indicates what percentage of your collateral value is borrowed.",
+    "ltv_points": [
+      "LTV = debt / collateral value in USD. Collateral value is obtained with oracles (Pyth/RedStone) with staleness and deviation protections.",
+      "There is a liquidation LTV configured in the market. If your LTV exceeds it, your position can be partially liquidated to return to a safe level.",
+      "Health Factor (HF) adds a safety margin over LTV. If HF < 1, the account is liquidatable. We recommend maintaining HF ≥ 1.5 for normal market conditions.",
+      "To improve your HF: add more collateral or reduce your debt (repay). In the 'Borrow' flow you'll see alerts and the button is disabled if HF < 1.2."
+    ]
+  },
   "borrow": {
     "collateral_label": "Collateral (BTC)",
     "collateral_tip": "BTC amount to lock as collateral",
@@ -72,14 +115,81 @@
     "subtitle": "Market health and key metrics",
     "oracle_stale": "Oracle data may be stale",
     "recalculate": "Recalculate",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "metrics_24h": "24h Metrics",
+    "active_positions": "Active positions",
+    "liquidations_24h": "Liquidations 24h",
+    "liquidations_recent": "Liquidations (recent)",
+    "deployed_contracts": "Deployed contracts"
   },
   "header": {
     "network_aria": "Current network status",
     "switch_to_mainnet": "Switch to Mainnet",
     "switch_to_testnet": "Switch to Testnet",
     "to_mainnet": "Mainnet",
-    "to_testnet": "Testnet"
+    "to_testnet": "Testnet",
+    "copy_address": "Copy address",
+    "disconnect": "Disconnect"
+  },
+  "footer": {
+    "description": "Remittances and loans with BTC as collateral on Core. Security, performance and simple UX.",
+    "company": "Company",
+    "subscribe": "Subscribe",
+    "email_label": "Email address",
+    "subscribe_button": "Subscribe",
+    "email_error": "Enter a valid email",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "docs": {
+    "title": "Documentation",
+    "subtitle": "Quick guides, references and useful project links.",
+    "protocol": {
+      "title": "Protocol",
+      "subtitle": "On-chain architecture, oracles and market parameters.",
+      "contracts": [
+        "CollateralVault: manages deposits and withdrawals.",
+        "LoanManager: manages loans and LTV.",
+        "LiquidationModule: handles liquidations and incentives.",
+        "OracleRouter: routes price requests with circuit breakers."
+      ],
+      "key_params": "Key parameters",
+      "params": [
+        "Target/Liquidation LTV thresholds.",
+        "Staleness/Deviation thresholds for oracles.",
+        "Interest rates and fees."
+      ],
+      "external_docs": "External documentation:"
+    },
+    "api": {
+      "title": "API",
+      "subtitle": "REST API endpoints for market data and oracle prices.",
+      "endpoints": [
+        "GET /market/params: market parameters.",
+        "GET /market/prices/:symbol: price by symbol (uses cache/oracle).",
+        "GET /market/metrics: aggregated metrics.",
+        "GET /oracle/status: oracle router status."
+      ]
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Read-only market parameters",
+    "market_params": "Market parameters (read-only)"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
   }
 }
 

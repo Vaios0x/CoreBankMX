@@ -70,7 +70,7 @@ export function Header() {
           </motion.button>
           <div className="hidden items-center gap-2 rounded-md border border-ui bg-ui-surface px-2 py-1 text-xs text-gray-300 sm:flex">
             <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
-            <span aria-label={t('header.network_aria')} className="max-w-[160px] truncate" title={networkLabel}>{networkLabel}</span>
+            <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>{networkLabel}</span>
             {isConnected && (
               <span className="hidden items-center sm:inline-flex">
                 <span className="mx-1 text-ui-muted">·</span>
@@ -89,9 +89,9 @@ export function Header() {
                 switchChain({ chainId: targetId })
               }}
               className="btn-outline px-2 py-0.5 motion-press"
-              aria-label={isMainnet ? t('header.switch_to_testnet') : t('header.switch_to_mainnet')}
+              aria-label={isMainnet ? (t('header.switch_to_testnet') as string) : (t('header.switch_to_mainnet') as string)}
             >
-              {isMainnet ? t('header.to_testnet') : t('header.to_mainnet')}
+              {isMainnet ? (t('header.to_testnet') as string) : (t('header.to_mainnet') as string)}
             </motion.button>
           </div>
           {/* User menu compact */}
@@ -114,14 +114,14 @@ export function Header() {
                     className="btn-ghost w-full justify-start px-2 py-1 text-left text-xs motion-press"
                     onClick={async () => { try { await navigator.clipboard.writeText(address ?? '') } catch {} setUserMenuOpen(false) }}
                   >
-                    Copiar dirección
+                    {t('header.copy_address')}
                   </button>
                   <button
                     role="menuitem"
                     className="btn-outline w-full justify-start px-2 py-1 text-left text-xs motion-press"
                     onClick={() => { disconnect(); setUserMenuOpen(false) }}
                   >
-                    Desconectar
+                    {t('header.disconnect')}
                   </button>
                 </div>
               )}

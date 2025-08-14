@@ -6,11 +6,11 @@ const dict = { en, es }
 
 export function useI18n() {
   const { language } = useUiStore()
-  return (path: string): string => {
+  return (path: string): string | string[] => {
     const parts = path.split('.')
     let cur: any = dict[language]
     for (const p of parts) cur = cur?.[p]
-    return (cur as string) ?? path
+    return cur ?? path
   }
 }
 

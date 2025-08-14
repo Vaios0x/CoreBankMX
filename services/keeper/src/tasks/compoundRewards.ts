@@ -26,7 +26,8 @@ export async function compoundRewards(log: FastifyBaseLogger) {
     let gasCostWei = 0n
     try {
       const gas = await c.compound.estimateGas()
-      const gp = await provider.getGasPrice()
+      const fd = await provider.getFeeData()
+      const gp = (fd.gasPrice ?? fd.maxFeePerGas ?? 0n)
       gasCostWei = gas * gp
     } catch {}
     const gasMultiplier = Number(process.env.GAS_COST_MULTIPLIER || '1.2')

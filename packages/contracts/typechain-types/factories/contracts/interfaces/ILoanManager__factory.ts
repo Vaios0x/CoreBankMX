@@ -10,6 +10,26 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "AmountZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "HealthyPosition",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LtvTooHigh",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotEnoughCollateral",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -22,6 +42,12 @@ const _abi = [
         indexed: false,
         internalType: "uint256",
         name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fee",
         type: "uint256",
       },
     ],
@@ -167,6 +193,35 @@ const _abi = [
     name: "repayFrom",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "newCollateral",
+        type: "uint256",
+      },
+    ],
+    name: "simulateHealthAfter",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "healthFactor",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "ltvBps",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const;

@@ -31,6 +31,10 @@ const EnvSchema = z.object({
   VITE_TWITTER_URL: z.string().url().default('https://x.com/example'),
   VITE_DISCORD_URL: z.string().url().default('https://discord.gg/example'),
   VITE_GITHUB_URL: z.string().url().default('https://github.com/example/repo'),
+  VITE_TELEMETRY_ENABLED: z.coerce.boolean().default(false),
+  VITE_POSTHOG_KEY: z.string().default(''),
+  VITE_POSTHOG_HOST: z.string().default('https://app.posthog.com'),
+  VITE_MIXPANEL_TOKEN: z.string().default(''),
 })
 
 const parsed = EnvSchema.parse(import.meta.env)
@@ -57,6 +61,10 @@ export const env = {
   TWITTER_URL: parsed.VITE_TWITTER_URL,
   DISCORD_URL: parsed.VITE_DISCORD_URL,
   GITHUB_URL: parsed.VITE_GITHUB_URL,
+  TELEMETRY_ENABLED: parsed.VITE_TELEMETRY_ENABLED,
+  POSTHOG_KEY: parsed.VITE_POSTHOG_KEY,
+  POSTHOG_HOST: parsed.VITE_POSTHOG_HOST,
+  MIXPANEL_TOKEN: parsed.VITE_MIXPANEL_TOKEN,
 }
 
 

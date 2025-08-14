@@ -38,6 +38,8 @@ export type { Roles } from "./contracts/access/Roles";
 export { Roles__factory } from "./factories/contracts/access/Roles__factory";
 export type { CollateralVault } from "./contracts/core/CollateralVault";
 export { CollateralVault__factory } from "./factories/contracts/core/CollateralVault__factory";
+export type { FeeController } from "./contracts/core/FeeController";
+export { FeeController__factory } from "./factories/contracts/core/FeeController__factory";
 export type { LiquidationModule } from "./contracts/core/LiquidationModule";
 export { LiquidationModule__factory } from "./factories/contracts/core/LiquidationModule__factory";
 export type { LoanManager } from "./contracts/core/LoanManager";

@@ -2,9 +2,9 @@
   "name": "@core-neobank/keeper",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "dev": "ts-node-esm src/index.ts",
+    "dev": "ts-node src/index.ts",
     "start": "node --enable-source-maps dist/index.js",
     "build": "tsc -p tsconfig.json"
   },
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node-cron": "^3.0.11",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "@types/node": "^24.2.1"
   }
 }

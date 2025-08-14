@@ -43,12 +43,8 @@ export default function Positions() {
       try {
         const loanAddr = env.LOAN_MANAGER as `0x${string}`
         if (!loanAddr || loanAddr === '0x0000000000000000000000000000000000000000') return
-        const fn = new Function('env', 'return [' +
-          `import('viem').then(m=>m), import('wagmi').then(m=>m)` +
-        ']') as (env: any) => Promise<any[]>
-        const [viemMod, wagmiMod] = await fn(env)
-        const { createPublicClient, http } = viemMod
-        const { getContract } = viemMod
+        const viemMod = await (new Function('env', `return import('viem')`) as (env: any) => Promise<any>)(env)
+        const { createPublicClient, http, getContract } = viemMod
         const chainId = env.CHAIN_ID_TESTNET
         const rpc = env.RPC_TESTNET
         const chain = { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any

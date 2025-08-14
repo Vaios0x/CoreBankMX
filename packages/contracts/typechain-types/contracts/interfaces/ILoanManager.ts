@@ -31,6 +31,7 @@ export interface ILoanManagerInterface extends Interface {
       | "getAccountData"
       | "repay"
       | "repayFrom"
+      | "simulateHealthAfter"
   ): FunctionFragment;
 
   getEvent(
@@ -51,6 +52,10 @@ export interface ILoanManagerInterface extends Interface {
     functionFragment: "repayFrom",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "simulateHealthAfter",
+    values: [AddressLike, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "borrow", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "debtOf", data: BytesLike): Result;
@@ -60,14 +65,23 @@ export interface ILoanManagerInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "repayFrom", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "simulateHealthAfter",
+    data: BytesLike
+  ): Result;
 }
 
 export namespace BorrowEvent {
-  export type InputTuple = [user: AddressLike, amount: BigNumberish];
-  export type OutputTuple = [user: string, amount: bigint];
+  export type InputTuple = [
+    user: AddressLike,
+    amount: BigNumberish,
+    fee: BigNumberish
+  ];
+  export type OutputTuple = [user: string, amount: bigint, fee: bigint];
   export interface OutputObject {
     user: string;
     amount: bigint;
+    fee: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -177,6 +191,12 @@ export interface ILoanManager extends BaseContract {
     "nonpayable"
   >;
 
+  simulateHealthAfter: TypedContractMethod<
+    [user: AddressLike, newCollateral: BigNumberish],
+    [[bigint, bigint] & { healthFactor: bigint; ltvBps: bigint }],
+    "view"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -210,6 +230,13 @@ export interface ILoanManager extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "simulateHealthAfter"
+  ): TypedContractMethod<
+    [user: AddressLike, newCollateral: BigNumberish],
+    [[bigint, bigint] & { healthFactor: bigint; ltvBps: bigint }],
+    "view"
+  >;
 
   getEvent(
     key: "Borrow"
@@ -234,7 +261,7 @@ export interface ILoanManager extends BaseContract {
   >;
 
   filters: {
-    "Borrow(address,uint256)": TypedContractEvent<
+    "Borrow(address,uint256,uint256)": TypedContractEvent<
       BorrowEvent.InputTuple,
       BorrowEvent.OutputTuple,
       BorrowEvent.OutputObject

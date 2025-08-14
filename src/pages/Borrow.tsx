@@ -17,6 +17,7 @@ import { useI18n } from '../i18n/i18n'
 import { Alert } from '../components/ui/Alert'
 import { useAccount } from 'wagmi'
 import { useFeeEstimate } from '../hooks/useFee'
+import { track } from '../lib/telemetry'
 
 const Schema = z.object({
   collateralAmount: z.coerce.number().positive(),
@@ -46,16 +47,30 @@ export default function Borrow() {
   const maxBorrowAtTarget = collateralUsd * (targetLtv || 0.6)
 
   const { push } = useToastStore()
-  const { approve, borrow: borrowTx } = useTx()
+  const { approveCollateral, borrow: borrowTx, deposit } = useTx()
   const feeUsd = useMemo(() => (typeof feeEst.data?.fee === 'number' ? feeEst.data.fee : (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0)), [borrow, originationFeeBps, feeEst.data])
   const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : (typeof feeEst.data?.minBorrow === 'number' ? borrow < feeEst.data.minBorrow : false)), [borrow, minBorrowAmount, feeEst.data])
-  const onSubmit = (_data: FormValues) => {
-    // Mocks: approve + borrow
-    push({ type: 'info', message: t('borrow.toast_approving') })
-    setTimeout(() => {
-      push({ type: 'success', message: t('borrow.toast_borrowing') })
-      setTimeout(() => push({ type: 'success', message: t('borrow.toast_borrow_sent_base') }), 1000)
-    }, 800)
+  const onSubmit = async (_data: FormValues) => {
+    try {
+      // flujo real: approve -> deposit -> borrow
+      push({ type: 'info', message: t('borrow.toast_approving') })
+      await approveCollateral()
+      track('approve_collateral', { amount: collateral })
+      push({ type: 'success', message: t('borrow.toast_approve_done') })
+      if (collateral > 0) {
+        push({ type: 'info', message: t('borrow.toast_depositing') })
+        await deposit(collateral)
+        track('deposit_collateral', { amount: collateral })
+        push({ type: 'success', message: t('borrow.toast_deposit_sent') })
+      }
+      push({ type: 'info', message: t('borrow.toast_borrowing') })
+      const hash = await borrowTx(borrow)
+      track('borrow_submitted', { amount: borrow, feeUsd })
+      push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base')} ${String(hash).slice(0, 10)}…` })
+    } catch (e: any) {
+      track('borrow_failed', { message: e?.message })
+      push({ type: 'error', message: e?.message ?? t('borrow.toast_borrow_failed') })
+    }
   }
 
   const isBorrowDisabled = health.hf < 1.2 || belowMin
@@ -177,7 +192,8 @@ export default function Borrow() {
           onClick={async () => {
             try {
               push({ type: 'info', message: t('borrow.toast_approving') })
-              const hash = await approve()
+              const hash = await approveCollateral()
+              track('approve_collateral', { from: 'borrow_page' })
               push({ type: 'success', message: `${t('borrow.toast_approve_sent_base')} ${String(hash).slice(0, 10)}…` })
             } catch (e: any) {
               push({ type: 'error', message: e?.message ?? t('borrow.toast_approve_failed') })

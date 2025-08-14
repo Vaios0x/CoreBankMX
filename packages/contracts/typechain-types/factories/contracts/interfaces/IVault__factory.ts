@@ -10,6 +10,21 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "AmountZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "UnsafeWithdraw",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {

@@ -33,6 +33,7 @@ async function main() {
       }
     }, Math.max(10, every) * 1000)
   }
+  // Si se define MONITOR_USERS_ADDRESSES, exponerlos en /positions/users para demo seed
   await app.register(positionsRoutes)
   await app.listen({ port: cfg.API_PORT, host: '0.0.0.0' })
 }

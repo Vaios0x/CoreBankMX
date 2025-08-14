@@ -78,6 +78,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CollateralVault__factory>;
     getContractFactory(
+      name: "FeeController",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FeeController__factory>;
+    getContractFactory(
       name: "LiquidationModule",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.LiquidationModule__factory>;
@@ -203,6 +207,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.CollateralVault>;
     getContractAt(
+      name: "FeeController",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FeeController>;
+    getContractAt(
       name: "LiquidationModule",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -323,6 +332,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.CollateralVault>;
     deployContract(
+      name: "FeeController",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FeeController>;
+    deployContract(
       name: "LiquidationModule",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.LiquidationModule>;
@@ -447,6 +460,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.CollateralVault>;
+    deployContract(
+      name: "FeeController",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FeeController>;
     deployContract(
       name: "LiquidationModule",
       args: any[],

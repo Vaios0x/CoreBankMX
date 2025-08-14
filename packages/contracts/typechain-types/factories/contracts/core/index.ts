@@ -2,5 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export { CollateralVault__factory } from "./CollateralVault__factory";
+export { FeeController__factory } from "./FeeController__factory";
 export { LiquidationModule__factory } from "./LiquidationModule__factory";
 export { LoanManager__factory } from "./LoanManager__factory";

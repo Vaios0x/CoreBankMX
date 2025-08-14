@@ -41,7 +41,8 @@ export function useOracle(symbol: string = 'BTC') {
   })
   const updatedAt = q.dataUpdatedAt
   const stale = Date.now() - updatedAt > 120_000
-  return { ...q, stale, updatedAt }
+  const source = env.USE_ONCHAIN_ORACLE ? 'on-chain' : 'api'
+  return { ...q, stale, updatedAt, source }
 }
 
 

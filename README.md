@@ -102,10 +102,39 @@ CORE_CHAIN_ID_TESTNET=1114
 API_PORT=8081
 ```
 
+### `.env.example` para la dApp (root)
+```
+VITE_CORE_CHAIN_ID_MAINNET=1116
+VITE_CORE_CHAIN_ID_TESTNET=1114
+VITE_CORE_RPC_MAINNET=https://rpc.coredao.org
+VITE_CORE_RPC_TESTNET=https://rpc.test2.btcs.network
+VITE_EXPLORER_MAINNET=https://scan.coredao.org
+VITE_EXPLORER_TESTNET=https://scan.test2.btcs.network
+VITE_CONTRACT_COLLATERAL_VAULT=0x...
+VITE_CONTRACT_LOAN_MANAGER=0x...
+VITE_CONTRACT_STAKING_VAULT=0x...
+VITE_CONTRACT_ORACLE_ROUTER=0x...
+VITE_CONTRACT_DEBT_TOKEN=0x...
+VITE_CONTRACT_COLLATERAL_TOKEN=0x...
+VITE_WALLETCONNECT_PROJECT_ID=demo-project-id
+VITE_USE_MOCKS=false
+VITE_USE_ONCHAIN_ORACLE=true
+VITE_API_URL=http://localhost:8080
+VITE_STATUS_URL=http://localhost:8080/status
+VITE_TWITTER_URL=https://x.com/example
+VITE_DISCORD_URL=https://discord.gg/example
+VITE_GITHUB_URL=https://github.com/example/repo
+VITE_TELEMETRY_ENABLED=false
+VITE_POSTHOG_KEY=
+VITE_POSTHOG_HOST=https://app.posthog.com
+VITE_MIXPANEL_TOKEN=
+```
+
 ## Scripts rápidos
 - Contratos
   - pnpm --filter packages/contracts test  pruebas
   - pnpm --filter packages/contracts deploy:testnet2  despliegue 1114
+  - pnpm --filter packages/contracts seed:full:testnet2  despliegue+seed demo 1114
   - pnpm --filter packages/contracts verify:testnet2  verificación en Core Scan
 - Keeper
   - pnpm --filter services/keeper start  cron monitor/compound
@@ -114,7 +143,7 @@ API_PORT=8081
   - pnpm --filter services/api build  compila (tsc)
   - pnpm --filter services/api oracle:cron  empuja precios sintéticos a adapters (usar ALLOW_ORACLE_PUSH_CRON=1 y LSTBTC_ADDRESS)
 - Web
-  - pnpm dev en pps/web  dApp local
+  - pnpm dev en apps/web  dApp local
 
 ## Calidad, seguridad y accesibilidad
 - CEI pattern, ReentrancyGuard, AccessControl (roles: ADMIN/KEEPER/PAUSER), pausas granulares.

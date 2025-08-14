@@ -14,6 +14,7 @@ import { useMarketStore } from '../state/useMarketStore'
 import { useHealth } from '../hooks/useHealth'
 import { formatUSD } from '../lib/format'
 import { Badge } from '../components/ui/Badge'
+import { track } from '../lib/telemetry'
 
 const Schema = z.object({
   repayAmount: z.coerce.number().positive(),
@@ -29,7 +30,7 @@ export default function Repay() {
   const repayAmount = watch('repayAmount') || 0
   const withdrawAmount = watch('withdrawAmount') || 0
   const { push } = useToastStore()
-  const { repay } = useTx()
+  const { repay, withdraw } = useTx() as any
   const { data: price } = useOracle()
   const { positions } = usePositionsStore()
   const current = positions[0] || { collateralBtc: 0, debtUsdt: 0 }
@@ -55,7 +56,13 @@ export default function Repay() {
       }
       push({ type: 'info', message: t('repay.submitting') })
       const hash = await repay(repayAmount)
+      track('repay_submitted', { amount: repayAmount })
       push({ type: 'success', message: `${t('repay.tx_sent_base')} ${String(hash).slice(0, 10)}…` })
+      if (withdrawAmount && withdrawAmount > 0) {
+        const wtx = await withdraw(withdrawAmount)
+        track('withdraw_submitted', { amount: withdrawAmount })
+        push({ type: 'success', message: `${t('repay.withdraw_sent_base') ?? 'Withdraw sent:'} ${String(wtx).slice(0, 10)}…` })
+      }
     } catch (e: any) {
       push({ type: 'error', message: e?.message ?? t('repay.failed') })
     }

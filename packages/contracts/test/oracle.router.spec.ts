@@ -1,11 +1,12 @@
+/// <reference types="hardhat" />
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 
 describe('OracleRouter', () => {
   it('uses primary if fresh; fallback if primary stale and within deviation', async () => {
-    const [admin] = await ethers.getSigners()
-    const Red = await ethers.getContractFactory('RedStoneAdapter')
-    const Pyth = await ethers.getContractFactory('PythAdapter')
+    const [admin] = await (ethers as any).getSigners()
+    const Red = await (ethers as any).getContractFactory('RedStoneAdapter')
+    const Pyth = await (ethers as any).getContractFactory('PythAdapter')
     const red = await Red.deploy(await admin.getAddress())
     const pyth = await Pyth.deploy(await admin.getAddress())
     await red.waitForDeployment(); await pyth.waitForDeployment()
@@ -14,7 +15,7 @@ describe('OracleRouter', () => {
     await router.waitForDeployment()
 
     const token = '0x0000000000000000000000000000000000000001'
-    const now = (await ethers.provider.getBlock('latest'))!.timestamp
+    const now = (await (ethers as any).provider.getBlock('latest'))!.timestamp
     await (await red.connect(admin).grantRole(await red.ROLE_ORACLE(), await admin.getAddress())).wait()
     await (await pyth.connect(admin).grantRole(await pyth.ROLE_ORACLE(), await admin.getAddress())).wait()
     await (await red.pushPrice(token, 1000n, BigInt(now))).wait()
@@ -34,9 +35,9 @@ describe('OracleRouter', () => {
   })
 
   it('falls back if primary deviates beyond threshold after drop', async () => {
-    const [admin] = await ethers.getSigners()
-    const Red = await ethers.getContractFactory('RedStoneAdapter')
-    const Pyth = await ethers.getContractFactory('PythAdapter')
+    const [admin] = await (ethers as any).getSigners()
+    const Red = await (ethers as any).getContractFactory('RedStoneAdapter')
+    const Pyth = await (ethers as any).getContractFactory('PythAdapter')
     const red = await Red.deploy(await admin.getAddress())
     const pyth = await Pyth.deploy(await admin.getAddress())
     await red.waitForDeployment(); await pyth.waitForDeployment()
@@ -44,7 +45,7 @@ describe('OracleRouter', () => {
     const router = await Router.deploy(await admin.getAddress(), await red.getAddress(), await pyth.getAddress())
     await router.waitForDeployment()
     const token = '0x0000000000000000000000000000000000000001'
-    const now = (await ethers.provider.getBlock('latest'))!.timestamp
+    const now = (await (ethers as any).provider.getBlock('latest'))!.timestamp
     await (await red.connect(admin).grantRole(await red.ROLE_ORACLE(), await admin.getAddress())).wait()
     await (await pyth.connect(admin).grantRole(await pyth.ROLE_ORACLE(), await admin.getAddress())).wait()
     // Primary collapses price; fallback sane → router should ignore primary if deviation > threshold

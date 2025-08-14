@@ -5,6 +5,9 @@ import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit'
 import { wagmiConfig } from '../lib/wagmi'
 import { useUiStore } from '../state/useUiStore'
+import { useEffect } from 'react'
+import { env } from '../lib/env'
+import { initTelemetry } from '../lib/telemetry'
 
 const queryClient = new QueryClient()
 
@@ -16,10 +19,18 @@ export function AppProviders({ children }: { children: ReactNode }) {
     ? darkTheme({ accentColor: '#ff7a00', accentColorForeground: '#ffffff', borderRadius: 'medium' })
     : lightTheme({ accentColor: '#ff7a00', accentColorForeground: '#ffffff', borderRadius: 'medium' })
 
+  useEffect(() => {
+    if (env.TELEMETRY_ENABLED) {
+      initTelemetry()
+    }
+  }, [])
+
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={rkTheme}>{children}</RainbowKitProvider>
+        <RainbowKitProvider theme={rkTheme}>
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )

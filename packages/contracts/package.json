@@ -8,6 +8,7 @@
     "test": "hardhat test",
     "coverage": "hardhat coverage",
     "deploy:testnet2": "hardhat run scripts/deploy.ts --network coreTestnet2",
+    "seed:full:testnet2": "hardhat run scripts/seedFull.ts --network coreTestnet2",
     "deploy:mainnet": "hardhat run scripts/deploy.ts --network coreMainnet",
     "verify:testnet2": "hardhat run scripts/verify.ts --network coreTestnet2",
     "verify:mainnet": "hardhat run scripts/verify.ts --network coreMainnet",

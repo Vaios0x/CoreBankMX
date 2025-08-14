@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../../common";
 
-export interface LiquidationModuleInterface extends Interface {
+export interface FeeControllerInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
@@ -32,29 +32,34 @@ export interface LiquidationModuleInterface extends Interface {
       | "ROLE_ORACLE"
       | "ROLE_PAUSER"
       | "ROLE_RISK"
-      | "collateralVault"
-      | "debtAsset"
+      | "exchangeFeeBps"
+      | "feeCollector"
+      | "getBorrowFee"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
-      | "incentiveBps"
-      | "liquidate"
-      | "loanManager"
+      | "isPro"
+      | "minBorrowAmount"
+      | "originationFeeBps"
+      | "proDiscountBps"
       | "renounceRole"
       | "revokeRole"
-      | "setIncentive"
-      | "setTreasury"
+      | "setCollector"
+      | "setFees"
+      | "setMinBorrow"
+      | "setPro"
       | "supportsInterface"
-      | "treasury"
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
-      | "Liquidate"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
-      | "SetTreasury"
+      | "SetPro"
+      | "UpdateCollector"
+      | "UpdateFees"
+      | "UpdateMinBorrow"
   ): EventFragment;
 
   encodeFunctionData(
@@ -79,10 +84,17 @@ export interface LiquidationModuleInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "ROLE_RISK", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "collateralVault",
+    functionFragment: "exchangeFeeBps",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "debtAsset", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "feeCollector",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getBorrowFee",
+    values: [AddressLike, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
@@ -95,16 +107,17 @@ export interface LiquidationModuleInterface extends Interface {
     functionFragment: "hasRole",
     values: [BytesLike, AddressLike]
   ): string;
+  encodeFunctionData(functionFragment: "isPro", values: [AddressLike]): string;
   encodeFunctionData(
-    functionFragment: "incentiveBps",
+    functionFragment: "minBorrowAmount",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "liquidate",
-    values: [AddressLike, BigNumberish]
+    functionFragment: "originationFeeBps",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "loanManager",
+    functionFragment: "proDiscountBps",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -116,18 +129,25 @@ export interface LiquidationModuleInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setIncentive",
+    functionFragment: "setCollector",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFees",
+    values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMinBorrow",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTreasury",
-    values: [AddressLike]
+    functionFragment: "setPro",
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "treasury", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
@@ -148,23 +168,34 @@ export interface LiquidationModuleInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "ROLE_RISK", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "collateralVault",
+    functionFragment: "exchangeFeeBps",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "debtAsset", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "feeCollector",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getBorrowFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isPro", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "incentiveBps",
+    functionFragment: "minBorrowAmount",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "liquidate", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "loanManager",
+    functionFragment: "originationFeeBps",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proDiscountBps",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -173,43 +204,19 @@ export interface LiquidationModuleInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setIncentive",
+    functionFragment: "setCollector",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setFees", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setTreasury",
+    functionFragment: "setMinBorrow",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setPro", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "treasury", data: BytesLike): Result;
-}
-
-export namespace LiquidateEvent {
-  export type InputTuple = [
-    user: AddressLike,
-    repayAmount: BigNumberish,
-    collateralSeized: BigNumberish,
-    incentive: BigNumberish
-  ];
-  export type OutputTuple = [
-    user: string,
-    repayAmount: bigint,
-    collateralSeized: bigint,
-    incentive: bigint
-  ];
-  export interface OutputObject {
-    user: string;
-    repayAmount: bigint;
-    collateralSeized: bigint;
-    incentive: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace RoleAdminChangedEvent {
@@ -270,11 +277,12 @@ export namespace RoleRevokedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace SetTreasuryEvent {
-  export type InputTuple = [treasury: AddressLike];
-  export type OutputTuple = [treasury: string];
+export namespace SetProEvent {
+  export type InputTuple = [user: AddressLike, pro: boolean];
+  export type OutputTuple = [user: string, pro: boolean];
   export interface OutputObject {
-    treasury: string;
+    user: string;
+    pro: boolean;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -282,11 +290,57 @@ export namespace SetTreasuryEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface LiquidationModule extends BaseContract {
-  connect(runner?: ContractRunner | null): LiquidationModule;
+export namespace UpdateCollectorEvent {
+  export type InputTuple = [collector: AddressLike];
+  export type OutputTuple = [collector: string];
+  export interface OutputObject {
+    collector: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpdateFeesEvent {
+  export type InputTuple = [
+    originationFeeBps: BigNumberish,
+    exchangeFeeBps: BigNumberish,
+    proDiscountBps: BigNumberish
+  ];
+  export type OutputTuple = [
+    originationFeeBps: bigint,
+    exchangeFeeBps: bigint,
+    proDiscountBps: bigint
+  ];
+  export interface OutputObject {
+    originationFeeBps: bigint;
+    exchangeFeeBps: bigint;
+    proDiscountBps: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpdateMinBorrowEvent {
+  export type InputTuple = [amount: BigNumberish];
+  export type OutputTuple = [amount: bigint];
+  export interface OutputObject {
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export interface FeeController extends BaseContract {
+  connect(runner?: ContractRunner | null): FeeController;
   waitForDeployment(): Promise<this>;
 
-  interface: LiquidationModuleInterface;
+  interface: FeeControllerInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -337,9 +391,15 @@ export interface LiquidationModule extends BaseContract {
 
   ROLE_RISK: TypedContractMethod<[], [string], "view">;
 
-  collateralVault: TypedContractMethod<[], [string], "view">;
+  exchangeFeeBps: TypedContractMethod<[], [bigint], "view">;
 
-  debtAsset: TypedContractMethod<[], [string], "view">;
+  feeCollector: TypedContractMethod<[], [string], "view">;
+
+  getBorrowFee: TypedContractMethod<
+    [user: AddressLike, amount: BigNumberish],
+    [[bigint, string] & { fee: bigint; collector: string }],
+    "view"
+  >;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -355,15 +415,13 @@ export interface LiquidationModule extends BaseContract {
     "view"
   >;
 
-  incentiveBps: TypedContractMethod<[], [bigint], "view">;
+  isPro: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
 
-  liquidate: TypedContractMethod<
-    [user: AddressLike, repayAmount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  minBorrowAmount: TypedContractMethod<[], [bigint], "view">;
 
-  loanManager: TypedContractMethod<[], [string], "view">;
+  originationFeeBps: TypedContractMethod<[], [bigint], "view">;
+
+  proDiscountBps: TypedContractMethod<[], [bigint], "view">;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
@@ -377,10 +435,30 @@ export interface LiquidationModule extends BaseContract {
     "nonpayable"
   >;
 
-  setIncentive: TypedContractMethod<[bps: BigNumberish], [void], "nonpayable">;
+  setCollector: TypedContractMethod<
+    [_collector: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-  setTreasury: TypedContractMethod<
-    [_treasury: AddressLike],
+  setFees: TypedContractMethod<
+    [
+      _originationFeeBps: BigNumberish,
+      _exchangeFeeBps: BigNumberish,
+      _proDiscountBps: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  setMinBorrow: TypedContractMethod<
+    [amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setPro: TypedContractMethod<
+    [user: AddressLike, pro: boolean],
     [void],
     "nonpayable"
   >;
@@ -390,8 +468,6 @@ export interface LiquidationModule extends BaseContract {
     [boolean],
     "view"
   >;
-
-  treasury: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -416,11 +492,18 @@ export interface LiquidationModule extends BaseContract {
     nameOrSignature: "ROLE_RISK"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "collateralVault"
+    nameOrSignature: "exchangeFeeBps"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "feeCollector"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "debtAsset"
-  ): TypedContractMethod<[], [string], "view">;
+    nameOrSignature: "getBorrowFee"
+  ): TypedContractMethod<
+    [user: AddressLike, amount: BigNumberish],
+    [[bigint, string] & { fee: bigint; collector: string }],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
@@ -439,18 +522,17 @@ export interface LiquidationModule extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "incentiveBps"
+    nameOrSignature: "isPro"
+  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "minBorrowAmount"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "liquidate"
-  ): TypedContractMethod<
-    [user: AddressLike, repayAmount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "originationFeeBps"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "loanManager"
-  ): TypedContractMethod<[], [string], "view">;
+    nameOrSignature: "proDiscountBps"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
@@ -466,25 +548,33 @@ export interface LiquidationModule extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setIncentive"
-  ): TypedContractMethod<[bps: BigNumberish], [void], "nonpayable">;
+    nameOrSignature: "setCollector"
+  ): TypedContractMethod<[_collector: AddressLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setTreasury"
-  ): TypedContractMethod<[_treasury: AddressLike], [void], "nonpayable">;
+    nameOrSignature: "setFees"
+  ): TypedContractMethod<
+    [
+      _originationFeeBps: BigNumberish,
+      _exchangeFeeBps: BigNumberish,
+      _proDiscountBps: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setMinBorrow"
+  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setPro"
+  ): TypedContractMethod<
+    [user: AddressLike, pro: boolean],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "treasury"
-  ): TypedContractMethod<[], [string], "view">;
 
-  getEvent(
-    key: "Liquidate"
-  ): TypedContractEvent<
-    LiquidateEvent.InputTuple,
-    LiquidateEvent.OutputTuple,
-    LiquidateEvent.OutputObject
-  >;
   getEvent(
     key: "RoleAdminChanged"
   ): TypedContractEvent<
@@ -507,25 +597,35 @@ export interface LiquidationModule extends BaseContract {
     RoleRevokedEvent.OutputObject
   >;
   getEvent(
-    key: "SetTreasury"
+    key: "SetPro"
   ): TypedContractEvent<
-    SetTreasuryEvent.InputTuple,
-    SetTreasuryEvent.OutputTuple,
-    SetTreasuryEvent.OutputObject
+    SetProEvent.InputTuple,
+    SetProEvent.OutputTuple,
+    SetProEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdateCollector"
+  ): TypedContractEvent<
+    UpdateCollectorEvent.InputTuple,
+    UpdateCollectorEvent.OutputTuple,
+    UpdateCollectorEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdateFees"
+  ): TypedContractEvent<
+    UpdateFeesEvent.InputTuple,
+    UpdateFeesEvent.OutputTuple,
+    UpdateFeesEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdateMinBorrow"
+  ): TypedContractEvent<
+    UpdateMinBorrowEvent.InputTuple,
+    UpdateMinBorrowEvent.OutputTuple,
+    UpdateMinBorrowEvent.OutputObject
   >;
 
   filters: {
-    "Liquidate(address,uint256,uint256,uint256)": TypedContractEvent<
-      LiquidateEvent.InputTuple,
-      LiquidateEvent.OutputTuple,
-      LiquidateEvent.OutputObject
-    >;
-    Liquidate: TypedContractEvent<
-      LiquidateEvent.InputTuple,
-      LiquidateEvent.OutputTuple,
-      LiquidateEvent.OutputObject
-    >;
-
     "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
       RoleAdminChangedEvent.InputTuple,
       RoleAdminChangedEvent.OutputTuple,
@@ -559,15 +659,48 @@ export interface LiquidationModule extends BaseContract {
       RoleRevokedEvent.OutputObject
     >;
 
-    "SetTreasury(address)": TypedContractEvent<
-      SetTreasuryEvent.InputTuple,
-      SetTreasuryEvent.OutputTuple,
-      SetTreasuryEvent.OutputObject
+    "SetPro(address,bool)": TypedContractEvent<
+      SetProEvent.InputTuple,
+      SetProEvent.OutputTuple,
+      SetProEvent.OutputObject
     >;
-    SetTreasury: TypedContractEvent<
-      SetTreasuryEvent.InputTuple,
-      SetTreasuryEvent.OutputTuple,
-      SetTreasuryEvent.OutputObject
+    SetPro: TypedContractEvent<
+      SetProEvent.InputTuple,
+      SetProEvent.OutputTuple,
+      SetProEvent.OutputObject
+    >;
+
+    "UpdateCollector(address)": TypedContractEvent<
+      UpdateCollectorEvent.InputTuple,
+      UpdateCollectorEvent.OutputTuple,
+      UpdateCollectorEvent.OutputObject
+    >;
+    UpdateCollector: TypedContractEvent<
+      UpdateCollectorEvent.InputTuple,
+      UpdateCollectorEvent.OutputTuple,
+      UpdateCollectorEvent.OutputObject
+    >;
+
+    "UpdateFees(uint256,uint256,uint256)": TypedContractEvent<
+      UpdateFeesEvent.InputTuple,
+      UpdateFeesEvent.OutputTuple,
+      UpdateFeesEvent.OutputObject
+    >;
+    UpdateFees: TypedContractEvent<
+      UpdateFeesEvent.InputTuple,
+      UpdateFeesEvent.OutputTuple,
+      UpdateFeesEvent.OutputObject
+    >;
+
+    "UpdateMinBorrow(uint256)": TypedContractEvent<
+      UpdateMinBorrowEvent.InputTuple,
+      UpdateMinBorrowEvent.OutputTuple,
+      UpdateMinBorrowEvent.OutputObject
+    >;
+    UpdateMinBorrow: TypedContractEvent<
+      UpdateMinBorrowEvent.InputTuple,
+      UpdateMinBorrowEvent.OutputTuple,
+      UpdateMinBorrowEvent.OutputObject
     >;
   };
 }

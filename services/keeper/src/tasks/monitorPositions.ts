@@ -5,7 +5,7 @@ export async function monitorPositions(log: FastifyBaseLogger) {
   // Lee lista de usuarios desde API o ENV
   let users: string[] = []
   try {
-    const res = await fetch(`${process.env.API_URL || 'http://localhost:8080'}/positions`)
+    const res = await fetch(`${process.env.API_URL || 'http://localhost:8080'}/positions/users`)
     if (res.ok) {
       const json = await res.json()
       users = Array.isArray(json?.users) ? json.users : []

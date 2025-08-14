@@ -13,6 +13,8 @@ export const loanAbi = [
   { inputs: [], name: 'targetLtv', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'liquidationLtv', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'baseRateBps', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'interestIndex', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'lastAccrual', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [{ name: 'user', type: 'address' }], name: 'getAccountData', outputs: [{ type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' },
 ]
 
@@ -24,6 +26,11 @@ export const feeAbi = [
   { inputs: [{ name: 'user', type: 'address' }], name: 'isPro', outputs: [{ type: 'bool' }], stateMutability: 'view', type: 'function' },
 ]
 
+const erc20Abi = [
+  { inputs: [{ name: 'owner', type: 'address' }], name: 'balanceOf', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'decimals', outputs: [{ type: 'uint8' }], stateMutability: 'view', type: 'function' },
+]
+
 export async function readMarketParams() {
   const rpc = cfg.CORE_RPC_TESTNET
   const chainId = cfg.CORE_CHAIN_ID_TESTNET
@@ -32,10 +39,12 @@ export async function readMarketParams() {
   const contract = getContract({ address: addr, abi: loanAbi, client })
   const feeAddr = (addresses as any).FeeController as `0x${string}` | undefined
   const fee = feeAddr ? getContract({ address: feeAddr, abi: feeAbi, client }) : null
-  const [t, l, r, obps, minBorrow] = await Promise.all([
+  const [t, l, r, idx, last, obps, minBorrow] = await Promise.all([
     contract.read.targetLtv(),
     contract.read.liquidationLtv(),
     contract.read.baseRateBps(),
+    contract.read.interestIndex(),
+    contract.read.lastAccrual(),
     fee ? fee.read.originationFeeBps() : Promise.resolve(0n),
     fee ? fee.read.minBorrowAmount() : Promise.resolve(0n),
   ])
@@ -44,6 +53,8 @@ export async function readMarketParams() {
     targetLtv: Number(t) / 10_000,
     liquidationLtv: Number(l) / 10_000,
     baseRate: Number(r) / 10_000,
+    interestIndex: Number(idx) / 1e18,
+    lastAccrual: Number(last),
     originationFeeBps: Number(obps),
     minBorrowAmount: Number(minBorrow) / 1e18,
     addresses,
@@ -129,6 +140,51 @@ export async function readRecentLiquidations(maxItems = 20, lookbackBlocks = 200
     incentive: Number((l.args as any)?.incentive) / 1e18,
     blockNumber: Number(l.blockNumber),
   }))
+}
+
+export async function readOnchainPriceForSymbol(symbol: string): Promise<{ price: number; updatedAt: number } | null> {
+  const routerAddr = (addresses as any).OracleRouter as `0x${string}` | undefined
+  if (!routerAddr) return null
+  const tokenBySymbol: Record<string, string | undefined> = {
+    LSTBTC: (addresses as any).LSTBTC,
+    BTC: (addresses as any).LSTBTC,
+    WBTC: (addresses as any).LSTBTC,
+    USDT: (addresses as any).USDT,
+  }
+  const key = String(symbol).toUpperCase()
+  const token = tokenBySymbol[key]
+  if (!token) return null
+  const rpc = cfg.CORE_RPC_TESTNET
+  const chainId = cfg.CORE_CHAIN_ID_TESTNET
+  const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
+  const router = getContract({ address: routerAddr, abi: [{ inputs: [{ name: 'token', type: 'address' }], name: 'getPrice', outputs: [{ type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' }], client })
+  const [p, t] = (await (router as any).read.getPrice([token as `0x${string}`])) as [bigint, bigint]
+  const price = Number(p) / 1e18
+  const updatedAt = Number(t) * 1000
+  if (!Number.isFinite(price) || price <= 0) return null
+  return { price, updatedAt }
+}
+
+export async function readVaultTvlUsd(): Promise<number> {
+  const vaultAddr = (addresses as any).CollateralVault as `0x${string}` | undefined
+  const tokenAddr = (addresses as any).LSTBTC as `0x${string}` | undefined
+  const routerAddr = (addresses as any).OracleRouter as `0x${string}` | undefined
+  if (!vaultAddr || !tokenAddr || !routerAddr) return 0
+  const rpc = cfg.CORE_RPC_TESTNET
+  const chainId = cfg.CORE_CHAIN_ID_TESTNET
+  const client = createPublicClient({ transport: http(rpc), chain: { id: chainId, name: 'Core', nativeCurrency: { name: 'CORE', symbol: 'CORE', decimals: 18 }, rpcUrls: { default: { http: [rpc] } } } as any })
+  const token = getContract({ address: tokenAddr, abi: erc20Abi as any, client })
+  const router = getContract({ address: routerAddr, abi: [{ inputs: [{ name: 'token', type: 'address' }], name: 'getPrice', outputs: [{ type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' }], client })
+  const [bal, dec, pr] = await Promise.all([
+    (token as any).read.balanceOf([vaultAddr]),
+    (token as any).read.decimals(),
+    (router as any).read.getPrice([tokenAddr]),
+  ])
+  const decimals = Number(dec || 18)
+  const balance = Number(bal) / 10 ** decimals
+  const price = Number((pr as [bigint, bigint])[0]) / 1e18
+  if (!Number.isFinite(balance) || !Number.isFinite(price)) return 0
+  return balance * price
 }
 
 

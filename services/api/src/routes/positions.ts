@@ -46,7 +46,7 @@ export async function positionsRoutes(app: FastifyInstance) {
     return { items }
   })
 
-  app.get('/positions', async () => {
+  app.get('/positions/users', async () => {
     // Endpoint simple que devuelve la lista de usuarios monitor (para keeper/demo)
     return { users: demoUsers }
   })

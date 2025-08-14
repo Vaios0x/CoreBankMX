@@ -2,9 +2,9 @@
   "name": "@core-neobank/api",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "dev": "ts-node-esm src/server.ts",
+    "dev": "ts-node src/server.ts",
     "start": "node --enable-source-maps dist/server.js",
     "build": "tsc -p tsconfig.json",
     "oracle:cron": "ts-node-esm src/scripts/oracle-cron.ts"
@@ -20,7 +20,8 @@
   },
   "devDependencies": {
     "typescript": "^5.5.4",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "@types/node": "^24.2.1"
   }
 }
 

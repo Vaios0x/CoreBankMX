@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/api/.env
+    volumes:
+      - ./packages/contracts/addresses.testnet2.json:/app/packages/contracts/addresses.testnet2.json:ro
+      - ./packages/contracts/addresses.testnet2.json:/packages/contracts/addresses.testnet2.json:ro
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  keeper:
+    build:
+      context: ./services/keeper
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/keeper/.env
+    environment:
+      - API_URL=http://api:8080
+    depends_on:
+      - api
+    volumes:
+      - ./packages/contracts/addresses.testnet2.json:/app/packages/contracts/addresses.testnet2.json:ro
+      - ./packages/contracts/addresses.testnet2.json:/packages/contracts/addresses.testnet2.json:ro
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+

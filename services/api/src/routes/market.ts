@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { getPrice } from '../lib/oracleCache'
-import { readMarketParams, estimateBorrowFee, readMetricsForUsers, readRecentLiquidations } from '../lib/onchain'
+import { readMarketParams, estimateBorrowFee, readMetricsForUsers, readRecentLiquidations, readOnchainPriceForSymbol, readVaultTvlUsd } from '../lib/onchain'
 
 export async function marketRoutes(app: FastifyInstance) {
   let cache: any = null
@@ -22,6 +22,9 @@ export async function marketRoutes(app: FastifyInstance) {
 
   app.get<{ Params: { symbol: string } }>('/market/prices/:symbol', async (req) => {
     const { symbol } = req.params
+    // Intenta on-chain primero (router); si falla, usa caché/upstream
+    const onchain = await readOnchainPriceForSymbol(symbol).catch(() => null)
+    if (onchain) return onchain
     const e = await getPrice(symbol.toUpperCase(), 10_000)
     return e
   })
@@ -43,8 +46,11 @@ export async function marketRoutes(app: FastifyInstance) {
   // Métricas agregadas (demo: usuarios de MONITOR_USERS)
   app.get('/market/metrics', async () => {
     const users = (process.env.MONITOR_USERS || '').split(',').map((s) => s.trim()).filter(Boolean)
-    const m = await readMetricsForUsers(users)
-    return { ...m, liquidations24h: 0 }
+    const [m, tvlUsd] = await Promise.all([
+      readMetricsForUsers(users),
+      readVaultTvlUsd().catch(() => 0),
+    ])
+    return { ...m, tvlUsd, liquidations24h: 0 }
   })
 
   // Histórico de TVL (mock)

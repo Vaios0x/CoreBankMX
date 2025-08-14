@@ -2,5 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { CollateralVault } from "./CollateralVault";
+export type { FeeController } from "./FeeController";
 export type { LiquidationModule } from "./LiquidationModule";
 export type { LoanManager } from "./LoanManager";

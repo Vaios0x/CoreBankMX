@@ -5,6 +5,68 @@ import { ethers } from 'ethers'
 const Schema = z.object({ adapter: z.string(), token: z.string(), price: z.coerce.number().positive(), updatedAt: z.coerce.number().int() })
 
 export async function oracleRoutes(app: FastifyInstance) {
+  app.get('/oracle/status', async () => {
+    let addresses: any = {}
+    try { addresses = require('../../../packages/contracts/addresses.testnet2.json') } catch {}
+    const routerAddr = addresses.OracleRouter
+    const token = addresses.LSTBTC
+    if (!routerAddr || !token) return { error: 'missing_addresses', router: routerAddr, token }
+    const provider = new ethers.JsonRpcProvider(process.env.CORE_RPC_TESTNET)
+    const routerAbi = [
+      'function primary() view returns (address)',
+      'function fallbackOracle() view returns (address)',
+      'function maxStaleness() view returns (uint256)',
+      'function maxDeviationBps() view returns (uint256)',
+    ]
+    const ioracleAbi = [ 'function getPrice(address) view returns (uint256,uint256)' ]
+    const router = new ethers.Contract(routerAddr, routerAbi, provider)
+    const [primary, fallbackA, maxStaleness, maxDeviationBps] = await Promise.all([
+      router.primary(), router.fallbackOracle(), router.maxStaleness(), router.maxDeviationBps(),
+    ])
+    // Read both adapters
+    const pC = new ethers.Contract(primary, ioracleAbi, provider)
+    const fC = new ethers.Contract(fallbackA, ioracleAbi, provider)
+    const [pRes, fRes] = await Promise.all([
+      pC.getPrice(token),
+      fC.getPrice(token),
+    ])
+    const nowSec = Math.floor(Date.now() / 1000)
+    const pPrice = Number(pRes[0]) / 1e18
+    const pTime = Number(pRes[1])
+    const fPrice = Number(fRes[0]) / 1e18
+    const fTime = Number(fRes[1])
+    const pFresh = nowSec - pTime <= Number(maxStaleness)
+    const fFresh = nowSec - fTime <= Number(maxStaleness)
+    let selected: 'primary' | 'fallback' | 'none' = 'none'
+    let reason = ''
+    let deviationBps = 0
+    if (pFresh && fFresh) {
+      if (pPrice === 0 && fPrice === 0) {
+        selected = 'none'; reason = 'zero'
+      } else if (pPrice === 0) {
+        selected = 'fallback'; reason = 'primary_zero'
+      } else if (fPrice === 0) {
+        selected = 'primary'; reason = 'fallback_zero'
+      } else {
+        deviationBps = pPrice > fPrice ? Math.floor(((pPrice - fPrice) * 10000) / pPrice) : Math.floor(((fPrice - pPrice) * 10000) / fPrice)
+        if (deviationBps > Number(maxDeviationBps)) { selected = 'fallback'; reason = 'deviation' } else { selected = 'primary'; reason = 'within_deviation' }
+      }
+    } else if (pFresh) { selected = 'primary'; reason = 'fallback_stale' }
+    else if (fFresh) { selected = 'fallback'; reason = 'primary_stale' }
+    else { selected = 'none'; reason = 'both_stale' }
+    return {
+      router: routerAddr,
+      token,
+      limits: { maxStaleness: Number(maxStaleness), maxDeviationBps: Number(maxDeviationBps) },
+      adapters: {
+        primary: { address: String(primary), price: pPrice, updatedAt: pTime, fresh: pFresh },
+        fallback: { address: String(fallbackA), price: fPrice, updatedAt: fTime, fresh: fFresh },
+      },
+      deviationBps,
+      selected,
+      reason,
+    }
+  })
   app.post('/oracle/push', async (req, res) => {
     const key = req.headers['x-api-key']
     if (!key || key !== process.env.API_KEY_ADMIN) return res.status(401).send({ error: 'unauthorized' })

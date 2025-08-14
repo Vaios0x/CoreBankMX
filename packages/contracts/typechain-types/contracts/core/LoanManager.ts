@@ -39,6 +39,8 @@ export interface LoanManagerInterface extends Interface {
       | "collateralVault"
       | "debtAsset"
       | "debtOf"
+      | "feeCollector"
+      | "feeController"
       | "getAccountData"
       | "getRoleAdmin"
       | "grantRole"
@@ -53,8 +55,10 @@ export interface LoanManagerInterface extends Interface {
       | "repay"
       | "repayFrom"
       | "revokeRole"
+      | "setFeeController"
       | "setOracle"
       | "setParams"
+      | "simulateHealthAfter"
       | "supportsInterface"
       | "targetLtv"
       | "userIndex"
@@ -69,6 +73,7 @@ export interface LoanManagerInterface extends Interface {
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
+      | "SetFeeController"
       | "Unpaused"
       | "UpdateParams"
       | "UpdateRates"
@@ -118,6 +123,14 @@ export interface LoanManagerInterface extends Interface {
   encodeFunctionData(functionFragment: "debtAsset", values?: undefined): string;
   encodeFunctionData(functionFragment: "debtOf", values: [AddressLike]): string;
   encodeFunctionData(
+    functionFragment: "feeCollector",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "feeController",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAccountData",
     values: [AddressLike]
   ): string;
@@ -165,12 +178,20 @@ export interface LoanManagerInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setFeeController",
+    values: [AddressLike, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setOracle",
     values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setParams",
     values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "simulateHealthAfter",
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -220,6 +241,14 @@ export interface LoanManagerInterface extends Interface {
   decodeFunctionResult(functionFragment: "debtAsset", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "debtOf", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "feeCollector",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "feeController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAccountData",
     data: BytesLike
   ): Result;
@@ -254,8 +283,16 @@ export interface LoanManagerInterface extends Interface {
   decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "repayFrom", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setFeeController",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setOracle", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setParams", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "simulateHealthAfter",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -278,11 +315,16 @@ export namespace AccrueInterestEvent {
 }
 
 export namespace BorrowEvent {
-  export type InputTuple = [user: AddressLike, amount: BigNumberish];
-  export type OutputTuple = [user: string, amount: bigint];
+  export type InputTuple = [
+    user: AddressLike,
+    amount: BigNumberish,
+    fee: BigNumberish
+  ];
+  export type OutputTuple = [user: string, amount: bigint, fee: bigint];
   export interface OutputObject {
     user: string;
     amount: bigint;
+    fee: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -366,6 +408,18 @@ export namespace RoleRevokedEvent {
     role: string;
     account: string;
     sender: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace SetFeeControllerEvent {
+  export type InputTuple = [controller: AddressLike];
+  export type OutputTuple = [controller: string];
+  export interface OutputObject {
+    controller: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -488,6 +542,10 @@ export interface LoanManager extends BaseContract {
 
   debtOf: TypedContractMethod<[user: AddressLike], [bigint], "view">;
 
+  feeCollector: TypedContractMethod<[], [string], "view">;
+
+  feeController: TypedContractMethod<[], [string], "view">;
+
   getAccountData: TypedContractMethod<
     [user: AddressLike],
     [
@@ -546,6 +604,12 @@ export interface LoanManager extends BaseContract {
     "nonpayable"
   >;
 
+  setFeeController: TypedContractMethod<
+    [controller: AddressLike, collector: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   setOracle: TypedContractMethod<
     [_oracle: AddressLike, _collateralToken: AddressLike],
     [void],
@@ -556,6 +620,12 @@ export interface LoanManager extends BaseContract {
     [_target: BigNumberish, _liq: BigNumberish, _baseRate: BigNumberish],
     [void],
     "nonpayable"
+  >;
+
+  simulateHealthAfter: TypedContractMethod<
+    [user: AddressLike, newCollateral: BigNumberish],
+    [[bigint, bigint] & { healthFactor: bigint; ltvBps: bigint }],
+    "view"
   >;
 
   supportsInterface: TypedContractMethod<
@@ -611,6 +681,12 @@ export interface LoanManager extends BaseContract {
   getFunction(
     nameOrSignature: "debtOf"
   ): TypedContractMethod<[user: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "feeCollector"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "feeController"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "getAccountData"
   ): TypedContractMethod<
@@ -684,6 +760,13 @@ export interface LoanManager extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "setFeeController"
+  ): TypedContractMethod<
+    [controller: AddressLike, collector: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setOracle"
   ): TypedContractMethod<
     [_oracle: AddressLike, _collateralToken: AddressLike],
@@ -696,6 +779,13 @@ export interface LoanManager extends BaseContract {
     [_target: BigNumberish, _liq: BigNumberish, _baseRate: BigNumberish],
     [void],
     "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "simulateHealthAfter"
+  ): TypedContractMethod<
+    [user: AddressLike, newCollateral: BigNumberish],
+    [[bigint, bigint] & { healthFactor: bigint; ltvBps: bigint }],
+    "view"
   >;
   getFunction(
     nameOrSignature: "supportsInterface"
@@ -757,6 +847,13 @@ export interface LoanManager extends BaseContract {
     RoleRevokedEvent.OutputObject
   >;
   getEvent(
+    key: "SetFeeController"
+  ): TypedContractEvent<
+    SetFeeControllerEvent.InputTuple,
+    SetFeeControllerEvent.OutputTuple,
+    SetFeeControllerEvent.OutputObject
+  >;
+  getEvent(
     key: "Unpaused"
   ): TypedContractEvent<
     UnpausedEvent.InputTuple,
@@ -790,7 +887,7 @@ export interface LoanManager extends BaseContract {
       AccrueInterestEvent.OutputObject
     >;
 
-    "Borrow(address,uint256)": TypedContractEvent<
+    "Borrow(address,uint256,uint256)": TypedContractEvent<
       BorrowEvent.InputTuple,
       BorrowEvent.OutputTuple,
       BorrowEvent.OutputObject
@@ -854,6 +951,17 @@ export interface LoanManager extends BaseContract {
       RoleRevokedEvent.InputTuple,
       RoleRevokedEvent.OutputTuple,
       RoleRevokedEvent.OutputObject
+    >;
+
+    "SetFeeController(address)": TypedContractEvent<
+      SetFeeControllerEvent.InputTuple,
+      SetFeeControllerEvent.OutputTuple,
+      SetFeeControllerEvent.OutputObject
+    >;
+    SetFeeController: TypedContractEvent<
+      SetFeeControllerEvent.InputTuple,
+      SetFeeControllerEvent.OutputTuple,
+      SetFeeControllerEvent.OutputObject
     >;
 
     "Unpaused(address)": TypedContractEvent<

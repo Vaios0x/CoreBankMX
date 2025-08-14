@@ -124,27 +124,27 @@ export default function Repay() {
         />
         <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">
           <span>
-            {t('repay.max_withdraw_label')}: {Math.max(0, maxWithdrawBtc).toFixed(6)} BTC ({formatUSD(maxWithdrawUsd)})
+            {t('repay.max_withdraw_label') as string}: {Math.max(0, maxWithdrawBtc).toFixed(6)} BTC ({formatUSD(maxWithdrawUsd)})
           </span>
           <button
             type="button"
             className="btn-outline px-2 py-0.5 text-xs motion-press"
             onClick={() => setValue('withdrawAmount', Math.max(0, maxWithdrawBtc), { shouldValidate: true, shouldDirty: true })}
           >
-            {t('repay.use_max')}
+            {t('repay.use_max') as string}
           </button>
         </div>
       </div>
       <div className="card-muted text-sm text-gray-300">
-        <div>{t('repay.after_collateral_usd')}: {formatUSD(afterCollateralUsd)}</div>
-        <div>{t('repay.after_ltv')}: {(healthAfter.ltv * 100).toFixed(2)}%</div>
+        <div>{t('repay.after_collateral_usd') as string}: {formatUSD(afterCollateralUsd)}</div>
+        <div>{t('repay.after_ltv') as string}: {(healthAfter.ltv * 100).toFixed(2)}%</div>
         <div>
-          {t('repay.after_health')}: <span className={healthAfter.status === 'danger' ? 'text-red-400' : healthAfter.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}>{healthAfter.hf.toFixed(2)}</span>
+          {t('repay.after_health') as string}: <span className={healthAfter.status === 'danger' ? 'text-red-400' : healthAfter.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}>{healthAfter.hf.toFixed(2)}</span>
         </div>
         {healthAfter.hf < 1.5 && (
           <p className={`mt-2 text-xs ${healthAfter.hf < 1.2 ? 'text-red-400' : 'text-yellow-400'}`}>
             <Badge variant={healthAfter.hf < 1.2 ? 'error' : 'warning'}>
-              {healthAfter.hf < 1.2 ? t('repay.after_health_danger') : t('repay.after_health_warning')}
+              {healthAfter.hf < 1.2 ? (t('repay.after_health_danger') as string) : (t('repay.after_health_warning') as string)}
             </Badge>
           </p>
         )}
@@ -153,15 +153,15 @@ export default function Repay() {
         <button
           type="button"
           className="btn-outline motion-press"
-          aria-label={t('repay.copy_link')}
+          aria-label={t('repay.copy_link') as string}
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(window.location.href)
-              push({ type: 'success', message: t('repay.link_copied') })
+              push({ type: 'success', message: t('repay.link_copied') as string })
             } catch {}
           }}
         >
-          {t('repay.copy_link')}
+          {t('repay.copy_link') as string}
         </button>
         <button
           type="button"
@@ -175,14 +175,14 @@ export default function Repay() {
             setValue('withdrawAmount', 0, { shouldValidate: true })
           }}
         >
-          {t('repay.reset_filters')}
+          {t('repay.reset_filters') as string}
         </button>
         <button
           type="submit"
           className="btn-primary motion-press"
           disabled={withdrawTooHigh}
         >
-          {t('repay.repay_button')}
+          {t('repay.repay_button') as string}
         </button>
       </div>
     </form>

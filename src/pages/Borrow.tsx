@@ -200,7 +200,7 @@ export default function Borrow() {
             }
           }}
         >
-          {t('borrow.approve_button')}
+          {t('borrow.approve_button') as string}
         </button>
         <button
           type="submit"
@@ -210,14 +210,14 @@ export default function Borrow() {
             e.preventDefault()
             try {
               if (isBorrowDisabled) {
-                push({ type: 'info', message: t('borrow.disabled_reason') })
+                push({ type: 'info', message: t('borrow.disabled_reason') as string })
                 return
               }
-              push({ type: 'info', message: t('borrow.toast_borrowing') })
+              push({ type: 'info', message: t('borrow.toast_borrowing') as string })
               const hash = await borrowTx(borrow)
-              push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base')} ${String(hash).slice(0, 10)}…` })
+              push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base') as string} ${String(hash).slice(0, 10)}…` })
             } catch (e: any) {
-              push({ type: 'error', message: e?.message ?? t('borrow.toast_borrow_failed') })
+              push({ type: 'error', message: e?.message ?? (t('borrow.toast_borrow_failed') as string) })
             }
           }}
         >
@@ -227,7 +227,7 @@ export default function Borrow() {
           <button
             type="button"
             className="text-xs text-gray-400 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500"
-            onClick={() => push({ type: 'info', message: t('borrow.disabled_reason') })}
+            onClick={() => push({ type: 'info', message: t('borrow.disabled_reason') as string })}
           >
             {t('borrow.why_disabled')}
           </button>

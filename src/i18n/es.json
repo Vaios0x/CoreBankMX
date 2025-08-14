@@ -129,7 +129,10 @@
     "to_mainnet": "Mainnet",
     "to_testnet": "Testnet",
     "copy_address": "Copiar dirección",
-    "disconnect": "Desconectar"
+    "disconnect": "Desconectar",
+    "toggle_sidebar": "Alternar barra lateral",
+    "toggle_theme": "Alternar tema",
+    "toggle_language": "Alternar idioma"
   },
   "footer": {
     "description": "Remesas y préstamos con BTC como colateral sobre Core. Seguridad, rendimiento y UX simple.",
@@ -138,8 +141,36 @@
     "email_label": "Correo electrónico",
     "subscribe_button": "Suscribirse",
     "email_error": "Ingresa un email válido",
+    "subscribe_success": "Gracias por suscribirte",
+    "no_spam": "Sin spam. Cancela cuando quieras.",
     "terms": "Términos",
-    "privacy": "Privacidad"
+    "privacy": "Privacidad",
+    "cookies": "Cookies",
+    "product": "Producto",
+    "developers": "Desarrolladores",
+    "about": "Acerca",
+    "press": "Prensa",
+    "contact": "Contacto",
+    "careers": "Carreras",
+    "status": "Estado",
+    "product": {
+      "dashboard": "Dashboard",
+      "borrow": "Pedir préstamo",
+      "repay": "Repagar",
+      "positions": "Posiciones"
+    },
+    "developers": {
+      "docs": "Docs",
+      "api": "API",
+      "status": "Estado",
+      "github": "GitHub"
+    },
+    "company": {
+      "about": "Acerca",
+      "press": "Prensa",
+      "contact": "Contacto",
+      "careers": "Carreras"
+    }
   },
   "docs": {
     "title": "Documentación",

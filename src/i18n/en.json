@@ -129,7 +129,10 @@
     "to_mainnet": "Mainnet",
     "to_testnet": "Testnet",
     "copy_address": "Copy address",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "toggle_sidebar": "Toggle sidebar",
+    "toggle_theme": "Toggle theme",
+    "toggle_language": "Toggle language"
   },
   "footer": {
     "description": "Remittances and loans with BTC as collateral on Core. Security, performance and simple UX.",
@@ -138,8 +141,36 @@
     "email_label": "Email address",
     "subscribe_button": "Subscribe",
     "email_error": "Enter a valid email",
+    "subscribe_success": "Thank you for subscribing",
+    "no_spam": "No spam. Cancel anytime.",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "product": "Product",
+    "developers": "Developers",
+    "about": "About",
+    "press": "Press",
+    "contact": "Contact",
+    "careers": "Careers",
+    "status": "Status",
+    "product": {
+      "dashboard": "Dashboard",
+      "borrow": "Borrow",
+      "repay": "Repay",
+      "positions": "Positions"
+    },
+    "developers": {
+      "docs": "Docs",
+      "api": "API",
+      "status": "Status",
+      "github": "GitHub"
+    },
+    "company": {
+      "about": "About",
+      "press": "Press",
+      "contact": "Contact",
+      "careers": "Careers"
+    }
   },
   "docs": {
     "title": "Documentation",

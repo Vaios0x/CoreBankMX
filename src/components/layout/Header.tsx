@@ -40,7 +40,7 @@ export function Header() {
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.03 }}
             className="btn-ghost p-2 motion-press"
-            aria-label="Toggle sidebar"
+            aria-label={t('header.toggle_sidebar') as string}
             onClick={toggleSidebar}
           >
             <span aria-hidden>☰</span>
@@ -64,7 +64,7 @@ export function Header() {
               } catch {}
             }}
             className="btn-outline px-2 py-1 text-sm motion-press"
-            aria-label="Toggle theme"
+            aria-label={t('header.toggle_theme') as string}
           >
             {theme === 'dark' ? '☾' : '☀︎'}
           </motion.button>
@@ -139,7 +139,7 @@ export function Header() {
               window.history.replaceState({}, '', url)
             }}
             className="btn-outline px-2 py-1 text-sm motion-press"
-            aria-label="Toggle language"
+            aria-label={t('header.toggle_language') as string}
           >
             {language === 'en' ? 'ES' : 'EN'}
           </motion.button>

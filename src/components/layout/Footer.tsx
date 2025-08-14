@@ -17,7 +17,7 @@ export function Footer() {
       push({ type: 'error', message: t('footer.email_error') as string })
       return
     }
-    push({ type: 'success', message: 'Gracias por suscribirte' })
+    push({ type: 'success', message: t('footer.subscribe_success') as string })
     setEmail('')
   }
   return (
@@ -33,33 +33,33 @@ export function Footer() {
           </p>
         </div>
 
-        <nav aria-label="Producto" className="grid grid-rows-[auto_1fr] gap-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">Producto</h3>
+        <nav aria-label={t('footer.product') as string} className="grid grid-rows-[auto_1fr] gap-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.product') as string}</h3>
           <ul className="space-y-1">
-            <li><Link to="/dashboard" className="link">Dashboard</Link></li>
-            <li><Link to="/borrow" className="link">Borrow</Link></li>
-            <li><Link to="/repay" className="link">Repay</Link></li>
-            <li><Link to="/positions" className="link">Positions</Link></li>
+            <li><Link to="/dashboard" className="link">{t('nav.dashboard') as string}</Link></li>
+            <li><Link to="/borrow" className="link">{t('nav.borrow') as string}</Link></li>
+            <li><Link to="/repay" className="link">{t('nav.repay') as string}</Link></li>
+            <li><Link to="/positions" className="link">{t('nav.positions') as string}</Link></li>
           </ul>
         </nav>
 
-        <nav aria-label="Desarrolladores" className="grid grid-rows-[auto_1fr] gap-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">Desarrolladores</h3>
+        <nav aria-label={t('footer.developers') as string} className="grid grid-rows-[auto_1fr] gap-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.developers') as string}</h3>
           <ul className="space-y-1">
-            <li><Link to="/docs" className="link">Docs</Link></li>
-            <li><a href={env.API_URL} target="_blank" rel="noreferrer" className="link">API</a></li>
-            <li><a href={env.STATUS_URL} target="_blank" rel="noreferrer" className="link">Estado</a></li>
-            <li><a href={env.GITHUB_URL} target="_blank" rel="noreferrer" className="link">GitHub</a></li>
+            <li><Link to="/docs" className="link">{t('footer.developers.docs') as string}</Link></li>
+            <li><a href={env.API_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.api') as string}</a></li>
+            <li><a href={env.STATUS_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.status') as string}</a></li>
+            <li><a href={env.GITHUB_URL} target="_blank" rel="noreferrer" className="link">{t('footer.developers.github') as string}</a></li>
           </ul>
         </nav>
 
         <nav aria-label={t('footer.company') as string} className="grid grid-rows-[auto_1fr] gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ui-muted">{t('footer.company') as string}</h3>
           <ul className="space-y-1">
-            <li><a href="#" className="link">Acerca</a></li>
-            <li><a href="#" className="link">Prensa</a></li>
-            <li><a href="#" className="link">Contacto</a></li>
-            <li><a href="#" className="link">Carreras</a></li>
+            <li><a href="#" className="link">{t('footer.company.about') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company.press') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company.contact') as string}</a></li>
+            <li><a href="#" className="link">{t('footer.company.careers') as string}</a></li>
           </ul>
         </nav>
 
@@ -76,7 +76,7 @@ export function Footer() {
             />
             <button type="submit" className="btn-primary w-full">{t('footer.subscribe_button') as string}</button>
           </form>
-          <p className="text-[11px] text-ui-muted">Sin spam. Cancela cuando quieras.</p>
+          <p className="text-[11px] text-ui-muted">{t('footer.no_spam') as string}</p>
         </div>
       </div>
 
@@ -87,7 +87,7 @@ export function Footer() {
             <span aria-hidden>·</span>
             <a href="#" className="link">{t('footer.terms') as string}</a>
             <span aria-hidden>·</span>
-            <a href="#" className="link">Cookies</a>
+            <a href="#" className="link">{t('footer.cookies') as string}</a>
           </div>
           <div className="flex items-center gap-3">
             <a aria-label="X" href={env.TWITTER_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 link">

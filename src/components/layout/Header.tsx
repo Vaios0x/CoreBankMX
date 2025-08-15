@@ -37,22 +37,22 @@ export function Header() {
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 py-2 sm:py-3"
+          className="mx-auto flex max-w-7xl items-center justify-between px-2 sm:px-4 py-1.5 sm:py-3"
         >
           {/* Left side - Logo and menu */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <motion.button
               whileTap={{ scale: 0.97 }}
               whileHover={{ scale: 1.03 }}
-              className="btn-ghost p-1.5 sm:p-2 motion-press"
+              className="btn-ghost p-1 sm:p-2 motion-press"
               aria-label={t('header.toggle_sidebar') as string}
               onClick={toggleSidebar}
             >
-              <span aria-hidden className="text-sm sm:text-base">☰</span>
+              <span aria-hidden className="text-xs sm:text-base">☰</span>
             </motion.button>
-            <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-1.5 sm:gap-2">
-              <span className="inline-block h-5 w-5 sm:h-6 sm:w-6 rounded bg-brand-500" aria-hidden />
-              <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm sm:text-base">
+            <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-1 sm:gap-2">
+              <span className="inline-block h-4 w-4 sm:h-6 sm:w-6 rounded bg-brand-500" aria-hidden />
+              <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs sm:text-base">
                 Banobs
               </Link>
             </motion.div>
@@ -73,7 +73,7 @@ export function Header() {
                   else root.classList.remove('dark')
                 } catch {}
               }}
-              className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
+              className="btn-outline px-1 py-0.5 sm:px-2 sm:py-1 text-xs motion-press"
               aria-label={t('header.toggle_theme') as string}
             >
               {theme === 'dark' ? '☾' : '☀︎'}
@@ -91,7 +91,7 @@ export function Header() {
                 url.searchParams.set('lang', next)
                 window.history.replaceState({}, '', url)
               }}
-              className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
+              className="btn-outline px-1 py-0.5 sm:px-2 sm:py-1 text-xs motion-press"
               aria-label={t('header.toggle_language') as string}
             >
               {language === 'en' ? 'ES' : 'EN'}

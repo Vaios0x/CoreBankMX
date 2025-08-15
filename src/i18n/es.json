@@ -230,7 +230,13 @@
   "admin": {
     "title": "Admin",
     "subtitle": "Parámetros de mercado solo lectura",
-    "market_params": "Parámetros de mercado (solo lectura)"
+    "market_params": "Parámetros de mercado (solo lectura)",
+    "parameter": "Parámetro",
+    "value": "Valor",
+    "info_title": "Acerca del Panel Admin",
+    "info_readonly": "Esta es una vista de solo lectura de parámetros del protocolo",
+    "info_parameters": "Los parámetros son controlados por governance y multisig",
+    "info_governance": "Los cambios requieren votación comunitaria y timelock"
   },
   "common": {
     "loading": "Cargando…",

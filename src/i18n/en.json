@@ -230,7 +230,13 @@
   "admin": {
     "title": "Admin",
     "subtitle": "Read-only market parameters",
-    "market_params": "Market parameters (read-only)"
+    "market_params": "Market parameters (read-only)",
+    "parameter": "Parameter",
+    "value": "Value",
+    "info_title": "About Admin Panel",
+    "info_readonly": "This is a read-only view of protocol parameters",
+    "info_parameters": "Parameters are controlled by governance and multisig",
+    "info_governance": "Changes require community voting and timelock"
   },
   "common": {
     "loading": "Loading…",

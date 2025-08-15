@@ -53,7 +53,7 @@ export function Header() {
             <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-1 sm:gap-2">
               <Link to="/" className="flex items-center gap-2 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <img src="/src/assets/Logo2.svg" alt="Banobs Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
-                <span className="font-semibold tracking-tight text-xs sm:text-base">
+                <span className="hidden sm:block font-semibold tracking-tight text-xs sm:text-base">
                   Banobs
                 </span>
               </Link>
@@ -105,12 +105,6 @@ export function Header() {
               <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>
                 {networkLabel}
               </span>
-              {isConnected && (
-                <span className="hidden items-center lg:inline-flex">
-                  <span className="mx-1 text-ui-muted">·</span>
-                  <AddressTag address={address} />
-                </span>
-              )}
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 disabled={isPending}

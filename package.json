@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "generate:abis": "node scripts/generate-abis.js",
+    "postinstall": "pnpm run generate:abis"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

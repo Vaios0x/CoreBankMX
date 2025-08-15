@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import '@rainbow-me/rainbowkit/styles.css'
 import type { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
@@ -8,10 +8,28 @@ import { useUiStore } from '../state/useUiStore'
 import { useEffect } from 'react'
 import { env } from '../lib/env'
 import { initTelemetry } from '../lib/telemetry'
+import { queryClient, setupGlobalCache } from '../lib/cache'
+import { OptimisticUpdatesIndicator } from '../lib/optimistic'
+import { blockchainEventManager } from '../lib/blockchain/eventListeners'
+import { transactionQueueManager } from '../lib/blockchain/transactionQueue'
 
-const queryClient = new QueryClient()
+// Configurar cache global
+setupGlobalCache()
 
-// Web3Modal eliminado en favor de RainbowKit
+// Inicializar sistemas blockchain
+if (typeof window !== 'undefined') {
+  // Iniciar event listeners
+  blockchainEventManager.start()
+  
+  // Iniciar transaction queue
+  transactionQueueManager.start()
+  
+  // Limpiar al cerrar la página
+  window.addEventListener('beforeunload', () => {
+    blockchainEventManager.stop()
+    transactionQueueManager.stop()
+  })
+}
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const { theme } = useUiStore()
@@ -30,6 +48,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={rkTheme}>
           {children}
+          <OptimisticUpdatesIndicator />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

@@ -11,6 +11,9 @@ import { onrampRoutes } from './routes/onramp'
 import { oracleRoutes } from './routes/oracle'
 import { interestRoutes } from './routes/interest'
 import { positionsRoutes } from './routes/positions'
+import { remittancesRoutes } from './routes/remittances'
+import { offrampRoutes } from './routes/offramp'
+import { userRoutes } from './routes/user'
 
 async function main() {
   const app = Fastify({ logger })
@@ -21,6 +24,9 @@ async function main() {
   await app.register(onrampRoutes)
   await app.register(oracleRoutes)
   await app.register(interestRoutes)
+  await app.register(remittancesRoutes)
+  await app.register(offrampRoutes)
+  await app.register(userRoutes)
   // Ad-hoc accrue cron si está activado
   if (process.env.ACCRUE_CRON_SEC) {
     const every = Number(process.env.ACCRUE_CRON_SEC)

@@ -11,7 +11,10 @@ const links = [
   { to: '/repay', key: 'nav.repay', icon: '💳' },
   { to: '/positions', key: 'nav.positions', icon: '📋' },
   { to: '/liquidity', key: 'nav.liquidity', icon: '💧' },
-  { to: '/admin', key: 'nav.admin', icon: '⚙️' },
+  { to: '/remittances', key: 'nav.remittances', icon: '💸' },
+  { to: '/offramp', key: 'nav.offramp', icon: '🏦' },
+  { to: '/settings', key: 'nav.settings', icon: '⚙️' },
+  { to: '/admin', key: 'nav.admin', icon: '🔧' },
 ]
 
 export function SidebarNav() {

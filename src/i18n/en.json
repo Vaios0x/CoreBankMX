@@ -7,6 +7,9 @@
     "repay": "Repay",
     "positions": "Positions",
     "liquidity": "Liquidity",
+    "remittances": "Remittances",
+    "offramp": "Off-Ramp",
+    "settings": "Settings",
     "admin": "Admin",
     "close_sidebar": "Close sidebar",
     "mobile_footer": "Banobs - Obsidiana Digital Banking"
@@ -255,12 +258,225 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saving": "Saving…",
     "edit": "Edit",
     "delete": "Delete",
     "close": "Close",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "processing": "Processing…"
+  },
+  "remittances": {
+    "title": "Remittances",
+    "subtitle": "Send money to Mexico with the lowest fees in the market",
+    "new": {
+      "title": "New Remittance"
+    },
+    "form": {
+      "amount": "Amount",
+      "currency": "Currency",
+      "recipientName": "Recipient Name",
+      "recipientNamePlaceholder": "Enter recipient's full name",
+      "recipientPhone": "Recipient Phone",
+      "recipientBank": "Bank Name",
+      "recipientBankPlaceholder": "Enter bank name",
+      "recipientAccount": "Account Number",
+      "recipientAccountPlaceholder": "Enter account number",
+      "deliveryMethod": "Delivery Method",
+      "deliveryBank": "Bank Transfer",
+      "deliveryCash": "Cash Pickup",
+      "deliveryMobile": "Mobile Money",
+      "notes": "Notes",
+      "notesPlaceholder": "Optional notes for the recipient",
+      "getQuote": "Get Quote"
+    },
+    "quote": {
+      "title": "Quote Summary",
+      "amount": "Amount",
+      "fee": "Fee",
+      "exchangeRate": "Exchange Rate",
+      "totalCost": "Total Cost",
+      "recipient": "Recipient Information",
+      "delivery": "Delivery Information",
+      "estimatedDelivery": "Estimated Delivery",
+      "confirm": "Confirm Remittance"
+    },
+    "history": {
+      "title": "Remittance History",
+      "empty": "No remittances yet",
+      "recipient": "Recipient",
+      "phone": "Phone",
+      "fee": "Fee",
+      "created": "Created"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "insufficientBalance": "Insufficient USDT balance for this transaction"
+  },
+  "offramp": {
+    "title": "Off-Ramp to MXN",
+    "subtitle": "Convert your crypto to Mexican Pesos with the best rates",
+    "liveRates": "Live Exchange Rates",
+    "fee": "Fee",
+    "delivery": "Delivery Time",
+    "businessDays": "business days",
+    "new": {
+      "title": "New Off-Ramp"
+    },
+    "form": {
+      "cryptoAmount": "Crypto Amount",
+      "cryptoCurrency": "Crypto Currency",
+      "balance": "Available Balance",
+      "bankName": "Bank Name",
+      "bankNamePlaceholder": "Enter your bank name",
+      "accountHolder": "Account Holder",
+      "accountHolderPlaceholder": "Enter account holder name",
+      "bankAccount": "Account Number",
+      "bankAccountPlaceholder": "Enter your account number",
+      "deliveryMethod": "Delivery Method",
+      "deliveryBank": "Bank Transfer",
+      "deliveryCash": "Cash Pickup",
+      "deliveryMobile": "Mobile Money",
+      "notes": "Notes",
+      "notesPlaceholder": "Optional notes for this transaction",
+      "getQuote": "Get Quote"
+    },
+    "quote": {
+      "title": "Quote Summary",
+      "cryptoAmount": "Crypto Amount",
+      "exchangeRate": "Exchange Rate",
+      "fee": "Fee",
+      "fiatAmount": "Fiat Amount",
+      "bankInfo": "Bank Information",
+      "provider": "Provider",
+      "estimatedDelivery": "Estimated Delivery",
+      "confirm": "Confirm Off-Ramp"
+    },
+    "history": {
+      "title": "Off-Ramp History",
+      "empty": "No off-ramp transactions yet",
+      "fiatAmount": "Fiat Amount",
+      "exchangeRate": "Exchange Rate",
+      "fee": "Fee",
+      "reference": "Reference",
+      "created": "Created"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "insufficientBalance": "Insufficient crypto balance for this transaction"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and security settings",
+    "saved": "Settings saved successfully",
+    "saveError": "Error saving settings",
+    "tabs": {
+      "profile": "Profile",
+      "preferences": "Preferences",
+      "security": "Security",
+      "trading": "Trading",
+      "notifications": "Notifications",
+      "advanced": "Advanced"
+    },
+    "profile": {
+      "title": "User Profile",
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "country": "Country",
+      "timezone": "Timezone"
+    },
+    "kyc": {
+      "title": "KYC Verification",
+      "description": "Complete KYC to unlock higher limits and additional features",
+      "verify": "Verify KYC",
+      "verified": "Verified",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "notStarted": "Not Started"
+    },
+    "preferences": {
+      "title": "General Preferences",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeSystem": "System",
+      "language": "Language",
+      "currency": "Currency",
+      "autoRefresh": "Auto Refresh",
+      "autoRefreshDesc": "Automatically refresh data every 30 seconds",
+      "gasPreferences": "Gas Preferences",
+      "gasFast": "Fast (Gwei)",
+      "gasStandard": "Standard (Gwei)",
+      "gasSlow": "Slow (Gwei)"
+    },
+    "security": {
+      "title": "Security Settings",
+      "2fa": "Two-Factor Authentication",
+      "2faDesc": "Add an extra layer of security to your account",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enable": "Enable 2FA",
+      "sessionTimeout": "Session Timeout",
+      "sessionTimeoutDesc": "Automatically log out after inactivity",
+      "minutes": "minutes",
+      "hour": "hour",
+      "hours": "hours",
+      "maxLoginAttempts": "Max Login Attempts",
+      "maxLoginAttemptsDesc": "Number of failed attempts before account lockout"
+    },
+    "trading": {
+      "title": "Trading Preferences",
+      "defaultSlippage": "Default Slippage (%)",
+      "defaultSlippageDesc": "Maximum price impact for trades",
+      "preferredGasSpeed": "Preferred Gas Speed",
+      "gasSlow": "Slow",
+      "gasStandard": "Standard",
+      "gasFast": "Fast",
+      "maxAutoApproveAmount": "Max Auto-Approve Amount (USD)",
+      "maxAutoApproveAmountDesc": "Maximum amount for automatic token approvals",
+      "autoApprove": "Auto-Approve Tokens",
+      "autoApproveDesc": "Automatically approve tokens for trading",
+      "confirmTransactions": "Confirm Transactions",
+      "confirmTransactionsDesc": "Show confirmation dialog before transactions",
+      "showAdvancedOptions": "Show Advanced Options",
+      "showAdvancedOptionsDesc": "Display advanced trading options"
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "priceAlerts": "Price Alerts",
+      "priceAlertsDesc": "Get notified when prices change significantly",
+      "liquidationWarnings": "Liquidation Warnings",
+      "liquidationWarningsDesc": "Receive warnings when positions are at risk",
+      "transactionConfirmations": "Transaction Confirmations",
+      "transactionConfirmationsDesc": "Get notified when transactions are confirmed",
+      "marketUpdates": "Market Updates",
+      "marketUpdatesDesc": "Receive market news and updates",
+      "securityAlerts": "Security Alerts",
+      "securityAlertsDesc": "Get notified of security events",
+      "promotionalEmails": "Promotional Emails",
+      "promotionalEmailsDesc": "Receive promotional content and offers"
+    },
+    "advanced": {
+      "title": "Advanced Settings",
+      "dangerZone": "Danger Zone",
+      "clearCache": "Clear Cache",
+      "resetSettings": "Reset Settings",
+      "exportData": "Export Data",
+      "exportSettings": "Export Settings"
+    }
   }
 }
 

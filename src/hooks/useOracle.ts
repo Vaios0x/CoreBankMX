@@ -4,6 +4,8 @@ import { CONTRACTS } from '../lib/contracts'
 import { createPublicClient, http } from 'viem'
 import OracleRouterAbi from '../abi/OracleRouter.json'
 import { coreMainnet, coreTestnet } from '../lib/chains'
+import { CACHE_KEYS, CACHE_CONFIGS, SmartCache } from '../lib/cache'
+import { persistentActions } from '../state/usePersistentStore'
 
 async function fetchOraclePriceFromApi(symbol: string): Promise<number> {
   try {
@@ -36,14 +38,36 @@ async function fetchOraclePriceOnchain(): Promise<number> {
 }
 
 export function useOracle(symbol: string = 'BTC') {
+  const config = CACHE_CONFIGS.PRICE
+  
   const q = useQuery({
-    queryKey: ['oracle', env.USE_ONCHAIN_ORACLE ? 'onchain' : 'api', symbol],
-    queryFn: () => (env.USE_ONCHAIN_ORACLE ? fetchOraclePriceOnchain() : fetchOraclePriceFromApi(symbol)),
+    queryKey: CACHE_KEYS.ORACLE_PRICE(symbol),
+    queryFn: async () => {
+      const price = env.USE_ONCHAIN_ORACLE ? 
+        await fetchOraclePriceOnchain() : 
+        await fetchOraclePriceFromApi(symbol)
+      
+      // Actualizar cache persistente
+      persistentActions.updatePriceCache(symbol, price, env.USE_ONCHAIN_ORACLE ? 'onchain' : 'api')
+      
+      return price
+    },
+    staleTime: config.staleTime,
+    gcTime: config.gcTime,
+    retry: config.retry,
     refetchInterval: 30_000,
+    refetchIntervalInBackground: config.background,
+    placeholderData: () => {
+      // Usar datos del cache persistente como fallback
+      const cachedData = SmartCache.getData(CACHE_KEYS.ORACLE_PRICE(symbol))
+      return typeof cachedData === 'number' ? cachedData : undefined
+    }
   })
+  
   const updatedAt = q.dataUpdatedAt
   const stale = Date.now() - updatedAt > 120_000
   const source = env.USE_ONCHAIN_ORACLE ? 'on-chain' : 'api'
+  
   return { ...q, stale, updatedAt, source }
 }
 

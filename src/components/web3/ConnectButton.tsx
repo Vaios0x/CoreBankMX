@@ -19,22 +19,15 @@ export function ConnectButton() {
           showBalance={false} 
         />
       </div>
-      {isConnected ? (
-        <>
-          <span className="hidden text-xs sm:text-sm text-gray-400 sm:inline" aria-label="Connected address">
-            {address?.slice(0, 6)}…{address?.slice(-4)}
-          </span>
-          {wrongNetwork && (
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              className="btn-primary text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 w-full sm:w-auto"
-              onClick={() => switchChain({ chainId: coreMainnet.id })}
-            >
-              Switch to Core
-            </motion.button>
-          )}
-        </>
-      ) : null}
+      {isConnected && wrongNetwork && (
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          className="btn-primary text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 w-full sm:w-auto"
+          onClick={() => switchChain({ chainId: coreMainnet.id })}
+        >
+          Switch to Core
+        </motion.button>
+      )}
     </div>
   )
 }

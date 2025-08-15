@@ -7,6 +7,9 @@
     "repay": "Repagar",
     "positions": "Posiciones",
     "liquidity": "Liquidez",
+    "remittances": "Remesas",
+    "offramp": "Off-Ramp",
+    "settings": "Configuración",
     "admin": "Admin",
     "close_sidebar": "Cerrar barra lateral",
     "mobile_footer": "Banobs - Obsidiana Digital Banking"
@@ -255,12 +258,225 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "save": "Guardar",
+    "saving": "Guardando…",
     "edit": "Editar",
     "delete": "Eliminar",
     "close": "Cerrar",
     "back": "Atrás",
     "next": "Siguiente",
-    "previous": "Anterior"
+    "previous": "Anterior",
+    "processing": "Procesando…"
+  },
+  "remittances": {
+    "title": "Remesas",
+    "subtitle": "Envía dinero a México con las tarifas más bajas del mercado",
+    "new": {
+      "title": "Nueva Remesa"
+    },
+    "form": {
+      "amount": "Monto",
+      "currency": "Moneda",
+      "recipientName": "Nombre del Destinatario",
+      "recipientNamePlaceholder": "Ingresa el nombre completo del destinatario",
+      "recipientPhone": "Teléfono del Destinatario",
+      "recipientBank": "Nombre del Banco",
+      "recipientBankPlaceholder": "Ingresa el nombre del banco",
+      "recipientAccount": "Número de Cuenta",
+      "recipientAccountPlaceholder": "Ingresa el número de cuenta",
+      "deliveryMethod": "Método de Entrega",
+      "deliveryBank": "Transferencia Bancaria",
+      "deliveryCash": "Recogida en Efectivo",
+      "deliveryMobile": "Dinero Móvil",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas opcionales para el destinatario",
+      "getQuote": "Obtener Cotización"
+    },
+    "quote": {
+      "title": "Resumen de Cotización",
+      "amount": "Monto",
+      "fee": "Comisión",
+      "exchangeRate": "Tipo de Cambio",
+      "totalCost": "Costo Total",
+      "recipient": "Información del Destinatario",
+      "delivery": "Información de Entrega",
+      "estimatedDelivery": "Entrega Estimada",
+      "confirm": "Confirmar Remesa"
+    },
+    "history": {
+      "title": "Historial de Remesas",
+      "empty": "Aún no hay remesas",
+      "recipient": "Destinatario",
+      "phone": "Teléfono",
+      "fee": "Comisión",
+      "created": "Creado"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "processing": "Procesando",
+      "completed": "Completado",
+      "failed": "Fallido"
+    },
+    "insufficientBalance": "Saldo insuficiente de USDT para esta transacción"
+  },
+  "offramp": {
+    "title": "Off-Ramp a MXN",
+    "subtitle": "Convierte tu crypto a Pesos Mexicanos con las mejores tasas",
+    "liveRates": "Tasas de Cambio en Tiempo Real",
+    "fee": "Comisión",
+    "delivery": "Tiempo de Entrega",
+    "businessDays": "días hábiles",
+    "new": {
+      "title": "Nuevo Off-Ramp"
+    },
+    "form": {
+      "cryptoAmount": "Monto de Crypto",
+      "cryptoCurrency": "Moneda Crypto",
+      "balance": "Saldo Disponible",
+      "bankName": "Nombre del Banco",
+      "bankNamePlaceholder": "Ingresa el nombre de tu banco",
+      "accountHolder": "Titular de la Cuenta",
+      "accountHolderPlaceholder": "Ingresa el nombre del titular",
+      "bankAccount": "Número de Cuenta",
+      "bankAccountPlaceholder": "Ingresa tu número de cuenta",
+      "deliveryMethod": "Método de Entrega",
+      "deliveryBank": "Transferencia Bancaria",
+      "deliveryCash": "Recogida en Efectivo",
+      "deliveryMobile": "Dinero Móvil",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas opcionales para esta transacción",
+      "getQuote": "Obtener Cotización"
+    },
+    "quote": {
+      "title": "Resumen de Cotización",
+      "cryptoAmount": "Monto de Crypto",
+      "exchangeRate": "Tipo de Cambio",
+      "fee": "Comisión",
+      "fiatAmount": "Monto en Fiat",
+      "bankInfo": "Información Bancaria",
+      "provider": "Proveedor",
+      "estimatedDelivery": "Entrega Estimada",
+      "confirm": "Confirmar Off-Ramp"
+    },
+    "history": {
+      "title": "Historial de Off-Ramp",
+      "empty": "Aún no hay transacciones de off-ramp",
+      "fiatAmount": "Monto en Fiat",
+      "exchangeRate": "Tipo de Cambio",
+      "fee": "Comisión",
+      "reference": "Referencia",
+      "created": "Creado"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "processing": "Procesando",
+      "completed": "Completado",
+      "failed": "Fallido"
+    },
+    "insufficientBalance": "Saldo insuficiente de crypto para esta transacción"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona las preferencias de tu cuenta y configuraciones de seguridad",
+    "saved": "Configuración guardada exitosamente",
+    "saveError": "Error al guardar la configuración",
+    "tabs": {
+      "profile": "Perfil",
+      "preferences": "Preferencias",
+      "security": "Seguridad",
+      "trading": "Trading",
+      "notifications": "Notificaciones",
+      "advanced": "Avanzado"
+    },
+    "profile": {
+      "title": "Perfil de Usuario",
+      "name": "Nombre Completo",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "phone": "Número de Teléfono",
+      "phonePlaceholder": "Ingresa tu número de teléfono",
+      "country": "País",
+      "timezone": "Zona Horaria"
+    },
+    "kyc": {
+      "title": "Verificación KYC",
+      "description": "Completa KYC para desbloquear límites más altos y funciones adicionales",
+      "verify": "Verificar KYC",
+      "verified": "Verificado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "notStarted": "No Iniciado"
+    },
+    "preferences": {
+      "title": "Preferencias Generales",
+      "theme": "Tema",
+      "themeLight": "Claro",
+      "themeDark": "Oscuro",
+      "themeSystem": "Sistema",
+      "language": "Idioma",
+      "currency": "Moneda",
+      "autoRefresh": "Actualización Automática",
+      "autoRefreshDesc": "Actualizar datos automáticamente cada 30 segundos",
+      "gasPreferences": "Preferencias de Gas",
+      "gasFast": "Rápido (Gwei)",
+      "gasStandard": "Estándar (Gwei)",
+      "gasSlow": "Lento (Gwei)"
+    },
+    "security": {
+      "title": "Configuraciones de Seguridad",
+      "2fa": "Autenticación de Dos Factores",
+      "2faDesc": "Agrega una capa extra de seguridad a tu cuenta",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "enable": "Habilitar 2FA",
+      "sessionTimeout": "Tiempo de Sesión",
+      "sessionTimeoutDesc": "Cerrar sesión automáticamente después de inactividad",
+      "minutes": "minutos",
+      "hour": "hora",
+      "hours": "horas",
+      "maxLoginAttempts": "Intentos Máximos de Login",
+      "maxLoginAttemptsDesc": "Número de intentos fallidos antes del bloqueo de cuenta"
+    },
+    "trading": {
+      "title": "Preferencias de Trading",
+      "defaultSlippage": "Slippage Predeterminado (%)",
+      "defaultSlippageDesc": "Impacto máximo de precio para trades",
+      "preferredGasSpeed": "Velocidad de Gas Preferida",
+      "gasSlow": "Lento",
+      "gasStandard": "Estándar",
+      "gasFast": "Rápido",
+      "maxAutoApproveAmount": "Monto Máximo de Auto-Aprobación (USD)",
+      "maxAutoApproveAmountDesc": "Monto máximo para aprobaciones automáticas de tokens",
+      "autoApprove": "Auto-Aprobar Tokens",
+      "autoApproveDesc": "Aprobar tokens automáticamente para trading",
+      "confirmTransactions": "Confirmar Transacciones",
+      "confirmTransactionsDesc": "Mostrar diálogo de confirmación antes de transacciones",
+      "showAdvancedOptions": "Mostrar Opciones Avanzadas",
+      "showAdvancedOptionsDesc": "Mostrar opciones avanzadas de trading"
+    },
+    "notifications": {
+      "title": "Configuraciones de Notificaciones",
+      "priceAlerts": "Alertas de Precio",
+      "priceAlertsDesc": "Recibir notificaciones cuando los precios cambien significativamente",
+      "liquidationWarnings": "Advertencias de Liquidación",
+      "liquidationWarningsDesc": "Recibir advertencias cuando las posiciones estén en riesgo",
+      "transactionConfirmations": "Confirmaciones de Transacción",
+      "transactionConfirmationsDesc": "Recibir notificaciones cuando las transacciones se confirmen",
+      "marketUpdates": "Actualizaciones de Mercado",
+      "marketUpdatesDesc": "Recibir noticias y actualizaciones del mercado",
+      "securityAlerts": "Alertas de Seguridad",
+      "securityAlertsDesc": "Recibir notificaciones de eventos de seguridad",
+      "promotionalEmails": "Correos Promocionales",
+      "promotionalEmailsDesc": "Recibir contenido promocional y ofertas"
+    },
+    "advanced": {
+      "title": "Configuraciones Avanzadas",
+      "dangerZone": "Zona de Peligro",
+      "clearCache": "Limpiar Caché",
+      "resetSettings": "Restablecer Configuración",
+      "exportData": "Exportar Datos",
+      "exportSettings": "Exportar Configuración"
+    }
   }
 }
 

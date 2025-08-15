@@ -14,4 +14,16 @@ export function useI18n() {
   }
 }
 
+export function useTranslation() {
+  const { language } = useUiStore()
+  return {
+    t: (path: string): string | string[] => {
+      const parts = path.split('.')
+      let cur: any = dict[language]
+      for (const p of parts) cur = cur?.[p]
+      return cur ?? path
+    }
+  }
+}
+
 

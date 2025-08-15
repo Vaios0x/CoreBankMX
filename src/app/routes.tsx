@@ -6,6 +6,9 @@ import Borrow from '../pages/Borrow'
 import Repay from '../pages/Repay'
 import Positions from '../pages/Positions'
 import Liquidity from '../pages/Liquidity'
+import { Remittances } from '../pages/Remittances'
+import { OffRamp } from '../pages/OffRamp'
+import { Settings } from '../pages/Settings'
 import Admin from '../pages/Admin'
 import Docs from '../pages/Docs'
 import DocsProtocol from '../pages/DocsProtocol'
@@ -38,6 +41,9 @@ function AnimatedRoutes() {
         <Route path="/repay" element={<Page><Repay /></Page>} />
         <Route path="/positions" element={<Page><Positions /></Page>} />
         <Route path="/liquidity" element={<Page><Liquidity /></Page>} />
+        <Route path="/remittances" element={<Page><Remittances /></Page>} />
+        <Route path="/offramp" element={<Page><OffRamp /></Page>} />
+        <Route path="/settings" element={<Page><Settings /></Page>} />
         <Route path="/admin" element={<Page><Admin /></Page>} />
         <Route path="/docs" element={<Page><Docs /></Page>} />
         <Route path="/docs/protocol" element={<Page><DocsProtocol /></Page>} />

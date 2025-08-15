@@ -59,6 +59,8 @@
     ]
   },
   "borrow": {
+    "subtitle": "Deposita colateral BTC y pide préstamo USDT",
+    "summary_title": "Resumen de Posición",
     "collateral_label": "Colateral (BTC)",
     "collateral_tip": "Monto de BTC a bloquear como colateral",
     "borrow_label": "Préstamo (USDT)",

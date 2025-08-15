@@ -50,6 +50,7 @@ export default function Borrow() {
   const { approveCollateral, borrow: borrowTx, deposit } = useTx()
   const feeUsd = useMemo(() => (typeof feeEst.data?.fee === 'number' ? feeEst.data.fee : (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0)), [borrow, originationFeeBps, feeEst.data])
   const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : (typeof feeEst.data?.minBorrow === 'number' ? borrow < feeEst.data.minBorrow : false)), [borrow, minBorrowAmount, feeEst.data])
+  
   const onSubmit = async (_data: FormValues) => {
     try {
       // flujo real: approve -> deposit -> borrow
@@ -95,9 +96,15 @@ export default function Borrow() {
   }, [collateral, borrow, setSearchParams])
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-4" aria-label="Borrow form">
-      <h1 className="text-xl font-semibold">{t('nav.borrow') as string}</h1>
-      <div>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-4 sm:space-y-6 p-4 sm:p-0" aria-label="Borrow form">
+      {/* Header */}
+      <div className="text-center sm:text-left">
+        <h1 className="text-xl sm:text-2xl font-semibold">{t('nav.borrow') as string}</h1>
+        <p className="text-sm text-ui-muted mt-1">{t('borrow.subtitle') as string}</p>
+      </div>
+
+      {/* Collateral Input */}
+      <div className="space-y-2">
         <Input
           name="collateralAmount"
           label={t('borrow.collateral_label') as string}
@@ -109,7 +116,9 @@ export default function Borrow() {
           tooltip={t('borrow.collateral_tip') as string}
         />
       </div>
-      <div>
+
+      {/* Borrow Input with Slider */}
+      <div className="space-y-3 sm:space-y-4">
         <Input
           name="borrowAmount"
           label={t('borrow.borrow_label') as string}
@@ -120,117 +129,161 @@ export default function Borrow() {
           error={errors.borrowAmount ? (t('borrow.error_amount') as string) : undefined}
           tooltip={t('borrow.borrow_tip') as string}
         />
-        <div className="mt-3">
+        <div className="px-2 sm:px-0">
           <Slider
             value={borrow || 0}
             onChange={(v) => setValue('borrowAmount', Number(v || 0), { shouldValidate: true, shouldDirty: true })}
             min={0}
             max={maxBorrowAtTarget || 0}
             step={Math.max(1, Math.round((maxBorrowAtTarget || 0) / 100))}
-            label={`${t('borrow.suggested_ltv_prefix') as string} ${(targetLtv * 100).toFixed(0)}%)`}
+            label={`${t('borrow.suggested_ltv_prefix') as string} ${(targetLtv * 100).toFixed(0)}%`}
             marks={[0, maxBorrowAtTarget * 0.25, maxBorrowAtTarget * 0.5, maxBorrowAtTarget * 0.75, maxBorrowAtTarget]}
             format={(v) => formatUSD(Number.isFinite(v) ? v : 0)}
           />
         </div>
       </div>
-      <div className="card-muted text-sm text-gray-300">
-        <div>{t('borrow.collateral_usd') as string}: {formatUSD(collateralUsd || 0)}</div>
-        <div>{t('borrow.ltv_label') as string}: {(health.ltv * 100).toFixed(2)}%</div>
-        <div>
-          {t('borrow.health_label') as string}: <span className={health.status === 'danger' ? 'text-red-400' : health.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}>{health.hf.toFixed(2)}</span>
+
+      {/* Summary Card */}
+      <div className="card-muted p-4 sm:p-5 space-y-3 sm:space-y-4">
+        <h3 className="text-sm font-medium text-ui-muted">{t('borrow.summary_title') as string}</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('borrow.collateral_usd') as string}:</span>
+            <span className="font-medium">{formatUSD(collateralUsd || 0)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('borrow.ltv_label') as string}:</span>
+            <span className="font-medium">{(health.ltv * 100).toFixed(2)}%</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('borrow.health_label') as string}:</span>
+            <span className={`font-medium ${health.status === 'danger' ? 'text-red-400' : health.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`}>
+              {health.hf.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-ui-muted">Fee:</span>
+            <span className="font-medium">
+              {feeEst.data?.bps ?? originationFeeBps ?? 0} bps (~{formatUSD(feeUsd)})
+              {feeEst.data?.pro ? <span className="ml-1 rounded bg-green-900/40 px-1 py-0.5 text-green-300 text-xs">Pro</span> : null}
+            </span>
+          </div>
         </div>
-        <div className="mt-2"><HealthBar value={Math.min(2, health.hf) / 2} /></div>
-        <div className="mt-2 text-xs text-gray-400">{t('borrow.liquidation_ltv') as string}: {((useMarketStore.getState().liquidationLtv || 0.8) * 100).toFixed(0)}%</div>
-        <div className="mt-1 text-xs text-gray-400">
-          Fee: {feeEst.data?.bps ?? originationFeeBps ?? 0} bps (~{formatUSD(feeUsd)}) {feeEst.data?.pro ? <span className="ml-1 rounded bg-green-900/40 px-1 py-0.5 text-green-300">Pro</span> : null}
+
+        {/* Health Bar */}
+        <div className="space-y-2">
+          <HealthBar value={Math.min(2, health.hf) / 2} />
+          <div className="text-xs text-ui-muted">
+            {t('borrow.liquidation_ltv') as string}: {((useMarketStore.getState().liquidationLtv || 0.8) * 100).toFixed(0)}%
+          </div>
         </div>
+
+        {/* Alerts */}
         {belowMin && (
-          <Alert variant="warning" className="mt-2 text-xs">Min borrow: {formatUSD(minBorrowAmount || 0)}</Alert>
+          <Alert variant="warning" className="text-xs">
+            Min borrow: {formatUSD(minBorrowAmount || 0)}
+          </Alert>
         )}
         {health.hf < 1.5 && (
-          <Alert variant={health.hf < 1.2 ? 'danger' : 'warning'} className="mt-2 text-xs">
+          <Alert variant={health.hf < 1.2 ? 'danger' : 'warning'} className="text-xs">
             {health.hf < 1.2 ? (t('borrow.error_ltv') as string) : (t('borrow.warning_hf') as string)}
           </Alert>
         )}
-        <div className="mt-2 text-xs">
+
+        {/* Learn More Link */}
+        <div className="text-xs">
           <Link to="/#ltv" className="text-brand-400 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500">
             {t('borrow.learn_ltv') as string}
           </Link>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          className="btn-outline motion-press"
-          aria-label={t('borrow.copy_link') as string}
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(window.location.href)
-              push({ type: 'success', message: t('borrow.link_copied') as string })
-            } catch {}
-          }}
-        >
-          {t('borrow.copy_link') as string}
-        </button>
-        <button
-          type="button"
-          className="btn-outline motion-press"
-          onClick={() => {
-            const url = new URL(window.location.href)
-            url.searchParams.delete('collateral')
-            url.searchParams.delete('borrow')
-            window.history.replaceState({}, '', url)
-            setValue('collateralAmount', 0, { shouldValidate: true })
-            setValue('borrowAmount', 0, { shouldValidate: true })
-          }}
-        >
-          {t('borrow.reset_filters') as string}
-        </button>
-        <button
-          type="button"
-          className="btn-outline motion-press"
-          onClick={async () => {
-            try {
-              push({ type: 'info', message: t('borrow.toast_approving') as string })
-              const hash = await approveCollateral()
-              track('approve_collateral', { from: 'borrow_page' })
-              push({ type: 'success', message: `${t('borrow.toast_approve_sent_base') as string} ${String(hash).slice(0, 10)}…` })
-            } catch (e: any) {
-              push({ type: 'error', message: e?.message ?? (t('borrow.toast_approve_failed') as string) })
-            }
-          }}
-        >
-          {t('borrow.approve_button') as string}
-        </button>
-        <button
-          type="submit"
-          className="btn-primary motion-press"
-          disabled={isBorrowDisabled}
-          onClick={async (e) => {
-            e.preventDefault()
-            try {
-              if (isBorrowDisabled) {
-                push({ type: 'info', message: t('borrow.disabled_reason') as string })
-                return
+
+      {/* Action Buttons */}
+      <div className="space-y-3 sm:space-y-4">
+        {/* Primary Actions */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <button
+            type="submit"
+            className="btn-primary motion-press flex-1 sm:flex-none order-1 sm:order-none"
+            disabled={isBorrowDisabled}
+            onClick={async (e) => {
+              e.preventDefault()
+              try {
+                if (isBorrowDisabled) {
+                  push({ type: 'info', message: t('borrow.disabled_reason') as string })
+                  return
+                }
+                push({ type: 'info', message: t('borrow.toast_borrowing') as string })
+                const hash = await borrowTx(borrow)
+                push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base') as string} ${String(hash).slice(0, 10)}…` })
+              } catch (e: any) {
+                push({ type: 'error', message: e?.message ?? (t('borrow.toast_borrow_failed') as string) })
               }
-              push({ type: 'info', message: t('borrow.toast_borrowing') as string })
-              const hash = await borrowTx(borrow)
-              push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base') as string} ${String(hash).slice(0, 10)}…` })
-            } catch (e: any) {
-              push({ type: 'error', message: e?.message ?? (t('borrow.toast_borrow_failed') as string) })
-            }
-          }}
-        >
-          {t('borrow.borrow_button')}
-        </button>
-        {isBorrowDisabled && (
+            }}
+          >
+            {t('borrow.borrow_button')}
+          </button>
           <button
             type="button"
-            className="text-xs text-gray-400 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500"
-            onClick={() => push({ type: 'info', message: t('borrow.disabled_reason') as string })}
+            className="btn-outline motion-press flex-1 sm:flex-none"
+            onClick={async () => {
+              try {
+                push({ type: 'info', message: t('borrow.toast_approving') as string })
+                const hash = await approveCollateral()
+                track('approve_collateral', { from: 'borrow_page' })
+                push({ type: 'success', message: `${t('borrow.toast_approve_sent_base') as string} ${String(hash).slice(0, 10)}…` })
+              } catch (e: any) {
+                push({ type: 'error', message: e?.message ?? (t('borrow.toast_approve_failed') as string) })
+              }
+            }}
           >
-            {t('borrow.why_disabled')}
+            {t('borrow.approve_button') as string}
           </button>
+        </div>
+
+        {/* Secondary Actions */}
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <button
+            type="button"
+            className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
+            aria-label={t('borrow.copy_link') as string}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(window.location.href)
+                push({ type: 'success', message: t('borrow.link_copied') as string })
+              } catch {}
+            }}
+          >
+            {t('borrow.copy_link') as string}
+          </button>
+          <button
+            type="button"
+            className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
+            onClick={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.delete('collateral')
+              url.searchParams.delete('borrow')
+              window.history.replaceState({}, '', url)
+              setValue('collateralAmount', 0, { shouldValidate: true })
+              setValue('borrowAmount', 0, { shouldValidate: true })
+            }}
+          >
+            {t('borrow.reset_filters') as string}
+          </button>
+        </div>
+
+        {/* Disabled Reason */}
+        {isBorrowDisabled && (
+          <div className="text-center sm:text-left">
+            <button
+              type="button"
+              className="text-xs text-gray-400 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500"
+              onClick={() => push({ type: 'info', message: t('borrow.disabled_reason') as string })}
+            >
+              {t('borrow.why_disabled')}
+            </button>
+          </div>
         )}
       </div>
     </form>

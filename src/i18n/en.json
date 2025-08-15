@@ -59,6 +59,8 @@
     ]
   },
   "borrow": {
+    "subtitle": "Deposit BTC collateral and borrow USDT",
+    "summary_title": "Position Summary",
     "collateral_label": "Collateral (BTC)",
     "collateral_tip": "BTC amount to lock as collateral",
     "borrow_label": "Borrow (USDT)",

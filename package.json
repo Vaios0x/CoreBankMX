@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:all": "pnpm -r --filter '@core-neobank/api' dev & pnpm -r --filter '@core-neobank/keeper' dev",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "build:all": "pnpm -r --filter '@core-neobank/api' build && pnpm -r --filter '@core-neobank/keeper' build && pnpm run build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

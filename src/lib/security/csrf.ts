@@ -375,8 +375,8 @@ export function logCSRFEvent(event: string, details?: any): void {
   console.log(`CSRF Event: ${event}`, details)
   
   // Aquí podrías enviar analytics o logging
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'csrf_event', {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'csrf_event', {
       event_type: event,
       details
     })

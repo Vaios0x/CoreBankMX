@@ -95,7 +95,7 @@ export class SecurityLogger {
     this.trimEvents()
     
     if (this.logToConsole) {
-      this.logToConsole(event)
+      this.logToConsoleMethod(event)
     }
     
     if (this.logToStorage) {
@@ -507,7 +507,7 @@ export class SecurityLogger {
     }
   }
   
-  private logToConsole(event: SecurityEvent): void {
+  private logToConsoleMethod(event: SecurityEvent): void {
     const emoji = {
       info: 'ℹ️',
       warning: '⚠️',

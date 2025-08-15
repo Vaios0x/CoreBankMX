@@ -274,8 +274,8 @@ export function logActionAttempt(action: string, success: boolean = true): void 
     console.warn(`Rate limit exceeded for action: ${action}`)
     
     // Aquí podrías enviar analytics o logging
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'rate_limit_exceeded', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'rate_limit_exceeded', {
         action,
         max_attempts: config.maxAttempts,
         window_ms: config.windowMs
@@ -285,8 +285,8 @@ export function logActionAttempt(action: string, success: boolean = true): void 
   
   if (success && wasAllowed) {
     // Log successful action
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'action_attempt', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'action_attempt', {
         action,
         success: true
       })

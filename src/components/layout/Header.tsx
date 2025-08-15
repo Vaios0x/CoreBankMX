@@ -17,6 +17,7 @@ export function Header() {
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const [isUserMenuOpen, setUserMenuOpen] = useState(false)
+  const [isNetworkMenuOpen, setNetworkMenuOpen] = useState(false)
   const isMainnet = chainId === coreMainnet.id
   const networkLabel = isMainnet ? 'Core Mainnet' : 'Core Testnet'
 
@@ -56,7 +57,7 @@ export function Header() {
         </div>
 
         {/* Right side - Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+        <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-3">
           {/* Theme toggle */}
           <motion.button
             whileTap={{ scale: 0.97 }}
@@ -94,7 +95,7 @@ export function Header() {
             {language === 'en' ? 'ES' : 'EN'}
           </motion.button>
 
-          {/* Network status - Desktop only */}
+          {/* Network status - Desktop */}
           <div className="hidden lg:flex items-center gap-2 rounded-md border border-ui bg-ui-surface px-2 py-1 text-xs text-gray-300">
             <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
             <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>
@@ -124,12 +125,74 @@ export function Header() {
             </motion.button>
           </div>
 
-          {/* Mobile network indicator */}
-          <div className="lg:hidden flex items-center gap-1">
-            <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
-            <span className="text-xs text-gray-300 truncate max-w-[60px]" title={networkLabel}>
-              {isMainnet ? 'Main' : 'Test'}
-            </span>
+          {/* Mobile network dropdown */}
+          <div className="lg:hidden relative">
+            <button
+              type="button"
+              className="btn-outline px-1.5 py-1 text-xs motion-press flex items-center gap-1"
+              aria-haspopup="menu"
+              aria-expanded={isNetworkMenuOpen}
+              onClick={() => setNetworkMenuOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setNetworkMenuOpen(false), 100)}
+            >
+              <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
+              <span className="truncate max-w-[50px]" title={networkLabel}>
+                {isMainnet ? 'Main' : 'Test'}
+              </span>
+              <span className="text-xs">▼</span>
+            </button>
+            {isNetworkMenuOpen && (
+              <div role="menu" className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-ui bg-ui-surface p-1 text-sm shadow-lg">
+                <div className="px-2 py-1 text-xs text-gray-400 border-b border-ui/50 mb-1">
+                  {t('header.network_menu_title') as string}
+                </div>
+                <button
+                  role="menuitem"
+                  className={`btn-ghost w-full justify-start px-2 py-1 text-left text-xs motion-press ${isMainnet ? 'bg-gray-800' : ''}`}
+                  onClick={() => {
+                    if (!isMainnet) {
+                      try { localStorage.setItem('core_neobank_chain_id', String(coreMainnet.id)) } catch {}
+                      const url = new URL(window.location.href)
+                      url.searchParams.set('chain', String(coreMainnet.id))
+                      window.history.replaceState({}, '', url)
+                      switchChain({ chainId: coreMainnet.id })
+                    }
+                    setNetworkMenuOpen(false)
+                  }}
+                >
+                  <span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-2" aria-hidden />
+                  {t('header.to_mainnet') as string}
+                </button>
+                <button
+                  role="menuitem"
+                  className={`btn-ghost w-full justify-start px-2 py-1 text-left text-xs motion-press ${!isMainnet ? 'bg-gray-800' : ''}`}
+                  onClick={() => {
+                    if (isMainnet) {
+                      try { localStorage.setItem('core_neobank_chain_id', String(coreTestnet.id)) } catch {}
+                      const url = new URL(window.location.href)
+                      url.searchParams.set('chain', String(coreTestnet.id))
+                      window.history.replaceState({}, '', url)
+                      switchChain({ chainId: coreTestnet.id })
+                    }
+                    setNetworkMenuOpen(false)
+                  }}
+                >
+                  <span className="inline-block h-2 w-2 rounded-full bg-yellow-400 mr-2" aria-hidden />
+                  {t('header.to_testnet') as string}
+                </button>
+                {isConnected && (
+                  <>
+                    <div className="border-t border-ui/50 my-1" />
+                    <div className="px-2 py-1 text-xs text-gray-400">
+                      {t('header.connected_address') as string}
+                    </div>
+                    <div className="px-2 py-1 text-xs text-gray-300 break-all">
+                      {address}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* User menu compact */}

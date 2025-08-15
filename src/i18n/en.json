@@ -89,6 +89,8 @@
     "reset_filters": "Reset filters"
   },
   "repay": {
+    "subtitle": "Repay debt and withdraw collateral",
+    "summary_title": "Position After Action",
     "repay_label": "Repay (USDT)",
     "repay_tip": "USDT amount to repay",
     "withdraw_label": "Withdraw (BTC)",

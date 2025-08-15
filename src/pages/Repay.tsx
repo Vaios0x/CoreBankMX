@@ -48,6 +48,7 @@ export default function Repay() {
   const afterCollateralUsd = Math.max(currentCollateralUsd - (withdrawAmount * (price ?? 0)), 0)
   const healthAfter = useHealth(afterCollateralUsd, afterDebtUsd)
   const withdrawTooHigh = withdrawAmount > maxWithdrawBtc + 1e-12
+  
   const onSubmit = async (_data: FormValues) => {
     try {
       if (withdrawTooHigh) {
@@ -67,6 +68,7 @@ export default function Repay() {
       push({ type: 'error', message: e?.message ?? (t('repay.failed') as string) })
     }
   }
+  
   // Prefill from URL query once on mount
   useEffect(() => {
     const repay = parseFloat(searchParams.get('repay') || '')
@@ -85,10 +87,17 @@ export default function Repay() {
     else params.delete('withdraw')
     setSearchParams(params, { replace: true })
   }, [repayAmount, withdrawAmount, setSearchParams])
+  
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-4" aria-label="Repay form">
-      <h1 className="text-xl font-semibold">{t('nav.repay') as string}</h1>
-      <div>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-4 sm:space-y-6 p-4 sm:p-0" aria-label="Repay form">
+      {/* Header */}
+      <div className="text-center sm:text-left">
+        <h1 className="text-xl sm:text-2xl font-semibold">{t('nav.repay') as string}</h1>
+        <p className="text-sm text-ui-muted mt-1">{t('repay.subtitle') as string}</p>
+      </div>
+
+      {/* Repay Input Section */}
+      <div className="space-y-3 sm:space-y-4">
         <Input
           name="repayAmount"
           label={t('repay.repay_label') as string}
@@ -99,7 +108,7 @@ export default function Repay() {
           error={errors.repayAmount ? (t('repay.error_amount') as string) : undefined}
           tooltip={t('repay.repay_tip') as string}
         />
-        <div className="mt-3">
+        <div className="px-2 sm:px-0">
           <Slider
             value={repayAmount}
             onChange={(v) => setValue('repayAmount', Number(v || 0), { shouldValidate: true, shouldDirty: true })}
@@ -110,7 +119,9 @@ export default function Repay() {
           />
         </div>
       </div>
-      <div>
+
+      {/* Withdraw Input Section */}
+      <div className="space-y-3 sm:space-y-4">
         <Input
           name="withdrawAmount"
           label={t('repay.withdraw_label') as string}
@@ -122,68 +133,92 @@ export default function Repay() {
           error={withdrawTooHigh ? (t('repay.withdraw_exceeds_max') as string) : undefined}
           suffix="BTC"
         />
-        <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">
-          <span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-gray-400">
+          <span className="flex-1">
             {t('repay.max_withdraw_label') as string}: {Math.max(0, maxWithdrawBtc).toFixed(6)} BTC ({formatUSD(maxWithdrawUsd)})
           </span>
           <button
             type="button"
-            className="btn-outline px-2 py-0.5 text-xs motion-press"
+            className="btn-outline px-2 py-1 text-xs motion-press w-full sm:w-auto"
             onClick={() => setValue('withdrawAmount', Math.max(0, maxWithdrawBtc), { shouldValidate: true, shouldDirty: true })}
           >
             {t('repay.use_max') as string}
           </button>
         </div>
       </div>
-      <div className="card-muted text-sm text-gray-300">
-        <div>{t('repay.after_collateral_usd') as string}: {formatUSD(afterCollateralUsd)}</div>
-        <div>{t('repay.after_ltv') as string}: {(healthAfter.ltv * 100).toFixed(2)}%</div>
-        <div>
-          {t('repay.after_health') as string}: <span className={healthAfter.status === 'danger' ? 'text-red-400' : healthAfter.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}>{healthAfter.hf.toFixed(2)}</span>
+
+      {/* Summary Card */}
+      <div className="card-muted p-4 sm:p-5 space-y-3 sm:space-y-4">
+        <h3 className="text-sm font-medium text-ui-muted">{t('repay.summary_title') as string}</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('repay.after_collateral_usd') as string}:</span>
+            <span className="font-medium">{formatUSD(afterCollateralUsd)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('repay.after_ltv') as string}:</span>
+            <span className="font-medium">{(healthAfter.ltv * 100).toFixed(2)}%</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-ui-muted">{t('repay.after_health') as string}:</span>
+            <span className={`font-medium ${healthAfter.status === 'danger' ? 'text-red-400' : healthAfter.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`}>
+              {healthAfter.hf.toFixed(2)}
+            </span>
+          </div>
         </div>
+
+        {/* Health Warnings */}
         {healthAfter.hf < 1.5 && (
-          <p className={`mt-2 text-xs ${healthAfter.hf < 1.2 ? 'text-red-400' : 'text-yellow-400'}`}>
-            <Badge variant={healthAfter.hf < 1.2 ? 'error' : 'warning'}>
+          <div className="mt-2">
+            <Badge variant={healthAfter.hf < 1.2 ? 'error' : 'warning'} className="text-xs">
               {healthAfter.hf < 1.2 ? (t('repay.after_health_danger') as string) : (t('repay.after_health_warning') as string)}
             </Badge>
-          </p>
+          </div>
         )}
       </div>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="btn-outline motion-press"
-          aria-label={t('repay.copy_link') as string}
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(window.location.href)
-              push({ type: 'success', message: t('repay.link_copied') as string })
-            } catch {}
-          }}
-        >
-          {t('repay.copy_link') as string}
-        </button>
-        <button
-          type="button"
-          className="btn-outline motion-press"
-          onClick={() => {
-            const url = new URL(window.location.href)
-            url.searchParams.delete('repay')
-            url.searchParams.delete('withdraw')
-            window.history.replaceState({}, '', url)
-            setValue('repayAmount', 0, { shouldValidate: true })
-            setValue('withdrawAmount', 0, { shouldValidate: true })
-          }}
-        >
-          {t('repay.reset_filters') as string}
-        </button>
+
+      {/* Action Buttons */}
+      <div className="space-y-3 sm:space-y-4">
+        {/* Primary Action */}
         <button
           type="submit"
-          className="btn-primary motion-press"
+          className="btn-primary motion-press w-full sm:w-auto"
           disabled={withdrawTooHigh}
         >
           {t('repay.repay_button') as string}
         </button>
+
+        {/* Secondary Actions */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <button
+            type="button"
+            className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
+            aria-label={t('repay.copy_link') as string}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(window.location.href)
+                push({ type: 'success', message: t('repay.link_copied') as string })
+              } catch {}
+            }}
+          >
+            {t('repay.copy_link') as string}
+          </button>
+          <button
+            type="button"
+            className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
+            onClick={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.delete('repay')
+              url.searchParams.delete('withdraw')
+              window.history.replaceState({}, '', url)
+              setValue('repayAmount', 0, { shouldValidate: true })
+              setValue('withdrawAmount', 0, { shouldValidate: true })
+            }}
+          >
+            {t('repay.reset_filters') as string}
+          </button>
+        </div>
       </div>
     </form>
   )

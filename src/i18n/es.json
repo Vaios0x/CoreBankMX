@@ -89,6 +89,8 @@
     "reset_filters": "Resetear filtros"
   },
   "repay": {
+    "subtitle": "Repaga deuda y retira colateral",
+    "summary_title": "Posición Después de la Acción",
     "repay_label": "Repago (USDT)",
     "repay_tip": "Monto de USDT a repagar",
     "withdraw_label": "Retiro (BTC)",

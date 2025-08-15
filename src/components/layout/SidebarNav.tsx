@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useI18n } from '../../i18n/i18n'
 import { motion } from 'framer-motion'
 import { useUiStore } from '../../state/useUiStore'
+import { useEffect, useState } from 'react'
 
 const links = [
   { to: '/', key: 'nav.home' },
@@ -16,19 +17,23 @@ const links = [
 export function SidebarNav() {
   const t = useI18n()
   const { isSidebarOpen, setSidebar } = useUiStore()
+  const [isMobile, setIsMobile] = useState(false)
 
-  // Función para cerrar el sidebar en móviles cuando se hace clic en un enlace
-  const handleNavClick = () => {
-    console.log('🔍 handleNavClick called')
-    console.log('📱 window.innerWidth:', window.innerWidth)
-    console.log('🔄 isSidebarOpen:', isSidebarOpen)
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // md breakpoint
+    }
     
-    // Solo cerrar en móviles (pantallas pequeñas)
-    if (window.innerWidth < 768) { // 768px es el breakpoint md de Tailwind
-      console.log('✅ Closing sidebar for mobile...')
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Close sidebar on mobile when clicking a link
+  const handleNavClick = () => {
+    if (isMobile && isSidebarOpen) {
       setSidebar(false)
-    } else {
-      console.log('❌ Not mobile, keeping sidebar open')
     }
   }
 

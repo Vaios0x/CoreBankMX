@@ -28,11 +28,7 @@ export const useUiStore = create<UiState>((set) => ({
       return 'dark'
     }
   })(),
-  setSidebar: (open) => {
-    console.log('🎯 setSidebar called with:', open)
-    set({ isSidebarOpen: open })
-    console.log('🎯 State updated, new isSidebarOpen will be:', open)
-  },
+  setSidebar: (open) => set({ isSidebarOpen: open }),
   toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
   setLanguage: (language) => {
     try {

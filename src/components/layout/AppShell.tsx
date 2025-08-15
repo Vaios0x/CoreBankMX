@@ -13,7 +13,7 @@ import { useChainId, useSwitchChain } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { isSidebarOpen, setLanguage, theme, setSidebar } = useUiStore()
+  const { isSidebarOpen, setLanguage, theme } = useUiStore()
   const maintenance = import.meta.env.VITE_MAINTENANCE_MSG as string | undefined
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
@@ -38,7 +38,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
   // Ensure initial theme class is applied to <html>
   useEffect(() => {
     try {
@@ -47,57 +46,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       else root.classList.remove('dark')
     } catch {}
   }, [theme])
-
-  // Cerrar sidebar cuando se hace clic fuera de él en móviles
-  const handleOverlayClick = () => {
-    if (window.innerWidth < 768) {
-      setSidebar(false)
-    }
-  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 dark:text-gray-100">
       <LegalBanner />
       <Header />
-      <div className="flex container mx-auto relative">
-        {/* Sidebar - Responsive behavior */}
-        <div className="relative">
-          {/* Desktop Sidebar */}
-          <div className="hidden md:block">
-            <SidebarNav />
-          </div>
-          
-          {/* Mobile Sidebar Overlay */}
-          <AnimatePresence>
-            {isSidebarOpen && (
-              <>
-                {/* Overlay */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                  onClick={handleOverlayClick}
-                  aria-hidden="true"
-                />
-                
-                {/* Mobile Sidebar */}
-                <motion.div
-                  initial={{ x: -280 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -280 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="fixed left-0 top-12 h-[calc(100vh-48px)] w-70 border-r border-ui bg-ui-surface p-3 z-50 md:hidden"
-                >
-                  <SidebarNav />
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Main Content */}
+      <div className="flex container mx-auto">
+        <SidebarNav />
         <main className="flex-1 p-2 sm:p-3 lg:p-4" role="main" aria-label="Main content">
           {maintenance && (
             <div className="mx-2 sm:mx-4 mb-2 rounded-md border border-red-800 bg-red-900/30 px-2 sm:px-3 py-1.5 sm:py-2 text-xs text-red-200" role="status">

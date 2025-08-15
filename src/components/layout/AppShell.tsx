@@ -46,15 +46,16 @@ export function AppShell({ children }: { children: ReactNode }) {
       else root.classList.remove('dark')
     } catch {}
   }, [theme])
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 dark:text-gray-100">
       <LegalBanner />
       <Header />
       <div className="flex container mx-auto">
         <SidebarNav />
-        <main className="flex-1 p-4" role="main" aria-label="Main content">
+        <main className="flex-1 p-2 sm:p-3 lg:p-4" role="main" aria-label="Main content">
           {maintenance && (
-            <div className="mx-4 mb-2 rounded-md border border-red-800 bg-red-900/30 px-3 py-2 text-xs text-red-200" role="status">
+            <div className="mx-2 sm:mx-4 mb-2 rounded-md border border-red-800 bg-red-900/30 px-2 sm:px-3 py-1.5 sm:py-2 text-xs text-red-200" role="status">
               {maintenance}
             </div>
           )}

@@ -27,30 +27,37 @@ export function Header() {
     url.searchParams.set('chain', String(chainId))
     window.history.replaceState({}, '', url)
   }, [chainId])
+  
   return (
     <header className="sticky top-0 z-10 border-b border-ui bg-gradient-to-b from-gray-900/80 to-gray-900/60 backdrop-blur">
       <motion.div
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
+        className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 py-2 sm:py-3"
       >
-        <div className="flex items-center gap-3">
+        {/* Left side - Logo and menu */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <motion.button
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.03 }}
-            className="btn-ghost p-2 motion-press"
+            className="btn-ghost p-1.5 sm:p-2 motion-press"
             aria-label={t('header.toggle_sidebar') as string}
             onClick={toggleSidebar}
           >
-            <span aria-hidden>☰</span>
+            <span aria-hidden className="text-sm sm:text-base">☰</span>
           </motion.button>
-          <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-2">
-            <span className="inline-block h-6 w-6 rounded bg-brand-500" aria-hidden />
-            <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500">Banobs</Link>
+          <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-1.5 sm:gap-2">
+            <span className="inline-block h-5 w-5 sm:h-6 sm:w-6 rounded bg-brand-500" aria-hidden />
+            <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm sm:text-base">
+              Banobs
+            </Link>
           </motion.div>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Right side - Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+          {/* Theme toggle */}
           <motion.button
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.03 }}
@@ -63,16 +70,38 @@ export function Header() {
                 else root.classList.remove('dark')
               } catch {}
             }}
-            className="btn-outline px-2 py-1 text-sm motion-press"
+            className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
             aria-label={t('header.toggle_theme') as string}
           >
             {theme === 'dark' ? '☾' : '☀︎'}
           </motion.button>
-          <div className="hidden items-center gap-2 rounded-md border border-ui bg-ui-surface px-2 py-1 text-xs text-gray-300 sm:flex">
+
+          {/* Language toggle */}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.03 }}
+            onClick={() => {
+              const next = language === 'en' ? 'es' : 'en'
+              setLanguage(next)
+              try { localStorage.setItem('core_neobank_language', next) } catch {}
+              const url = new URL(window.location.href)
+              url.searchParams.set('lang', next)
+              window.history.replaceState({}, '', url)
+            }}
+            className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
+            aria-label={t('header.toggle_language') as string}
+          >
+            {language === 'en' ? 'ES' : 'EN'}
+          </motion.button>
+
+          {/* Network status - Desktop only */}
+          <div className="hidden lg:flex items-center gap-2 rounded-md border border-ui bg-ui-surface px-2 py-1 text-xs text-gray-300">
             <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
-            <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>{networkLabel}</span>
+            <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>
+              {networkLabel}
+            </span>
             {isConnected && (
-              <span className="hidden items-center sm:inline-flex">
+              <span className="hidden items-center lg:inline-flex">
                 <span className="mx-1 text-ui-muted">·</span>
                 <AddressTag address={address} />
               </span>
@@ -94,12 +123,21 @@ export function Header() {
               {isMainnet ? (t('header.to_testnet') as string) : (t('header.to_mainnet') as string)}
             </motion.button>
           </div>
+
+          {/* Mobile network indicator */}
+          <div className="lg:hidden flex items-center gap-1">
+            <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
+            <span className="text-xs text-gray-300 truncate max-w-[60px]" title={networkLabel}>
+              {isMainnet ? 'Main' : 'Test'}
+            </span>
+          </div>
+
           {/* User menu compact */}
           {isConnected && (
             <div className="relative">
               <button
                 type="button"
-                className="btn-outline px-2 py-1 text-sm motion-press"
+                className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
                 aria-haspopup="menu"
                 aria-expanded={isUserMenuOpen}
                 onClick={() => setUserMenuOpen((v) => !v)}
@@ -108,7 +146,7 @@ export function Header() {
                 ⋯
               </button>
               {isUserMenuOpen && (
-                <div role="menu" className="absolute right-0 z-50 mt-2 w-44 rounded-md border border-ui bg-ui-surface p-1 text-sm shadow-lg">
+                <div role="menu" className="absolute right-0 z-50 mt-2 w-36 sm:w-44 rounded-md border border-ui bg-ui-surface p-1 text-sm shadow-lg">
                   <button
                     role="menuitem"
                     className="btn-ghost w-full justify-start px-2 py-1 text-left text-xs motion-press"
@@ -127,24 +165,11 @@ export function Header() {
               )}
             </div>
           )}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.03 }}
-            onClick={() => {
-              const next = language === 'en' ? 'es' : 'en'
-              setLanguage(next)
-              try { localStorage.setItem('core_neobank_language', next) } catch {}
-              const url = new URL(window.location.href)
-              url.searchParams.set('lang', next)
-              window.history.replaceState({}, '', url)
-            }}
-            className="btn-outline px-2 py-1 text-sm motion-press"
-            aria-label={t('header.toggle_language') as string}
-          >
-            {language === 'en' ? 'ES' : 'EN'}
-          </motion.button>
+
+          {/* Connect Button */}
           <ConnectButton />
         </div>
+
         {/* Live region for network changes */}
         <span className="sr-only" aria-live="polite" role="status">{networkLabel}</span>
       </motion.div>

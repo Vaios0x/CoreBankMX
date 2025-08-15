@@ -11,17 +11,23 @@ export function ConnectButton() {
   const wrongNetwork = chainId !== coreMainnet.id && chainId !== coreTestnet.id
 
   return (
-    <div className="flex items-center gap-2">
-      <RKConnectButton accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }} showBalance={false} />
+    <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+      <div className="w-full sm:w-auto">
+        <RKConnectButton 
+          accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} 
+          chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }} 
+          showBalance={false} 
+        />
+      </div>
       {isConnected ? (
         <>
-          <span className="hidden text-sm text-gray-400 sm:inline" aria-label="Connected address">
+          <span className="hidden text-xs sm:text-sm text-gray-400 sm:inline" aria-label="Connected address">
             {address?.slice(0, 6)}…{address?.slice(-4)}
           </span>
           {wrongNetwork && (
             <motion.button
               whileTap={{ scale: 0.97 }}
-              className="btn-primary text-xs px-2 py-1"
+              className="btn-primary text-xs px-2 py-1 w-full sm:w-auto"
               onClick={() => switchChain({ chainId: coreMainnet.id })}
             >
               Switch to Core

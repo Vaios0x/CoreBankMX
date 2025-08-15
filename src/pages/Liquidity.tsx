@@ -16,10 +16,10 @@ export default function Liquidity() {
   // Datos de demostración
   const [stakedAmount, setStakedAmount] = useState(1250)
   const [totalStaked, setTotalStaked] = useState(2850000)
-  const [apr, setApr] = useState(12.5)
+  const [apr] = useState(12.5)
   const [rewards, setRewards] = useState(156.25)
   const [stakedHistory, setStakedHistory] = useState<number[]>([])
-  const [apiAvailable, setApiAvailable] = useState(true)
+  const [apiAvailable] = useState(true)
   
   // Simular datos de staking
   useEffect(() => {

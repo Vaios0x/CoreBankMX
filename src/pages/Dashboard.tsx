@@ -10,14 +10,12 @@ import ExplorerLink from '../components/web3/ExplorerLink'
 import { motion } from 'framer-motion'
 
 export default function Dashboard() {
-  const { tvlUsd, baseRate, setParams } = useMarketStore()
+  const { tvlUsd, setParams } = useMarketStore()
   const [symbol, setSymbol] = useState<'BTC' | 'LSTBTC'>('BTC')
   const { data: priceNow, isLoading, stale, refetch } = useOracle(symbol)
   const t = useI18n()
-  const [apiStatus, setApiStatus] = useState<'ok' | 'down' | 'loading'>('loading')
   const [contracts, setContracts] = useState<any>(null)
   const [priceHistory, setPriceHistory] = useState<number[]>([])
-  const [tvlHistory, setTvlHistory] = useState<number[]>([])
   const [metrics, setMetrics] = useState<{ activePositions: number; liquidations24h: number } | null>(null)
   const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
   const [apiAvailable, setApiAvailable] = useState(true)
@@ -79,12 +77,10 @@ export default function Dashboard() {
         const res = await fetch(`${env.API_URL}/status`, { cache: 'no-store' })
         const json = await res.json()
         if (!mounted) return
-        setApiStatus(json?.ok ? 'ok' : 'down')
         setContracts(json?.contracts ?? null)
         setApiAvailable(true)
       } catch {
         if (mounted) {
-          setApiStatus('down')
           setApiAvailable(false)
           setContracts(demoContracts)
         }
@@ -175,12 +171,7 @@ export default function Dashboard() {
     }
   }, [symbol, priceNow])
 
-  // Histórico de TVL (mock)
-  useEffect(() => {
-    const seed = tvlUsd || 2850000
-    const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 4) * 0.02))
-    setTvlHistory(series)
-  }, [tvlUsd])
+  // Histórico de TVL (mock) - eliminado ya que no se usa
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-0">

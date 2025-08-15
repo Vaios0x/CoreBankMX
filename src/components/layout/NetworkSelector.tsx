@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 import { useI18n } from '../../i18n/i18n'
-import { useEffect, useState } from 'react'
 
 interface NetworkSelectorProps {
   isOpen: boolean
@@ -13,9 +12,7 @@ export function NetworkSelector({ isOpen, onClose }: NetworkSelectorProps) {
   const t = useI18n()
   const chainId = useChainId()
   const { switchChain, isPending } = useSwitchChain()
-  const [selectedChain, setSelectedChain] = useState(chainId)
   
-  const isMainnet = chainId === coreMainnet.id
   const networks = [
     {
       id: coreMainnet.id,
@@ -34,11 +31,6 @@ export function NetworkSelector({ isOpen, onClose }: NetworkSelectorProps) {
       isActive: chainId === coreTestnet.id
     }
   ]
-
-  // Update selected chain when chainId changes
-  useEffect(() => {
-    setSelectedChain(chainId)
-  }, [chainId])
 
   const handleNetworkSelect = async (targetChainId: number) => {
     if (targetChainId === chainId) {

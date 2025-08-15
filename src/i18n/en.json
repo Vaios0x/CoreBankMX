@@ -8,6 +8,13 @@
     "liquidity": "Liquidity",
     "admin": "Admin"
   },
+  "legal": {
+    "warning_title": "⚠️ LEGAL WARNING",
+    "demo_badge": "DEMO",
+    "disclaimer": "Banobs is a technical demonstration for the Core Connect Global Buildathon. This project is NOT authorized by CNBV, CONDUSEF, or any Mexican financial authority. It does not constitute a real financial service and is not subject to Fintech Law, Banking Law, or Banking Savings Protection Law regulations.",
+    "educational_use": "Educational use only: Funds used are for testing purposes. No real transactions or remittances are processed. This demo does not comply with KYC/AML requirements, regulatory reporting, or SHCP authorizations for financial services.",
+    "close": "Close warning"
+  },
   "home": {
     "badge": "Banobs • Obsidiana Digital Banking • Core DAO",
     "title": "Banobs: Obsidiana Digital Banking on Core",

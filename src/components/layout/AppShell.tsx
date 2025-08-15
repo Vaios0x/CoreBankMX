@@ -4,6 +4,7 @@ import { Footer } from './Footer'
 import { ToastViewport } from '../ui/Toast'
 import { SidebarNav } from './SidebarNav'
 import { OracleStatus } from '../market/OracleStatus'
+import { LegalBanner } from './LegalBanner'
 import { useUiStore } from '../../state/useUiStore'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
@@ -47,6 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [theme])
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 dark:text-gray-100">
+      <LegalBanner />
       <Header />
       <div className="flex container mx-auto">
         <SidebarNav />

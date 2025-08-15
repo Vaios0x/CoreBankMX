@@ -239,6 +239,41 @@ pnpm deploy:testnet2
 - **Colors**: Core DAO orange (#ff7a00) + volcanic obsidian
 - **Theme**: Mexican heritage meets Web3 innovation
 
+### 🏗️ **Deployed Contracts on Core Testnet2**
+
+#### **Core Protocol Contracts**
+| Contract | Address | Function |
+|----------|---------|----------|
+| **CollateralVault** | `0xeC153A56E676a34360B884530cf86Fb53D916908` | BTC collateral vault for deposits |
+| **LoanManager** | `0x4755014b4b34359c27B8A289046524E0987833F9` | Loan management and LTV control |
+| **LiquidationModule** | `0x7597bdb2A69FA1D42b4fE8d3F08BF23688DA908a` | Automated liquidation engine |
+| **DualStakingVault** | `0x3973A4471D1CB66274E33dD7f9802b19D7bF6CDc` | ERC4626 dual staking vault |
+| **FeeController** | `0x8BD96cfd4E9B9ad672698D6C18cece8248Fd34F8` | Fee management system |
+
+#### **Oracle Infrastructure**
+| Contract | Address | Function |
+|----------|---------|----------|
+| **OracleRouter** | `0x6B6a0Ad18f8E13299673d960f7dCeAaBfd64d82c` | Main oracle router |
+| **RedStoneAdapter** | `0xa62ba5700E24554D342133e326D7b5496F999108` | RedStone oracle adapter |
+| **PythAdapter** | `0xB937f6a00bE40500B3Da15795Dc72783b05c1D18` | Pyth oracle adapter |
+
+#### **Token Contracts**
+| Token | Address | Function |
+|-------|---------|----------|
+| **LSTBTC** | `0x8DDf46929c807213c2a313e69908C3c2904c30e7` | Liquid staking BTC token |
+| **USDT** | `0x4fec42A17F54870d104bEf233688dc9904Bbd58d` | Stablecoin debt token |
+
+#### **Administration**
+| Role | Address | Function |
+|------|---------|----------|
+| **Admin** | `0x8eC3829793D0a2499971d0D853935F17aB52F800` | Protocol administrator |
+
+#### **Network Configuration**
+- **Chain ID**: 1114 (Core Testnet2)
+- **RPC URL**: `https://rpc.test2.btcs.network`
+- **Explorer**: `https://scan.test2.btcs.network`
+- **Status**: ✅ **All contracts deployed and operational**
+
 </div>
 
 

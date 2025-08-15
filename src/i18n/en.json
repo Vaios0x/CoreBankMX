@@ -1,12 +1,15 @@
 {
   "nav": {
+    "title": "Navigation",
     "home": "Home",
     "dashboard": "Dashboard",
     "borrow": "Borrow",
     "repay": "Repay",
     "positions": "Positions",
     "liquidity": "Liquidity",
-    "admin": "Admin"
+    "admin": "Admin",
+    "close_sidebar": "Close sidebar",
+    "mobile_footer": "Banobs - Obsidiana Digital Banking"
   },
   "legal": {
     "warning_title": "⚠️ LEGAL WARNING",

@@ -12,6 +12,7 @@ import { queryClient, setupGlobalCache } from '../lib/cache'
 import { OptimisticUpdatesIndicator } from '../lib/optimistic'
 import { blockchainEventManager } from '../lib/blockchain/eventListeners'
 import { transactionQueueManager } from '../lib/blockchain/transactionQueue'
+import { initializeAnalytics } from '../lib/analytics'
 
 // Configurar cache global
 setupGlobalCache()
@@ -23,6 +24,33 @@ if (typeof window !== 'undefined') {
   
   // Iniciar transaction queue
   transactionQueueManager.start()
+  
+  // Inicializar sistema de analytics
+  initializeAnalytics({
+    enabled: env.ANALYTICS_ENABLED,
+    sentry: {
+      dsn: env.SENTRY_DSN,
+      environment: env.NODE_ENV,
+      tracesSampleRate: 0.1,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
+    },
+    performance: {
+      enabled: true,
+      sampleRate: 0.1,
+      maxEvents: 1000,
+    },
+    userAnalytics: {
+      enabled: true,
+      anonymize: false,
+      trackEvents: true,
+      trackPageViews: true,
+    },
+    abTesting: {
+      enabled: true,
+      experiments: {},
+    },
+  })
   
   // Limpiar al cerrar la página
   window.addEventListener('beforeunload', () => {

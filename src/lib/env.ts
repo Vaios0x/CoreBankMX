@@ -35,6 +35,16 @@ const EnvSchema = z.object({
   VITE_POSTHOG_KEY: z.string().default(''),
   VITE_POSTHOG_HOST: z.string().default('https://app.posthog.com'),
   VITE_MIXPANEL_TOKEN: z.string().default(''),
+  
+  // Analytics Configuration
+  VITE_ANALYTICS_ENABLED: z.coerce.boolean().default(true),
+  VITE_SENTRY_DSN: z.string().default(''),
+  VITE_NODE_ENV: z.string().default('development'),
+  VITE_GOOGLE_ANALYTICS_ID: z.string().default(''),
+  VITE_GOOGLE_TAG_MANAGER_ID: z.string().default(''),
+  VITE_HOTJAR_ID: z.string().default(''),
+  VITE_AMPLITUDE_API_KEY: z.string().default(''),
+  VITE_SEGMENT_WRITE_KEY: z.string().default(''),
 })
 
 const parsed = EnvSchema.parse(import.meta.env)
@@ -65,6 +75,16 @@ export const env = {
   POSTHOG_KEY: parsed.VITE_POSTHOG_KEY,
   POSTHOG_HOST: parsed.VITE_POSTHOG_HOST,
   MIXPANEL_TOKEN: parsed.VITE_MIXPANEL_TOKEN,
+  
+  // Analytics Configuration
+  ANALYTICS_ENABLED: parsed.VITE_ANALYTICS_ENABLED,
+  SENTRY_DSN: parsed.VITE_SENTRY_DSN,
+  NODE_ENV: parsed.VITE_NODE_ENV,
+  GOOGLE_ANALYTICS_ID: parsed.VITE_GOOGLE_ANALYTICS_ID,
+  GOOGLE_TAG_MANAGER_ID: parsed.VITE_GOOGLE_TAG_MANAGER_ID,
+  HOTJAR_ID: parsed.VITE_HOTJAR_ID,
+  AMPLITUDE_API_KEY: parsed.VITE_AMPLITUDE_API_KEY,
+  SEGMENT_WRITE_KEY: parsed.VITE_SEGMENT_WRITE_KEY,
 }
 
 

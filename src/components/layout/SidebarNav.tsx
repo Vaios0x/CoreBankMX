@@ -14,6 +14,7 @@ const links = [
   { to: '/remittances', key: 'nav.remittances', icon: '💸' },
   { to: '/offramp', key: 'nav.offramp', icon: '🏦' },
   { to: '/settings', key: 'nav.settings', icon: '⚙️' },
+  { to: '/analytics', key: 'nav.analytics', icon: '📈' },
   { to: '/admin', key: 'nav.admin', icon: '🔧' },
 ]
 

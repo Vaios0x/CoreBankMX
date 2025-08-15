@@ -1,34 +1,22 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { AppShell } from '../components/layout/AppShell'
-import { NetworkGuard } from '../components/layout/NetworkGuard'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+import { Page } from '../components/layout/Page'
+import Home from '../pages/Home'
 import Dashboard from '../pages/Dashboard'
 import Borrow from '../pages/Borrow'
 import Repay from '../pages/Repay'
 import Positions from '../pages/Positions'
 import Liquidity from '../pages/Liquidity'
+import Admin from '../pages/Admin'
+import Docs from '../pages/Docs'
+import DocsStatus from '../pages/DocsStatus'
+import DocsApi from '../pages/DocsApi'
+import DocsProtocol from '../pages/DocsProtocol'
+import NotFound from '../pages/NotFound'
 import { Remittances } from '../pages/Remittances'
 import { OffRamp } from '../pages/OffRamp'
 import { Settings } from '../pages/Settings'
-import Admin from '../pages/Admin'
-import Docs from '../pages/Docs'
-import DocsProtocol from '../pages/DocsProtocol'
-import DocsApi from '../pages/DocsApi'
-import DocsStatus from '../pages/DocsStatus'
-import { AnimatePresence, motion } from 'framer-motion'
-import Home from '../pages/Home'
-
-function Page({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
-    >
-      {children}
-    </motion.div>
-  )
-}
+import { Analytics } from '../pages/Analytics'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -44,28 +32,18 @@ function AnimatedRoutes() {
         <Route path="/remittances" element={<Page><Remittances /></Page>} />
         <Route path="/offramp" element={<Page><OffRamp /></Page>} />
         <Route path="/settings" element={<Page><Settings /></Page>} />
+        <Route path="/analytics" element={<Page><Analytics /></Page>} />
         <Route path="/admin" element={<Page><Admin /></Page>} />
         <Route path="/docs" element={<Page><Docs /></Page>} />
-        <Route path="/docs/protocol" element={<Page><DocsProtocol /></Page>} />
-        <Route path="/docs/api" element={<Page><DocsApi /></Page>} />
         <Route path="/docs/status" element={<Page><DocsStatus /></Page>} />
+        <Route path="/docs/api" element={<Page><DocsApi /></Page>} />
+        <Route path="/docs/protocol" element={<Page><DocsProtocol /></Page>} />
+        <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
     </AnimatePresence>
   )
 }
 
-export function AppRoutes() {
-  return (
-    <BrowserRouter>
-      <AppShell>
-        <NetworkGuard>
-          <AnimatedRoutes />
-        </NetworkGuard>
-      </AppShell>
-    </BrowserRouter>
-  )
-}
-
-export default AppRoutes
+export { AnimatedRoutes }
 
 

@@ -115,6 +115,10 @@
     "reset_filters": "Resetear filtros"
   },
   "positions": {
+    "subtitle": "Ver y gestionar tus posiciones de préstamo",
+    "collateral_label": "Colateral",
+    "debt_label": "Deuda",
+    "ltv_label": "LTV",
     "actions": "Acciones",
     "empty": "Sin posiciones",
     "add_collateral": "Añadir colateral",

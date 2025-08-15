@@ -115,6 +115,10 @@
     "reset_filters": "Reset filters"
   },
   "positions": {
+    "subtitle": "View and manage your loan positions",
+    "collateral_label": "Collateral",
+    "debt_label": "Debt",
+    "ltv_label": "LTV",
     "actions": "Actions",
     "empty": "No positions",
     "add_collateral": "Add collateral",

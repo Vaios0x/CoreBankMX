@@ -167,6 +167,11 @@
     "network_menu_title": "Seleccionar Red",
     "connected_address": "Dirección Conectada"
   },
+  "network_selector": {
+    "title": "Cambiar redes",
+    "close": "Cerrar selector de red",
+    "footer_text": "Selecciona la red a la que quieres conectarte"
+  },
   "footer": {
     "description": "Banobs: Obsidiana Digital Banking. Remesas y préstamos con BTC como colateral sobre Core. Fuerza volcánica, transparencia cristalina.",
     "company": "Compañía",

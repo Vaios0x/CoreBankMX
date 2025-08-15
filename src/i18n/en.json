@@ -167,6 +167,11 @@
     "network_menu_title": "Select Network",
     "connected_address": "Connected Address"
   },
+  "network_selector": {
+    "title": "Change Networks",
+    "close": "Close network selector",
+    "footer_text": "Select the network you want to connect to"
+  },
   "footer": {
     "description": "Banobs: Obsidiana Digital Banking. Remittances and loans with BTC as collateral on Core. Fuerza volcánica, transparencia cristalina.",
     "company": "Company",

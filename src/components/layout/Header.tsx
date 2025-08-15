@@ -97,7 +97,7 @@ export function Header() {
               {language === 'en' ? 'ES' : 'EN'}
             </motion.button>
 
-            {/* Network status - Desktop */}
+            {/* Network status - Desktop only */}
             <div className="hidden lg:flex items-center gap-2 rounded-md border border-ui bg-ui-surface px-2 py-1 text-xs text-gray-300">
               <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
               <span aria-label={t('header.network_aria') as string} className="max-w-[160px] truncate" title={networkLabel}>
@@ -124,23 +124,6 @@ export function Header() {
                 aria-label={isMainnet ? (t('header.switch_to_testnet') as string) : (t('header.switch_to_mainnet') as string)}
               >
                 {isMainnet ? (t('header.to_testnet') as string) : (t('header.to_mainnet') as string)}
-              </motion.button>
-            </div>
-
-            {/* Mobile network button */}
-            <div className="lg:hidden">
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                whileHover={{ scale: 1.03 }}
-                onClick={() => setNetworkSelectorOpen(true)}
-                className="btn-outline px-1.5 py-1 text-xs motion-press flex items-center gap-1"
-                aria-label={t('network_selector.title') as string}
-              >
-                <span className={`inline-block h-2 w-2 rounded-full ${isMainnet ? 'bg-green-500' : 'bg-yellow-400'}`} aria-hidden />
-                <span className="truncate max-w-[50px]" title={networkLabel}>
-                  {isMainnet ? 'Main' : 'Test'}
-                </span>
-                <span className="text-xs">▼</span>
               </motion.button>
             </div>
 

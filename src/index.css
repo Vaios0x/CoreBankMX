@@ -188,8 +188,6 @@
 
   .mobile-button {
     @apply px-4 py-3 rounded-lg font-medium transition-all duration-200;
-    /* Tamaño mínimo para touch */
-    min-height: 48px;
     /* Mejorar feedback táctil */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     /* Prevenir zoom */
@@ -202,8 +200,6 @@
 
   .mobile-input {
     @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg;
-    /* Prevenir zoom en iOS */
-    font-size: 16px;
     /* Mejorar apariencia */
     -webkit-appearance: none;
     background-color: white;
@@ -225,8 +221,6 @@
 
   .mobile-nav-item {
     @apply flex flex-col items-center justify-center py-2 px-3 text-sm;
-    /* Tamaño mínimo para touch */
-    min-height: 60px;
     /* Mejorar feedback táctil */
     -webkit-tap-highlight-color: transparent;
   }
@@ -256,8 +250,6 @@
 
   .mobile-list-item {
     @apply flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700;
-    /* Tamaño mínimo para touch */
-    min-height: 60px;
     /* Mejorar feedback táctil */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
   }
@@ -317,8 +309,6 @@
 
   .defi-button {
     @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl;
-    /* Tamaño mínimo para touch */
-    min-height: 48px;
     /* Mejorar feedback táctil */
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
     /* Prevenir zoom */
@@ -354,8 +344,6 @@
 
   .mobile-table-row {
     @apply flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700;
-    /* Tamaño mínimo para touch */
-    min-height: 60px;
   }
 
   /* Optimizaciones para notificaciones */

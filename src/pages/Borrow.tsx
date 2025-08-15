@@ -18,13 +18,13 @@ import { Alert } from '../components/ui/Alert'
 import { useAccount } from 'wagmi'
 import { useFeeEstimate } from '../hooks/useFee'
 import { track } from '../lib/telemetry'
+import { SecureBorrowSchema, validateAndSanitizeForm, validateTransactionAmount } from '../lib/security/inputValidation'
+import { useRateLimit, withRateLimit } from '../lib/security/rateLimiter'
+import { useCSRF } from '../lib/security/csrf'
+import { useSecurityLogger } from '../lib/security/logger'
 
-const Schema = z.object({
-  collateralAmount: z.coerce.number().positive(),
-  borrowAmount: z.coerce.number().positive(),
-})
-
-type FormValues = z.infer<typeof Schema>
+// Usar el schema seguro en lugar del básico
+type FormValues = z.infer<typeof SecureBorrowSchema>
 
 export default function Borrow() {
   const {
@@ -32,7 +32,7 @@ export default function Borrow() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(Schema), defaultValues: { collateralAmount: 0, borrowAmount: 0 } })
+  } = useForm<FormValues>({ resolver: zodResolver(SecureBorrowSchema), defaultValues: { collateralAmount: 0, borrowAmount: 0 } })
   const { data: price } = useOracle()
   const t = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -51,25 +51,80 @@ export default function Borrow() {
   const feeUsd = useMemo(() => (typeof feeEst.data?.fee === 'number' ? feeEst.data.fee : (originationFeeBps ? (borrow * (originationFeeBps / 10_000)) : 0)), [borrow, originationFeeBps, feeEst.data])
   const belowMin = useMemo(() => (minBorrowAmount ? borrow < minBorrowAmount : (typeof feeEst.data?.minBorrow === 'number' ? borrow < feeEst.data.minBorrow : false)), [borrow, minBorrowAmount, feeEst.data])
   
+  // Hooks de seguridad
+  const { checkRateLimit, getRemainingAttempts } = useRateLimit()
+  const { getToken: getCSRFToken } = useCSRF()
+  const { logInfo, logError, logXSSAttempt, logValidationBypassAttempt } = useSecurityLogger()
+  
   const onSubmit = async (_data: FormValues) => {
     try {
+      // Validaciones de seguridad
+      if (!checkRateLimit('BORROW')) {
+        const remaining = getRemainingAttempts('BORROW')
+        push({ type: 'error', message: `Rate limit exceeded. Try again later. (${remaining} attempts remaining)` })
+        return
+      }
+      
+      // Validar y sanitizar datos
+      const validation = validateAndSanitizeForm(_data, SecureBorrowSchema)
+      if (!validation.success) {
+        logError('validation', 'borrow_form_validation_failed', { errors: validation.errors })
+        push({ type: 'error', message: validation.errors.join(', ') })
+        return
+      }
+      
+      // Validar montos de transacción
+      if (!validateTransactionAmount(collateral, 'deposit')) {
+        logError('validation', 'invalid_collateral_amount', { amount: collateral })
+        push({ type: 'error', message: 'Invalid collateral amount' })
+        return
+      }
+      
+      if (!validateTransactionAmount(borrow, 'borrow')) {
+        logError('validation', 'invalid_borrow_amount', { amount: borrow })
+        push({ type: 'error', message: 'Invalid borrow amount' })
+        return
+      }
+      
+      // Log de intento de préstamo
+      logInfo('transaction', 'borrow_attempt', { 
+        collateral, 
+        borrow, 
+        csrfToken: getCSRFToken() 
+      })
+      
       // flujo real: approve -> deposit -> borrow
       push({ type: 'info', message: t('borrow.toast_approving') as string })
       await approveCollateral()
       track('approve_collateral', { amount: collateral })
       push({ type: 'success', message: t('borrow.toast_approve_done') as string })
+      
       if (collateral > 0) {
         push({ type: 'info', message: t('borrow.toast_depositing') as string })
         await deposit(collateral)
         track('deposit_collateral', { amount: collateral })
         push({ type: 'success', message: t('borrow.toast_deposit_sent') as string })
       }
+      
       push({ type: 'info', message: t('borrow.toast_borrowing') as string })
       const hash = await borrowTx(borrow)
       track('borrow_submitted', { amount: borrow, feeUsd })
       push({ type: 'success', message: `${t('borrow.toast_borrow_sent_base') as string} ${String(hash).slice(0, 10)}…` })
+      
+      // Log de éxito
+      logInfo('transaction', 'borrow_success', { 
+        collateral, 
+        borrow, 
+        hash: String(hash).slice(0, 10) 
+      })
+      
     } catch (e: any) {
       track('borrow_failed', { message: e?.message })
+      logError('transaction', 'borrow_failed', { 
+        error: e?.message, 
+        collateral, 
+        borrow 
+      })
       push({ type: 'error', message: e?.message ?? (t('borrow.toast_borrow_failed') as string) })
     }
   }

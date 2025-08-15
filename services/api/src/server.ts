@@ -15,8 +15,41 @@ import { remittancesRoutes } from './routes/remittances'
 import { offrampRoutes } from './routes/offramp'
 import { userRoutes } from './routes/user'
 
+// Importar módulos de seguridad
+import { cspPlugin } from './lib/security/csp'
+import { rateLimitMiddleware, withRateLimit } from './lib/security/rateLimiter'
+import { validationMiddleware, withValidation, SecureSchemas } from './lib/security/inputValidation'
+import { securityLogger, logRateLimitExceeded, logFailedAuth, logXSSAttempt, logSQLInjectionAttempt } from './lib/security/logger'
+import { securityRoutes } from './routes/security'
+
 async function main() {
   const app = Fastify({ logger })
+  
+  // Registrar plugin de CSP
+  await app.register(cspPlugin)
+  
+  // Middleware de seguridad global
+  app.addHook('preHandler', async (request, reply) => {
+    // Rate limiting global
+    try {
+      await rateLimitMiddleware('DEFAULT', { windowMs: 15 * 60 * 1000, max: 100 })(request, reply)
+    } catch (error) {
+      await logRateLimitExceeded(request, { endpoint: request.url, method: request.method })
+      return
+    }
+    
+    // Validación básica de entrada
+    if (request.body && typeof request.body === 'object') {
+      const bodyStr = JSON.stringify(request.body)
+      if (bodyStr.includes('<script') || bodyStr.includes('javascript:')) {
+        await logXSSAttempt(request, { payload: bodyStr })
+        reply.status(400).send({ error: 'Malicious content detected' })
+        return
+      }
+    }
+  })
+  
+  // Registrar rutas con seguridad
   await app.register(statusRoutes)
   await app.register(marketRoutes)
   await app.register(liquidationRoutes)
@@ -27,6 +60,7 @@ async function main() {
   await app.register(remittancesRoutes)
   await app.register(offrampRoutes)
   await app.register(userRoutes)
+  await app.register(securityRoutes)
   // Ad-hoc accrue cron si está activado
   if (process.env.ACCRUE_CRON_SEC) {
     const every = Number(process.env.ACCRUE_CRON_SEC)

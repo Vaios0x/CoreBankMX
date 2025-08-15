@@ -1,6 +1,5 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
-import { Page } from '../components/layout/Page'
+import { Routes, Route } from 'react-router-dom'
+import AppShell from '../components/layout/AppShell'
 import Home from '../pages/Home'
 import Dashboard from '../pages/Dashboard'
 import Borrow from '../pages/Borrow'
@@ -19,28 +18,25 @@ import { Settings } from '../pages/Settings'
 import { Analytics } from '../pages/Analytics'
 
 function AnimatedRoutes() {
-  const location = useLocation()
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><Home /></Page>} />
-        <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
-        <Route path="/borrow" element={<Page><Borrow /></Page>} />
-        <Route path="/repay" element={<Page><Repay /></Page>} />
-        <Route path="/positions" element={<Page><Positions /></Page>} />
-        <Route path="/liquidity" element={<Page><Liquidity /></Page>} />
-        <Route path="/remittances" element={<Page><Remittances /></Page>} />
-        <Route path="/offramp" element={<Page><OffRamp /></Page>} />
-        <Route path="/settings" element={<Page><Settings /></Page>} />
-        <Route path="/analytics" element={<Page><Analytics /></Page>} />
-        <Route path="/admin" element={<Page><Admin /></Page>} />
-        <Route path="/docs" element={<Page><Docs /></Page>} />
-        <Route path="/docs/status" element={<Page><DocsStatus /></Page>} />
-        <Route path="/docs/api" element={<Page><DocsApi /></Page>} />
-        <Route path="/docs/protocol" element={<Page><DocsProtocol /></Page>} />
-        <Route path="*" element={<Page><NotFound /></Page>} />
-      </Routes>
-    </AnimatePresence>
+    <Routes>
+      <Route path="/" element={<AppShell><Home /></AppShell>} />
+      <Route path="/dashboard" element={<AppShell><Dashboard /></AppShell>} />
+      <Route path="/borrow" element={<AppShell><Borrow /></AppShell>} />
+      <Route path="/repay" element={<AppShell><Repay /></AppShell>} />
+      <Route path="/positions" element={<AppShell><Positions /></AppShell>} />
+      <Route path="/liquidity" element={<AppShell><Liquidity /></AppShell>} />
+      <Route path="/remittances" element={<AppShell><Remittances /></AppShell>} />
+      <Route path="/offramp" element={<AppShell><OffRamp /></AppShell>} />
+      <Route path="/settings" element={<AppShell><Settings /></AppShell>} />
+      <Route path="/analytics" element={<AppShell><Analytics /></AppShell>} />
+      <Route path="/admin" element={<AppShell><Admin /></AppShell>} />
+      <Route path="/docs" element={<AppShell><Docs /></AppShell>} />
+      <Route path="/docs/status" element={<AppShell><DocsStatus /></AppShell>} />
+      <Route path="/docs/api" element={<AppShell><DocsApi /></AppShell>} />
+      <Route path="/docs/protocol" element={<AppShell><DocsProtocol /></AppShell>} />
+      <Route path="*" element={<AppShell><NotFound /></AppShell>} />
+    </Routes>
   )
 }
 

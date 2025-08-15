@@ -65,6 +65,13 @@ export interface PersistentData {
       [chainId: number]: string
     }
   }
+  
+  // Eventos de analytics
+  analyticsEvents: {
+    type: string
+    data: any
+    timestamp: number
+  }[]
 }
 
 // Estado inicial
@@ -88,7 +95,8 @@ const initialState: PersistentData = {
   networkConfig: {
     lastUsedChain: 1114,
     customRPCs: {}
-  }
+  },
+  analyticsEvents: []
 }
 
 // Store persistente con suscripciones
@@ -211,5 +219,11 @@ export const persistentActions = {
           )
         )
       }
-    })
+    }),
+  
+  // Eventos de analytics
+  addAnalyticsEvent: (event: PersistentData['analyticsEvents'][0]) =>
+    usePersistentStore.setState((state) => ({
+      analyticsEvents: [event, ...state.analyticsEvents.slice(0, 999)] // Mantener solo últimos 1000 eventos
+    }))
 }

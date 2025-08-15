@@ -1,4 +1,4 @@
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 
 export interface PerformanceConfig {
   enabled: boolean
@@ -59,11 +59,11 @@ export class PerformanceMonitor {
 
   private initializeWebVitals() {
     // Core Web Vitals
-    getCLS(this.handleWebVital.bind(this, 'CLS'))
-    getFID(this.handleWebVital.bind(this, 'FID'))
-    getFCP(this.handleWebVital.bind(this, 'FCP'))
-    getLCP(this.handleWebVital.bind(this, 'LCP'))
-    getTTFB(this.handleWebVital.bind(this, 'TTFB'))
+    onCLS(this.handleWebVital.bind(this, 'CLS'))
+    onFCP(this.handleWebVital.bind(this, 'FCP'))
+    onLCP(this.handleWebVital.bind(this, 'LCP'))
+    onTTFB(this.handleWebVital.bind(this, 'TTFB'))
+    onINP(this.handleWebVital.bind(this, 'INP'))
   }
 
   private handleWebVital(name: string, metric: any) {
@@ -430,7 +430,7 @@ export class PerformanceMonitor {
   private getRating(metricName: string, value: number): 'good' | 'needs-improvement' | 'poor' {
     const thresholds: Record<string, { good: number; poor: number }> = {
       CLS: { good: 0.1, poor: 0.25 },
-      FID: { good: 100, poor: 300 },
+      INP: { good: 200, poor: 500 },
       FCP: { good: 1800, poor: 3000 },
       LCP: { good: 2500, poor: 4000 },
       TTFB: { good: 800, poor: 1800 },

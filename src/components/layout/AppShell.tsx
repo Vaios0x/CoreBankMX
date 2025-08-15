@@ -60,17 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           )}
           <OracleStatus />
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isSidebarOpen ? 'open' : 'closed'}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          {children}
         </main>
       </div>
       <ToastViewport />

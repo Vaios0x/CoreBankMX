@@ -3,6 +3,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import type { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit'
+import { BrowserRouter } from 'react-router-dom'
 import { wagmiConfig } from '../lib/wagmi'
 import { useUiStore } from '../state/useUiStore'
 import { useEffect } from 'react'
@@ -72,14 +73,16 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={rkTheme}>
-          {children}
-          <OptimisticUpdatesIndicator />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <BrowserRouter>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider theme={rkTheme}>
+            {children}
+            <OptimisticUpdatesIndicator />
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </BrowserRouter>
   )
 }
 

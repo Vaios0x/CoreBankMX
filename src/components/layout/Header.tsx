@@ -127,12 +127,12 @@ export function Header() {
               </motion.button>
             </div>
 
-            {/* User menu compact */}
+            {/* User menu - Desktop only */}
             {isConnected && (
-              <div className="relative">
+              <div className="hidden lg:block relative">
                 <button
                   type="button"
-                  className="btn-outline px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm motion-press"
+                  className="btn-outline px-2 py-1 text-sm motion-press"
                   aria-haspopup="menu"
                   aria-expanded={isUserMenuOpen}
                   onClick={() => setUserMenuOpen((v) => !v)}
@@ -141,7 +141,7 @@ export function Header() {
                   ⋯
                 </button>
                 {isUserMenuOpen && (
-                  <div role="menu" className="absolute right-0 z-50 mt-2 w-36 sm:w-44 rounded-md border border-ui bg-ui-surface p-1 text-sm shadow-lg">
+                  <div role="menu" className="absolute right-0 z-50 mt-2 w-44 rounded-md border border-ui bg-ui-surface p-1 text-sm shadow-lg">
                     <button
                       role="menuitem"
                       className="btn-ghost w-full justify-start px-2 py-1 text-left text-xs motion-press"

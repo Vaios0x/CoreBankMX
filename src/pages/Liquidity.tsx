@@ -1,8 +1,11 @@
 import { useToastStore } from '../components/ui/Toast'
 import { useStaking } from '../hooks/useStaking'
 import Input from '../components/ui/Input'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useI18n } from '../i18n/i18n'
+import { motion } from 'framer-motion'
+import { formatUSD } from '../lib/format'
+import { Sparkline } from '../components/ui/Sparkline'
 
 export default function Liquidity() {
   const { push } = useToastStore()
@@ -10,12 +13,58 @@ export default function Liquidity() {
   const [amount, setAmount] = useState(0)
   const t = useI18n()
   
+  // Datos de demostración
+  const [stakedAmount, setStakedAmount] = useState(1250)
+  const [totalStaked, setTotalStaked] = useState(2850000)
+  const [apr, setApr] = useState(12.5)
+  const [rewards, setRewards] = useState(156.25)
+  const [stakedHistory, setStakedHistory] = useState<number[]>([])
+  const [apiAvailable, setApiAvailable] = useState(true)
+  
+  // Simular datos de staking
+  useEffect(() => {
+    const seed = totalStaked
+    const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 4) * 0.02))
+    setStakedHistory(series)
+  }, [totalStaked])
+
+  // Simular actualización de rewards
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRewards(prev => prev + (stakedAmount * apr / 100 / 365 / 24 / 60)) // Incremento por minuto
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [stakedAmount, apr])
+  
   const onCompound = () => {
-    const apr = 0.12
     const days = 30
-    const principal = 1000
-    const future = principal * Math.pow(1 + apr / 365, days)
-    push({ type: 'info', message: `APR 12% — 30d compound preview: ~$${future.toFixed(2)}` })
+    const future = stakedAmount * Math.pow(1 + apr / 100 / 365, days)
+    const profit = future - stakedAmount
+    push({ type: 'info', message: `APR ${apr}% — 30d compound preview: ~$${profit.toFixed(2)} profit` })
+  }
+
+  const onStake = async () => {
+    try {
+      const h = await stake(amount)
+      push({ type: 'success', message: `Stake sent ${String(h).slice(0, 10)}…` })
+      // Simular actualización de datos
+      setStakedAmount(prev => prev + amount)
+      setTotalStaked(prev => prev + amount)
+    } catch (e: any) {
+      push({ type: 'error', message: e?.message || 'Stake failed' })
+    }
+  }
+
+  const onUnstake = async () => {
+    try {
+      const h = await unstake(amount)
+      push({ type: 'success', message: `Unstake sent ${String(h).slice(0, 10)}…` })
+      // Simular actualización de datos
+      setStakedAmount(prev => Math.max(0, prev - amount))
+      setTotalStaked(prev => Math.max(0, prev - amount))
+    } catch (e: any) {
+      push({ type: 'error', message: e?.message || 'Unstake failed' })
+    }
   }
   
   return (
@@ -26,8 +75,97 @@ export default function Liquidity() {
         <p className="text-sm text-ui-muted mt-1">{t('liquidity.subtitle') as string}</p>
       </div>
 
+      {/* API Status Banner */}
+      {!apiAvailable && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card border-yellow-500/20 bg-yellow-500/5 p-3 text-center"
+        >
+          <p className="text-sm text-yellow-400">
+            🔧 API no disponible - Mostrando datos de demostración
+          </p>
+        </motion.div>
+      )}
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card p-3 sm:p-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">💰</span>
+            <span className="text-xs text-ui-muted uppercase tracking-wider">Your Staked</span>
+          </div>
+          <p className="text-lg sm:text-xl font-semibold">{formatUSD(stakedAmount)}</p>
+          <p className="text-xs text-ui-muted">Personal stake</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="card p-3 sm:p-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">📊</span>
+            <span className="text-xs text-ui-muted uppercase tracking-wider">Total Staked</span>
+          </div>
+          <p className="text-lg sm:text-xl font-semibold">{formatUSD(totalStaked)}</p>
+          <p className="text-xs text-ui-muted">Protocol TVL</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="card p-3 sm:p-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">📈</span>
+            <span className="text-xs text-ui-muted uppercase tracking-wider">APR</span>
+          </div>
+          <p className="text-lg sm:text-xl font-semibold text-green-400">{apr}%</p>
+          <p className="text-xs text-ui-muted">Annual return</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="card p-3 sm:p-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">🎁</span>
+            <span className="text-xs text-ui-muted uppercase tracking-wider">Rewards</span>
+          </div>
+          <p className="text-lg sm:text-xl font-semibold text-brand-400">{formatUSD(rewards)}</p>
+          <p className="text-xs text-ui-muted">Accumulated</p>
+        </motion.div>
+      </div>
+
+      {/* TVL Chart */}
+      <motion.section 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="card p-3 sm:p-4 lg:p-5"
+      >
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">Total Value Locked (24h)</h2>
+        <div className="h-32 sm:h-40">
+          <Sparkline values={stakedHistory} width={800} height={160} />
+        </div>
+      </motion.section>
+
       {/* Main Card */}
-      <div className="card p-4 sm:p-5 space-y-4 sm:space-y-5">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="card p-4 sm:p-5 space-y-4 sm:space-y-5"
+      >
         <div className="text-center sm:text-left">
           <p className="text-sm text-gray-300">{t('liquidity.description') as string}</p>
         </div>
@@ -65,27 +203,15 @@ export default function Liquidity() {
             </button>
             <button 
               className="btn-outline text-xs sm:text-sm flex-1 sm:flex-none motion-press" 
-              onClick={async () => { 
-                try { 
-                  const h = await stake(amount); 
-                  push({ type: 'success', message: `Stake sent ${String(h).slice(0,10)}…` }) 
-                } catch (e: any) { 
-                  push({ type: 'error', message: e?.message || 'Stake failed' }) 
-                } 
-              }}
+              onClick={onStake}
+              disabled={amount <= 0}
             >
               {t('liquidity.stake')}
             </button>
             <button 
               className="btn-outline text-xs sm:text-sm flex-1 sm:flex-none motion-press" 
-              onClick={async () => { 
-                try { 
-                  const h = await unstake(amount); 
-                  push({ type: 'success', message: `Unstake sent ${String(h).slice(0,10)}…` }) 
-                } catch (e: any) { 
-                  push({ type: 'error', message: e?.message || 'Unstake failed' }) 
-                } 
-              }}
+              onClick={onUnstake}
+              disabled={amount <= 0 || amount > stakedAmount}
             >
               {t('liquidity.unstake')}
             </button>
@@ -101,17 +227,31 @@ export default function Liquidity() {
             </button>
           </div>
         </div>
+      </motion.div>
 
-        {/* Info Section */}
-        <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-md bg-gray-800/50 border border-gray-700">
-          <h3 className="text-sm font-medium mb-2">{t('liquidity.info_title') as string}</h3>
-          <ul className="text-xs sm:text-sm text-gray-300 space-y-1">
-            <li>• {t('liquidity.info_erc4626') as string}</li>
-            <li>• {t('liquidity.info_apr') as string}</li>
-            <li>• {t('liquidity.info_compound') as string}</li>
-          </ul>
+      {/* Info Section */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="card p-4 sm:p-5 space-y-3 sm:space-y-4"
+      >
+        <h3 className="text-sm font-medium">{t('liquidity.info_title') as string}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm text-gray-300">
+          <div className="space-y-1">
+            <p className="font-medium">🔄 {t('liquidity.info_erc4626') as string}</p>
+            <p className="text-xs text-gray-400">Standard vault for maximum compatibility</p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium">📈 {t('liquidity.info_apr') as string}</p>
+            <p className="text-xs text-gray-400">Competitive APR with automatic compounding</p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium">🤖 {t('liquidity.info_compound') as string}</p>
+            <p className="text-xs text-gray-400">Compound rewards automatically via Keeper service</p>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

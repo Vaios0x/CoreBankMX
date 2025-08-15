@@ -20,6 +20,57 @@ export default function Dashboard() {
   const [tvlHistory, setTvlHistory] = useState<number[]>([])
   const [metrics, setMetrics] = useState<{ activePositions: number; liquidations24h: number } | null>(null)
   const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
+  const [apiAvailable, setApiAvailable] = useState(true)
+  
+  // Datos de demostración
+  const demoContracts = {
+    CollateralVault: '0x1234567890123456789012345678901234567890',
+    LoanManager: '0x2345678901234567890123456789012345678901',
+    LiquidationModule: '0x3456789012345678901234567890123456789012',
+    OracleRouter: '0x4567890123456789012345678901234567890123',
+    StakingVault: '0x5678901234567890123456789012345678901234'
+  }
+
+  const demoLiquidations = [
+    {
+      tx: '0x1234567890123456789012345678901234567890123456789012345678901234',
+      user: '0x8eC3829793D0a2499971d0D853935F17aB52F800',
+      repayAmount: 15000,
+      collateralSeized: 0.25,
+      incentive: 750,
+      blockNumber: 12345678
+    },
+    {
+      tx: '0x2345678901234567890123456789012345678901234567890123456789012345',
+      user: '0x9fD493B8E1C2499971d0D853935F17aB52F801',
+      repayAmount: 8500,
+      collateralSeized: 0.15,
+      incentive: 425,
+      blockNumber: 12345677
+    },
+    {
+      tx: '0x3456789012345678901234567890123456789012345678901234567890123456',
+      user: '0x0aE594B9E1C2499971d0D853935F17aB52F802',
+      repayAmount: 22000,
+      collateralSeized: 0.35,
+      incentive: 1100,
+      blockNumber: 12345676
+    }
+  ]
+
+  const demoMetrics = {
+    activePositions: 47,
+    liquidations24h: 3,
+    tvlUsd: 2850000
+  }
+
+  const demoMarketParams = {
+    baseRate: 0.05,
+    targetLtv: 0.60,
+    liquidationLtv: 0.75,
+    originationFeeBps: 50,
+    minBorrowAmount: 100
+  }
   
   useEffect(() => {
     let mounted = true
@@ -30,8 +81,13 @@ export default function Dashboard() {
         if (!mounted) return
         setApiStatus(json?.ok ? 'ok' : 'down')
         setContracts(json?.contracts ?? null)
+        setApiAvailable(true)
       } catch {
-        if (mounted) setApiStatus('down')
+        if (mounted) {
+          setApiStatus('down')
+          setApiAvailable(false)
+          setContracts(demoContracts)
+        }
       }
     })()
     ;(async () => {
@@ -42,7 +98,11 @@ export default function Dashboard() {
         if (json && typeof json.baseRate === 'number') {
           setParams({ baseRate: json.baseRate, targetLtv: json.targetLtv, liquidationLtv: json.liquidationLtv, originationFeeBps: json.originationFeeBps, minBorrowAmount: json.minBorrowAmount })
         }
-      } catch {}
+      } catch {
+        if (mounted) {
+          setParams(demoMarketParams)
+        }
+      }
     })()
     ;(async () => {
       try {
@@ -54,7 +114,10 @@ export default function Dashboard() {
           setParams({ tvlUsd: json.tvlUsd })
         }
       } catch {
-        if (mounted) setMetrics({ activePositions: 0, liquidations24h: 0 })
+        if (mounted) {
+          setMetrics({ activePositions: demoMetrics.activePositions, liquidations24h: demoMetrics.liquidations24h })
+          setParams({ tvlUsd: demoMetrics.tvlUsd })
+        }
       }
     })()
     ;(async () => {
@@ -64,7 +127,9 @@ export default function Dashboard() {
         if (!mounted) return
         setLiqs(Array.isArray(json?.items) ? json.items : [])
       } catch {
-        if (mounted) setLiqs([])
+        if (mounted) {
+          setLiqs(demoLiquidations)
+        }
       }
     })()
     ;(async () => {
@@ -74,9 +139,11 @@ export default function Dashboard() {
         if (!mounted) return
         setPriceHistory((json?.points ?? []).map((p: any) => Number(p.v) || 0))
       } catch {
-         const seed = Number(priceNow ?? 0) || 60000
-        const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 3) * 0.01))
-        setPriceHistory(series)
+        if (mounted) {
+          const seed = Number(priceNow ?? 0) || 60000
+          const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 3) * 0.01))
+          setPriceHistory(series)
+        }
       }
     })()
     return () => {
@@ -101,181 +168,159 @@ export default function Dashboard() {
       }
     }
     fetchHistory()
-    const id = setInterval(fetchHistory, 60_000)
-    return () => { mounted = false; clearInterval(id) }
-  }, [symbol, priceNow])
-  
-  // Histórico de TVL (auto-refresco cada 60s)
-  useEffect(() => {
-    let mounted = true
-    const fetchTvl = async () => {
-      try {
-        const res = await fetch(`${env.API_URL}/market/history/tvl`, { cache: 'no-store' })
-        const json = await res.json()
-        if (!mounted) return
-        setTvlHistory((json?.points ?? []).map((p: any) => Number(p.v) || 0))
-      } catch {
-        if (!mounted) return
-        const base = tvlUsd || 1_500_000
-        const series = Array.from({ length: 48 }).map((_, i) => base * (1 + Math.sin(i / 5) * 0.02))
-        setTvlHistory(series)
-      }
+    const interval = setInterval(fetchHistory, 30_000)
+    return () => {
+      mounted = false
+      clearInterval(interval)
     }
-    fetchTvl()
-    const id = setInterval(fetchTvl, 60_000)
-    return () => { mounted = false; clearInterval(id) }
+  }, [symbol, priceNow])
+
+  // Histórico de TVL (mock)
+  useEffect(() => {
+    const seed = tvlUsd || 2850000
+    const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 4) * 0.02))
+    setTvlHistory(series)
   }, [tvlUsd])
-  
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header Section */}
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-0">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">{t('nav.dashboard')}</h1>
-          <p className="text-xs sm:text-sm text-ui-muted">{t('dashboard.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('nav.dashboard')}</h1>
+          <p className="text-sm text-ui-muted mt-1">{t('dashboard.subtitle') as string}</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="btn-outline text-xs px-2 sm:px-3 py-1 motion-press"
+          >
+            {isLoading ? t('dashboard.loading') : t('dashboard.recalculate')}
+          </button>
           {stale && (
-            <Alert variant="warning" className="text-xs py-1 w-full sm:w-auto">
+            <Alert variant="warning" className="w-full sm:w-auto">
               {t('dashboard.oracle_stale')}
             </Alert>
           )}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              type="button"
-              className="btn-outline text-xs px-2 sm:px-3 py-1 flex-1 sm:flex-none"
-              onClick={() => refetch()}
-            >
-              {t('dashboard.recalculate')}
-            </button>
-            <div className="flex items-center gap-1">
-              {(['BTC','LSTBTC'] as const).map((sym) => (
-                <button
-                  key={sym}
-                  type="button"
-                  className={`${symbol === sym ? 'btn-primary' : 'btn-outline'} btn-sm text-xs px-2 py-1`}
-                  aria-pressed={symbol === sym}
-                  onClick={() => setSymbol(sym)}
-                >
-                  {sym}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
+      {/* API Status Banner */}
+      {!apiAvailable && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card border-yellow-500/20 bg-yellow-500/5 p-3 text-center"
+        >
+          <p className="text-sm text-yellow-400">
+            🔧 API no disponible - Mostrando datos de demostración
+          </p>
+        </motion.div>
+      )}
+
       {/* Metrics Section */}
       <section className="card p-3 sm:p-4 lg:p-5">
-        <h2 className="text-sm font-medium">{t('dashboard.metrics_24h')}</h2>
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          {[{
-            label: t('dashboard.active_positions') as string, 
-            value: metrics ? String(metrics.activePositions) : t('dashboard.loading') as string
-          },{
-            label: t('dashboard.liquidations_24h') as string, 
-            value: metrics ? String(metrics.liquidations24h) : t('dashboard.loading') as string
-          }].map((m) => (
-            <div key={m.label} className="kpi-card p-3 sm:p-4">
-              <div className="text-xs uppercase tracking-wide text-ui-muted">{m.label}</div>
-              <div className="mt-1 text-xl sm:text-2xl font-medium">{m.value}</div>
-            </div>
-          ))}
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('dashboard.metrics_24h')}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="kpi-card p-3 sm:p-4">
+            <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
+            <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
+              {formatUSD(tvlUsd || demoMetrics.tvlUsd)}
+            </p>
+            <p className="text-xs sm:text-sm text-ui-muted">TVL</p>
+          </div>
+          <div className="kpi-card p-3 sm:p-4">
+            <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
+            <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
+              {formatUSD((priceNow || 60000) * 0.5)}
+            </p>
+            <p className="text-xs sm:text-sm text-ui-muted">BTC Price</p>
+          </div>
+          <div className="kpi-card p-3 sm:p-4">
+            <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
+            <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
+              {metrics?.activePositions || demoMetrics.activePositions}
+            </p>
+            <p className="text-xs sm:text-sm text-ui-muted">{t('dashboard.active_positions')}</p>
+          </div>
+          <div className="kpi-card p-3 sm:p-4">
+            <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
+            <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
+              {metrics?.liquidations24h || demoMetrics.liquidations24h}
+            </p>
+            <p className="text-xs sm:text-sm text-ui-muted">{t('dashboard.liquidations_24h')}</p>
+          </div>
         </div>
-        
-        {/* Liquidations Section */}
-        <div className="mt-4 sm:mt-5">
-          <h3 className="text-xs font-medium text-ui-muted">{t('dashboard.liquidations_recent')}</h3>
+      </section>
+
+      {/* Price Chart */}
+      <section className="card p-3 sm:p-4 lg:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold">BTC Price (24h)</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSymbol('BTC')}
+              className={`btn-outline text-xs px-2 sm:px-3 py-1 motion-press ${symbol === 'BTC' ? 'btn-primary' : ''}`}
+            >
+              BTC
+            </button>
+            <button
+              onClick={() => setSymbol('LSTBTC')}
+              className={`btn-outline text-xs px-2 sm:px-3 py-1 motion-press ${symbol === 'LSTBTC' ? 'btn-primary' : ''}`}
+            >
+              LSTBTC
+            </button>
+          </div>
+        </div>
+        <div className="h-32 sm:h-40">
+          <Sparkline values={priceHistory} width={800} height={160} />
+        </div>
+      </section>
+
+      {/* Liquidations Section */}
+      <section className="card p-3 sm:p-4 lg:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold">{t('dashboard.liquidations_recent')}</h2>
+        </div>
+        <div className="space-y-2 sm:space-y-3">
           {liqs.length === 0 ? (
-            <div className="mt-2 text-xs text-ui-muted">{t('dashboard.loading')}</div>
+            <p className="text-sm text-ui-muted text-center py-4">No recent liquidations</p>
           ) : (
-            <ul className="mt-2 space-y-2 text-xs">
-              {liqs.slice(0, 5).map((it) => (
-                <li key={it.tx} className="rounded border border-ui bg-ui-surface p-2 sm:p-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-                    <span className="truncate" title={it.user}>
-                      <ExplorerLink hash={it.user} type="address" />
-                    </span>
-                    <span className="text-ui-muted text-xs">#{it.blockNumber}</span>
-                  </div>
-                  <div className="mt-1 text-ui-muted text-xs">
-                    tx: <ExplorerLink hash={it.tx} type="tx" />
-                  </div>
-                  <div className="mt-1 text-ui-muted text-xs">
-                    repay: {it.repayAmount.toFixed(4)} | seized: {it.collateralSeized.toFixed(4)}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            liqs.slice(0, 5).map((liq, i) => (
+              <motion.div
+                key={liq.tx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg bg-gray-800/30 text-xs sm:text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-red-400">💥</span>
+                  <span className="font-medium">{liq.user.slice(0, 6)}…{liq.user.slice(-4)}</span>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4 text-xs">
+                  <span>Repaid: {formatUSD(liq.repayAmount)}</span>
+                  <span>Seized: {liq.collateralSeized.toFixed(3)} BTC</span>
+                  <span>Incentive: {formatUSD(liq.incentive)}</span>
+                  <ExplorerLink type="tx" hash={liq.tx} />
+                </div>
+              </motion.div>
+            ))
           )}
         </div>
       </section>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {[{
-          label: 'TVL', value: formatUSD(tvlUsd), skeleton: false
-        },{
-          label: 'Base Rate', value: `${(baseRate * 100).toFixed(2)}%`, skeleton: false
-        },{
-          label: `${symbol}/USD`, value: isLoading ? t('dashboard.loading') : formatUSD(priceNow ?? 0), skeleton: isLoading
-        },{
-          label: 'API', value: apiStatus === 'loading' ? t('dashboard.loading') : apiStatus === 'ok' ? 'Online' : 'Offline', skeleton: false
-        }].map((kpi) => (
-          <motion.div
-            key={kpi.label}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="kpi-card shadow-sm p-3 sm:p-4"
-            role="group"
-          >
-            <div className="text-xs uppercase tracking-wide text-ui-muted">{kpi.label}</div>
-            {kpi.skeleton ? (
-              <div className="mt-2 h-6 sm:h-7 w-20 sm:w-28 skeleton" aria-hidden />
-            ) : (
-              <motion.div
-                key={String(kpi.value)}
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.12 }}
-                className={`mt-1 text-lg sm:text-xl lg:text-2xl font-medium break-words ${
-                  kpi.label === 'API'
-                    ? (apiStatus === 'ok' ? 'text-green-400' : apiStatus === 'down' ? 'text-red-400' : '')
-                    : kpi.label === 'TVL' && tvlHistory.length > 1
-                      ? (tvlHistory[tvlHistory.length - 1] - tvlHistory[0] > 0 ? 'text-green-400' : tvlHistory[tvlHistory.length - 1] - tvlHistory[0] < 0 ? 'text-red-400' : '')
-                      : ''
-                }`}
-              >
-                {kpi.value}
-              </motion.div>
-            )}
-            {kpi.label === 'TVL' && tvlHistory.length > 0 && (
-              <div className="mt-2">
-                <Sparkline values={tvlHistory} width={200} height={40} />
-              </div>
-            )}
-            {kpi.label.includes('/USD') && priceHistory.length > 0 && (
-              <div className="mt-2">
-                <Sparkline values={priceHistory} width={200} height={40} />
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-
       {/* Contracts Section */}
       <section className="card p-3 sm:p-4 lg:p-5">
-        <h2 className="text-sm font-medium">{t('dashboard.deployed_contracts') as string}</h2>
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          {contracts ? Object.entries(contracts).map(([name, addr]: any) => (
-            <div key={name as string} className="rounded border border-ui bg-ui-surface p-2 sm:p-3 text-xs">
-              <div className="text-ui-muted font-medium">{name}</div>
-              <div className="mt-1 truncate text-xs" title={String(addr)}>{String(addr)}</div>
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('dashboard.deployed_contracts')}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+          {contracts && Object.entries(contracts).map(([name, address]) => (
+            <div key={name} className="p-2 sm:p-3 rounded-lg bg-gray-800/30 text-xs sm:text-sm">
+              <div className="font-medium">{name}</div>
+              <ExplorerLink type="address" hash={address as string} />
             </div>
-          )) : (
-            <div className="text-sm text-ui-muted">{t('dashboard.loading') as string}</div>
-          )}
+          ))}
         </div>
       </section>
     </div>

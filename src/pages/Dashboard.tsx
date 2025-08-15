@@ -20,13 +20,16 @@ export default function Dashboard() {
   const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
   const [apiAvailable, setApiAvailable] = useState(true)
   
-  // Datos de demostración
+  // Datos de demostración con contratos reales desplegados
   const demoContracts = {
-    CollateralVault: '0x1234567890123456789012345678901234567890',
-    LoanManager: '0x2345678901234567890123456789012345678901',
-    LiquidationModule: '0x3456789012345678901234567890123456789012',
-    OracleRouter: '0x4567890123456789012345678901234567890123',
-    StakingVault: '0x5678901234567890123456789012345678901234'
+    CollateralVault: '0xeC153A56E676a34360B884530cf86Fb53D916908',
+    LoanManager: '0x4755014b4b34359c27B8A289046524E0987833F9',
+    LiquidationModule: '0x7597bdb2A69FA1D42b4fE8d3F08BF23688DA908a',
+    OracleRouter: '0x6B6a0Ad18f8E13299673d960f7dCeAaBfd64d82c',
+    StakingVault: '0x3973A4471D1CB66274E33dD7f9802b19D7bF6CDc',
+    FeeController: '0x8BD96cfd4E9B9ad672698D6C18cece8248Fd34F8',
+    LSTBTC: '0x8DDf46929c807213c2a313e69908C3c2904c30e7',
+    USDT: '0x4fec42A17F54870d104bEf233688dc9904Bbd58d'
   }
 
   const demoLiquidations = [

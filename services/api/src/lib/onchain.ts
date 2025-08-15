@@ -1,11 +1,12 @@
 import { createPublicClient, http, getContract } from 'viem'
 import { cfg } from './config'
-let addresses: any = {}
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  addresses = require('../../../packages/contracts/addresses.testnet2.json')
-} catch {
-  addresses = {}
+import { CONTRACTS, MONITOR_USERS } from './contracts'
+
+// Use contracts from centralized config
+const addresses = {
+  ...CONTRACTS,
+  admin: CONTRACTS.Admin,
+  MONITOR_USERS
 }
 
 // Minimal ABI for LoanManager params

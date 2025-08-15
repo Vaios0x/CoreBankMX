@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { env } from '../lib/env'
+import { CONTRACTS } from '../lib/contracts'
 import { createPublicClient, http } from 'viem'
 import OracleRouterAbi from '../abi/OracleRouter.json'
 import { coreMainnet, coreTestnet } from '../lib/chains'
@@ -17,9 +18,9 @@ async function fetchOraclePriceFromApi(symbol: string): Promise<number> {
 }
 
 async function fetchOraclePriceOnchain(): Promise<number> {
-  const router = env.ORACLE_ROUTER as `0x${string}`
-  const token = env.COLLATERAL_TOKEN as `0x${string}`
-  if (!router || router === '0x0000000000000000000000000000000000000000' || !token || token === '0x0000000000000000000000000000000000000000') {
+  const router = CONTRACTS.OracleRouter as `0x${string}`
+  const token = CONTRACTS.LSTBTC as `0x${string}`
+  if (!router || !token) {
     throw new Error('missing_oracle_addresses')
   }
   // Elegir chain por heurística: usar testnet si URL RPC apunta a testnet

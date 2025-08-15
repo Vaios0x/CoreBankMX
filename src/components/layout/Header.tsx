@@ -47,7 +47,7 @@ export function Header() {
           </motion.button>
           <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-2">
             <span className="inline-block h-6 w-6 rounded bg-brand-500" aria-hidden />
-            <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500">Core Neobank MX</Link>
+            <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500">Banobs</Link>
           </motion.div>
         </div>
         <div className="flex items-center gap-3">

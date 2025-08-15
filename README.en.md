@@ -1,4 +1,4 @@
-## Core Neobank MX — BTC-collateral Loans, Remittances, and Dual Staking on Core
+## Banobs — Obsidiana Digital Banking on Core
 
 This repository contains a full-stack, non-custodial neobank built on Core (Mainnet 1116 / Testnet2 1114). Users can deposit BTC-wrapped collateral, borrow USDT, send remittances (stub), and earn yield via a Dual Staking ERC4626 vault. The stack includes smart contracts (Vault/Loan/Liquidation/Oracle/Staking), a Fastify API, an autonomous Keeper, and a React dApp with i18n (EN/ES) and accessibility.
 

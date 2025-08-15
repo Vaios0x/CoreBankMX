@@ -26,7 +26,7 @@ export function Footer() {
         <div>
           <div className="mb-2 flex items-center gap-2">
             <span className="inline-block h-6 w-6 rounded bg-brand-500" aria-hidden />
-            <span className="font-semibold tracking-tight">Core Neobank MX</span>
+            <span className="font-semibold tracking-tight">Banobs</span>
           </div>
           <p className="text-ui-muted">
             {t('footer.description') as string}

@@ -9,9 +9,9 @@
     "admin": "Admin"
   },
   "home": {
-    "badge": "Build on Core DAO • BTCfi • DeFi • Web3",
-    "title": "Neobanco Web3 en Core: remesas y préstamos con BTC como colateral",
-    "subtitle": "Bloquea BTC puenteado en un vault no-custodial y recibe USDT. LTV dinámico con oráculos (Pyth/RedStone), auto-liquidaciones seguras, y opción de Dual Staking para componer rendimientos.",
+    "badge": "Banobs • Obsidiana Digital Banking • Core DAO",
+    "title": "Banobs: Obsidiana Digital Banking en Core",
+    "subtitle": "Fuerza volcánica, transparencia cristalina. Bloquea BTC puenteado en un vault no-custodial y recibe USDT. LTV dinámico con oráculos (Pyth/RedStone), auto-liquidaciones seguras, y opción de Dual Staking para componer rendimientos.",
     "start_button": "Comenzar",
     "dashboard_button": "Ver Dashboard",
     "connect_hint": "Conecta tu wallet para empezar",
@@ -135,7 +135,7 @@
     "toggle_language": "Alternar idioma"
   },
   "footer": {
-    "description": "Remesas y préstamos con BTC como colateral sobre Core. Seguridad, rendimiento y UX simple.",
+    "description": "Banobs: Obsidiana Digital Banking. Remesas y préstamos con BTC como colateral sobre Core. Fuerza volcánica, transparencia cristalina.",
     "company": "Compañía",
     "subscribe": "Suscríbete",
     "email_label": "Correo electrónico",

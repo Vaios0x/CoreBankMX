@@ -26,20 +26,8 @@ export function useFeeEstimate(amount: number, user?: `0x${string}`) {
           pro: Boolean(json?.pro ?? false),
         }
       } catch (error) {
-        // Fallback a datos de demostración
-        console.warn('API not available, using demo fee data:', error)
-        
-        // Calcular fee demo basado en el monto
-        const baseFee = amount * 0.005 // 0.5% base fee
-        const volumeDiscount = amount > 10000 ? 0.2 : amount > 5000 ? 0.1 : 0 // Descuentos por volumen
-        const finalFee = baseFee * (1 - volumeDiscount)
-        
-        return {
-          fee: finalFee,
-          bps: 50, // 0.5%
-          minBorrow: 100,
-          pro: amount > 10000, // Pro para montos grandes
-        }
+        console.error('Fee estimation failed:', error)
+        throw new Error('Fee estimation failed')
       }
     },
     enabled: Boolean(amount && amount > 0),

@@ -24,11 +24,6 @@ export function useTx() {
   const publicClient = usePublicClient()
   const { writeContractAsync } = useWriteContract()
 
-  async function mockTx(action: string) {
-    await new Promise((r) => setTimeout(r, 700))
-    return `0xmock_${action}_${Date.now()}` as `0x${string}`
-  }
-
   function toWei(amount: number, decimals = 18): bigint {
     // simple path: assume 18d unless token decimals fetched
     if (decimals === 18) return parseEther(String(amount))
@@ -43,41 +38,34 @@ export function useTx() {
 
   return {
     approve: async (amount?: number) => {
-      if (env.USE_MOCKS) return mockTx('approve')
       const token = CONTRACTS.LSTBTC || (await getCollateralToken())
       const value = amount && amount > 0 ? toWei(amount) : (BigInt(2) ** BigInt(256) - BigInt(1))
       return await writeContractAsync({ address: token as `0x${string}`, abi: erc20Abi, functionName: 'approve', args: [CONTRACTS.CollateralVault as `0x${string}`, value] })
     },
     approveCollateral: async (amount?: number) => {
-      if (env.USE_MOCKS) return mockTx('approve_collateral')
       const token = CONTRACTS.LSTBTC || (await getCollateralToken())
       const value = amount && amount > 0 ? toWei(amount) : (BigInt(2) ** BigInt(256) - BigInt(1))
       return await writeContractAsync({ address: token as `0x${string}`, abi: erc20Abi, functionName: 'approve', args: [CONTRACTS.CollateralVault as `0x${string}`, value] })
     },
     approveDebt: async (amount?: number) => {
-      if (env.USE_MOCKS) return mockTx('approve_debt')
       const token = CONTRACTS.USDT as `0x${string}`
       const value = amount && amount > 0 ? toWei(amount) : (BigInt(2) ** BigInt(256) - BigInt(1))
       return await writeContractAsync({ address: token, abi: erc20Abi, functionName: 'approve', args: [CONTRACTS.LoanManager as `0x${string}`, value] })
     },
     deposit: async (amount: number) => {
-      if (env.USE_MOCKS) return mockTx('deposit')
       const value = toWei(amount)
       return await writeContractAsync({ address: CONTRACTS.CollateralVault as `0x${string}`, abi: vaultAbi, functionName: 'deposit', args: [value] })
     },
     borrow: async (amount: number) => {
-      if (env.USE_MOCKS) return mockTx('borrow')
       const value = toWei(amount)
       return await writeContractAsync({ address: CONTRACTS.LoanManager as `0x${string}`, abi: loanAbi, functionName: 'borrow', args: [value] })
     },
     repay: async (amount?: number) => {
-      if (env.USE_MOCKS) return mockTx('repay')
       const value = toWei(amount ?? 0)
       // Si hay token de deuda declarado, hacer approve al LoanManager antes (fuera de este método el front ya maneja allowances)
       return await writeContractAsync({ address: CONTRACTS.LoanManager as `0x${string}`, abi: loanAbi, functionName: 'repay', args: [value] })
     },
     withdraw: async (amount: number) => {
-      if (env.USE_MOCKS) return mockTx('withdraw')
       const value = toWei(amount)
       return await writeContractAsync({ address: CONTRACTS.CollateralVault as `0x${string}`, abi: vaultAbi, functionName: 'withdraw', args: [value] })
     },

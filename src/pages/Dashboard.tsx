@@ -5,6 +5,7 @@ import { Alert } from '../components/ui/Alert'
 import { formatUSD } from '../lib/format'
 import { useEffect, useState } from 'react'
 import { env } from '../lib/env'
+import { CONTRACTS } from '../lib/contracts'
 import Sparkline from '../components/ui/Sparkline'
 import ExplorerLink from '../components/web3/ExplorerLink'
 import { motion } from 'framer-motion'
@@ -20,57 +21,16 @@ export default function Dashboard() {
   const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
   const [apiAvailable, setApiAvailable] = useState(true)
   
-  // Datos de demostración con contratos reales desplegados
-  const demoContracts = {
-    CollateralVault: '0xeC153A56E676a34360B884530cf86Fb53D916908',
-    LoanManager: '0x4755014b4b34359c27B8A289046524E0987833F9',
-    LiquidationModule: '0x7597bdb2A69FA1D42b4fE8d3F08BF23688DA908a',
-    OracleRouter: '0x6B6a0Ad18f8E13299673d960f7dCeAaBfd64d82c',
-    StakingVault: '0x3973A4471D1CB66274E33dD7f9802b19D7bF6CDc',
-    FeeController: '0x8BD96cfd4E9B9ad672698D6C18cece8248Fd34F8',
-    LSTBTC: '0x8DDf46929c807213c2a313e69908C3c2904c30e7',
-    USDT: '0x4fec42A17F54870d104bEf233688dc9904Bbd58d'
-  }
-
-  const demoLiquidations = [
-    {
-      tx: '0x1234567890123456789012345678901234567890123456789012345678901234',
-      user: '0x8eC3829793D0a2499971d0D853935F17aB52F800',
-      repayAmount: 15000,
-      collateralSeized: 0.25,
-      incentive: 750,
-      blockNumber: 12345678
-    },
-    {
-      tx: '0x2345678901234567890123456789012345678901234567890123456789012345',
-      user: '0x9fD493B8E1C2499971d0D853935F17aB52F801',
-      repayAmount: 8500,
-      collateralSeized: 0.15,
-      incentive: 425,
-      blockNumber: 12345677
-    },
-    {
-      tx: '0x3456789012345678901234567890123456789012345678901234567890123456',
-      user: '0x0aE594B9E1C2499971d0D853935F17aB52F802',
-      repayAmount: 22000,
-      collateralSeized: 0.35,
-      incentive: 1100,
-      blockNumber: 12345676
-    }
-  ]
-
-  const demoMetrics = {
-    activePositions: 47,
-    liquidations24h: 3,
-    tvlUsd: 2850000
-  }
-
-  const demoMarketParams = {
-    baseRate: 0.05,
-    targetLtv: 0.60,
-    liquidationLtv: 0.75,
-    originationFeeBps: 50,
-    minBorrowAmount: 100
+  // Fallback contracts from centralized config
+  const fallbackContracts = {
+    CollateralVault: CONTRACTS.CollateralVault,
+    LoanManager: CONTRACTS.LoanManager,
+    LiquidationModule: CONTRACTS.LiquidationModule,
+    OracleRouter: CONTRACTS.OracleRouter,
+    StakingVault: CONTRACTS.DualStakingVault,
+    FeeController: CONTRACTS.FeeController,
+    LSTBTC: CONTRACTS.LSTBTC,
+    USDT: CONTRACTS.USDT
   }
   
   useEffect(() => {
@@ -85,7 +45,7 @@ export default function Dashboard() {
       } catch {
         if (mounted) {
           setApiAvailable(false)
-          setContracts(demoContracts)
+          setContracts(fallbackContracts)
         }
       }
     })()
@@ -97,10 +57,9 @@ export default function Dashboard() {
         if (json && typeof json.baseRate === 'number') {
           setParams({ baseRate: json.baseRate, targetLtv: json.targetLtv, liquidationLtv: json.liquidationLtv, originationFeeBps: json.originationFeeBps, minBorrowAmount: json.minBorrowAmount })
         }
-      } catch {
-        if (mounted) {
-          setParams(demoMarketParams)
-        }
+      } catch (error) {
+        console.error('Failed to fetch market params:', error)
+        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -112,11 +71,9 @@ export default function Dashboard() {
         if (typeof json?.tvlUsd === 'number') {
           setParams({ tvlUsd: json.tvlUsd })
         }
-      } catch {
-        if (mounted) {
-          setMetrics({ activePositions: demoMetrics.activePositions, liquidations24h: demoMetrics.liquidations24h })
-          setParams({ tvlUsd: demoMetrics.tvlUsd })
-        }
+      } catch (error) {
+        console.error('Failed to fetch market metrics:', error)
+        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -125,10 +82,9 @@ export default function Dashboard() {
         const json = await res.json()
         if (!mounted) return
         setLiqs(Array.isArray(json?.items) ? json.items : [])
-      } catch {
-        if (mounted) {
-          setLiqs(demoLiquidations)
-        }
+      } catch (error) {
+        console.error('Failed to fetch liquidations:', error)
+        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -220,7 +176,7 @@ export default function Dashboard() {
           <div className="kpi-card p-3 sm:p-4">
             <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
             <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
-              {formatUSD(tvlUsd || demoMetrics.tvlUsd)}
+              {formatUSD(tvlUsd || 0)}
             </p>
             <p className="text-xs sm:text-sm text-ui-muted">TVL</p>
           </div>
@@ -234,14 +190,14 @@ export default function Dashboard() {
           <div className="kpi-card p-3 sm:p-4">
             <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
             <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
-              {metrics?.activePositions || demoMetrics.activePositions}
+              {metrics?.activePositions || 0}
             </p>
             <p className="text-xs sm:text-sm text-ui-muted">{t('dashboard.active_positions')}</p>
           </div>
           <div className="kpi-card p-3 sm:p-4">
             <div className="h-6 sm:h-7 w-20 sm:w-28 skeleton" />
             <p className="text-lg sm:text-xl lg:text-2xl font-medium break-words">
-              {metrics?.liquidations24h || demoMetrics.liquidations24h}
+              {metrics?.liquidations24h || 0}
             </p>
             <p className="text-xs sm:text-sm text-ui-muted">{t('dashboard.liquidations_24h')}</p>
           </div>

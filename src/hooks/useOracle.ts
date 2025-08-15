@@ -12,8 +12,9 @@ async function fetchOraclePriceFromApi(symbol: string): Promise<number> {
     const price = typeof json === 'number' ? Number(json) : Number(json?.price ?? json?.value ?? 0)
     if (!Number.isFinite(price) || price <= 0) throw new Error('Invalid price')
     return price
-  } catch {
-    return 60000
+  } catch (error) {
+    console.error('API oracle failed, falling back to on-chain oracle:', error)
+    return fetchOraclePriceOnchain()
   }
 }
 

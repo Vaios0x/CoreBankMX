@@ -15,7 +15,23 @@ const links = [
 
 export function SidebarNav() {
   const t = useI18n()
-  const { isSidebarOpen } = useUiStore()
+  const { isSidebarOpen, setSidebar } = useUiStore()
+
+  // Función para cerrar el sidebar en móviles cuando se hace clic en un enlace
+  const handleNavClick = () => {
+    console.log('🔍 handleNavClick called')
+    console.log('📱 window.innerWidth:', window.innerWidth)
+    console.log('🔄 isSidebarOpen:', isSidebarOpen)
+    
+    // Solo cerrar en móviles (pantallas pequeñas)
+    if (window.innerWidth < 768) { // 768px es el breakpoint md de Tailwind
+      console.log('✅ Closing sidebar for mobile...')
+      setSidebar(false)
+    } else {
+      console.log('❌ Not mobile, keeping sidebar open')
+    }
+  }
+
   return (
     <motion.aside
       initial={{ x: -12, opacity: 0 }}
@@ -30,6 +46,7 @@ export function SidebarNav() {
             <li key={l.to}>
               <NavLink
                 to={l.to}
+                onClick={handleNavClick}
                 className={({ isActive }) =>
                   `group flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-500 ${isActive ? 'bg-gray-800 text-white' : 'text-gray-300'} transition-colors`
                 }

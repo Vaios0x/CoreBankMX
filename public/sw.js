@@ -3,14 +3,12 @@ const STATIC_CACHE = 'static-v1.0.0'
 const DYNAMIC_CACHE = 'dynamic-v1.0.0'
 const API_CACHE = 'api-v1.0.0'
 
-// Archivos estáticos críticos
+// Archivos estáticos críticos (solo los que realmente existen)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/assets/Logo.png',
-  '/assets/Logo2.svg'
+  '/favicon.ico'
 ]
 
 // Rutas de API para cache
@@ -20,6 +18,20 @@ const API_ROUTES = [
   '/api/positions/',
   '/api/offramp/',
   '/api/remittances/'
+]
+
+// Dominios a excluir completamente del cache
+const EXCLUDED_DOMAINS = [
+  'rpc.test2.btcs.network',
+  'rpc.btcs.network',
+  'rpc.core.org',
+  'coinbase.com',
+  'analytics',
+  'tracking',
+  'google-analytics',
+  'gtag',
+  'localhost:3001', // API local
+  '127.0.0.1:3001'
 ]
 
 // Estrategias de cache
@@ -38,7 +50,11 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('[SW] Caching static assets')
-        return cache.addAll(STATIC_ASSETS)
+        // Solo cachear assets que realmente existen
+        return cache.addAll(STATIC_ASSETS.filter(asset => {
+          // Filtrar assets que sabemos que existen
+          return asset === '/' || asset === '/index.html' || asset === '/manifest.json'
+        }))
       })
       .then(() => {
         console.log('[SW] Static assets cached successfully')
@@ -46,6 +62,8 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('[SW] Error caching static assets:', error)
+        // Continuar incluso si hay errores de cache
+        return self.skipWaiting()
       })
   )
 })
@@ -80,6 +98,28 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
   
+  // No cachear requests que no son GET
+  if (request.method !== 'GET') {
+    event.respondWith(fetch(request))
+    return
+  }
+  
+  // Excluir completamente dominios de blockchain y RPC
+  if (isExcludedDomain(url.hostname)) {
+    event.respondWith(fetch(request))
+    return
+  }
+  
+  // No cachear requests a servicios externos problemáticos
+  if (url.hostname.includes('coinbase.com') || 
+      url.hostname.includes('analytics') ||
+      url.hostname.includes('tracking') ||
+      url.hostname.includes('rpc.') ||
+      url.hostname.includes('btcs.network')) {
+    event.respondWith(fetch(request))
+    return
+  }
+  
   // Estrategia para archivos estáticos
   if (isStaticAsset(url.pathname)) {
     event.respondWith(cacheFirst(request, STATIC_CACHE))
@@ -96,7 +136,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(networkFirst(request, DYNAMIC_CACHE))
 })
 
-// Estrategia Cache First
+// Estrategia Cache First (mejorada)
 async function cacheFirst(request, cacheName) {
   try {
     const cachedResponse = await caches.match(request)
@@ -105,25 +145,31 @@ async function cacheFirst(request, cacheName) {
     }
     
     const networkResponse = await fetch(request)
-    if (networkResponse.ok) {
+    if (networkResponse.ok && networkResponse.status === 200) {
       const cache = await caches.open(cacheName)
-      cache.put(request, networkResponse.clone())
+      // Solo cachear responses exitosas
+      await cache.put(request, networkResponse.clone())
     }
     
     return networkResponse
   } catch (error) {
     console.error('[SW] Cache first error:', error)
-    return new Response('Offline content not available', { status: 503 })
+    // Retornar una respuesta de error más amigable
+    return new Response('Content not available', { 
+      status: 503,
+      statusText: 'Service Unavailable'
+    })
   }
 }
 
-// Estrategia Network First
+// Estrategia Network First (mejorada)
 async function networkFirst(request, cacheName) {
   try {
     const networkResponse = await fetch(request)
-    if (networkResponse.ok) {
+    if (networkResponse.ok && networkResponse.status === 200) {
       const cache = await caches.open(cacheName)
-      cache.put(request, networkResponse.clone())
+      // Solo cachear responses exitosas
+      await cache.put(request, networkResponse.clone())
     }
     return networkResponse
   } catch (error) {
@@ -136,14 +182,17 @@ async function networkFirst(request, cacheName) {
     
     // Fallback para páginas
     if (request.destination === 'document') {
-      return caches.match('/offline.html')
+      return caches.match('/index.html')
     }
     
-    return new Response('Offline content not available', { status: 503 })
+    return new Response('Offline content not available', { 
+      status: 503,
+      statusText: 'Service Unavailable'
+    })
   }
 }
 
-// Funciones auxiliares
+// Funciones auxiliares (mejoradas)
 function isStaticAsset(pathname) {
   return STATIC_ASSETS.includes(pathname) ||
          pathname.startsWith('/assets/') ||
@@ -152,11 +201,16 @@ function isStaticAsset(pathname) {
          pathname.endsWith('.css') ||
          pathname.endsWith('.png') ||
          pathname.endsWith('.jpg') ||
-         pathname.endsWith('.svg')
+         pathname.endsWith('.svg') ||
+         pathname.endsWith('.ico')
 }
 
 function isApiRequest(pathname) {
   return API_ROUTES.some(route => pathname.startsWith(route))
+}
+
+function isExcludedDomain(hostname) {
+  return EXCLUDED_DOMAINS.some(domain => hostname.includes(domain))
 }
 
 // Background Sync para transacciones offline
@@ -190,8 +244,8 @@ self.addEventListener('push', (event) => {
   
   const options = {
     body: event.data ? event.data.text() : 'Nueva notificación de DeFi',
-    icon: '/assets/Logo.png',
-    badge: '/assets/badge.png',
+    icon: '/src/assets/Logo.png',
+    badge: '/src/assets/Logo.png',
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
@@ -201,12 +255,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Ver detalles',
-        icon: '/assets/check.png'
+        icon: '/src/assets/Logo.png'
       },
       {
         action: 'close',
         title: 'Cerrar',
-        icon: '/assets/x.png'
+        icon: '/src/assets/Logo.png'
       }
     ]
   }
@@ -274,6 +328,6 @@ async function processTransaction(transaction) {
   // Enviar notificación de éxito
   await self.registration.showNotification('Transacción Procesada', {
     body: `La transacción ${transaction.type} ha sido procesada exitosamente`,
-    icon: '/assets/Logo.png'
+    icon: '/src/assets/Logo.png'
   })
 }

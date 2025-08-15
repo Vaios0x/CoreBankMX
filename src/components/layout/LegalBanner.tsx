@@ -4,7 +4,7 @@ import { useI18n } from '../../i18n/i18n'
 
 export function LegalBanner() {
   const [isVisible, setIsVisible] = useState(true)
-  const t = useI18n()
+  const { t } = useI18n()
 
   if (!isVisible) return null
 

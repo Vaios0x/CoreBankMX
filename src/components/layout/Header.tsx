@@ -11,7 +11,7 @@ import { NetworkSelector } from './NetworkSelector'
 
 export function Header() {
   const { language, setLanguage, toggleSidebar, theme, toggleTheme } = useUiStore()
-  const t = useI18n()
+  const { t } = useI18n()
   const chainId = useChainId()
   const { switchChain, isPending } = useSwitchChain()
   const { address, isConnected } = useAccount()

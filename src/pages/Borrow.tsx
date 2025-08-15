@@ -34,7 +34,7 @@ export default function Borrow() {
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(SecureBorrowSchema), defaultValues: { collateralAmount: 0, borrowAmount: 0 } })
   const { data: price } = useOracle()
-  const t = useI18n()
+  const { t } = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const collateral = watch('collateralAmount') || 0

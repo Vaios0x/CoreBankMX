@@ -11,7 +11,7 @@ export default function Home() {
   const { tvlUsd, baseRate } = useMarketStore()
   const { data: btcPrice, isLoading: btcLoading } = useOracle()
   const { isConnected } = useAccount()
-  const t = useI18n()
+  const { t } = useI18n()
 
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-12">

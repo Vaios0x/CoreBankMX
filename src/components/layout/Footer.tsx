@@ -8,7 +8,7 @@ import { useI18n } from '../../i18n/i18n'
 export function Footer() {
   const { push } = useToastStore()
   const [email, setEmail] = useState('')
-  const t = useI18n()
+  const { t } = useI18n()
   
   const subscribe = (e: React.FormEvent) => {
     e.preventDefault()

@@ -9,7 +9,7 @@ interface NetworkSelectorProps {
 }
 
 export function NetworkSelector({ isOpen, onClose }: NetworkSelectorProps) {
-  const t = useI18n()
+  const { t } = useI18n()
   const chainId = useChainId()
   const { switchChain, isPending } = useSwitchChain()
   

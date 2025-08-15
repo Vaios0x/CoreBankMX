@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { LANGUAGES, type LanguageConfig } from '../i18n/i18n'
 
 type UiState = {
   isSidebarOpen: boolean
@@ -8,9 +9,10 @@ type UiState = {
   toggleSidebar: () => void
   setLanguage: (lang: 'en' | 'es') => void
   toggleTheme: () => void
+  getLanguageConfig: () => LanguageConfig
 }
 
-export const useUiStore = create<UiState>((set) => ({
+export const useUiStore = create<UiState>((set, get) => ({
   isSidebarOpen: false,
   language: ((): 'en' | 'es' => {
     try {
@@ -36,6 +38,21 @@ export const useUiStore = create<UiState>((set) => ({
       const url = new URL(window.location.href)
       url.searchParams.set('lang', language)
       window.history.replaceState({}, '', url)
+      
+      // Aplicar configuración RTL al documento
+      const config = LANGUAGES[language]
+      const root = document.documentElement
+      root.setAttribute('dir', config.direction)
+      root.setAttribute('lang', config.locale)
+      
+      // Aplicar clases CSS para RTL
+      if (config.direction === 'rtl') {
+        root.classList.add('rtl')
+        root.classList.remove('ltr')
+      } else {
+        root.classList.add('ltr')
+        root.classList.remove('rtl')
+      }
     } catch {}
     set({ language })
   },
@@ -46,6 +63,10 @@ export const useUiStore = create<UiState>((set) => ({
     } catch {}
     return { theme: next }
   }),
+  getLanguageConfig: () => {
+    const { language } = get()
+    return LANGUAGES[language]
+  }
 }))
 
 

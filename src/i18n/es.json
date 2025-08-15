@@ -155,7 +155,17 @@
     "active_positions": "Posiciones activas",
     "liquidations_24h": "Liquidaciones 24h",
     "liquidations_recent": "Liquidaciones (recientes)",
-    "deployed_contracts": "Contratos desplegados"
+    "deployed_contracts": "Contratos desplegados",
+    "real_time_updates": "Actualizaciones en tiempo real",
+    "export_data": "Exportar datos",
+    "advanced_filters": "Filtros avanzados",
+    "websocket_status": "Estado WebSocket",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "connecting": "Conectando...",
+    "last_update": "Última actualización",
+    "auto_refresh": "Auto-refresco",
+    "manual_refresh": "Refresco manual"
   },
   "header": {
     "network_aria": "Estado de red actual",
@@ -240,6 +250,79 @@
         "GET /oracle/status: estado del router de oráculos."
       ]
     }
+  },
+  "charts": {
+    "line": "Línea",
+    "area": "Área",
+    "timeframe": "Período",
+    "current_price": "Precio actual",
+    "high_24h": "Máximo 24h",
+    "low_24h": "Mínimo 24h",
+    "volume": "Volumen"
+  },
+  "filters": {
+    "search_placeholder": "Buscar transacciones, direcciones, símbolos...",
+    "advanced": "Filtros avanzados",
+    "clear": "Limpiar",
+    "date_range": "Rango de fechas",
+    "price_range": "Rango de precios",
+    "min_price": "Precio mínimo",
+    "max_price": "Precio máximo",
+    "symbols": "Símbolos",
+    "status": "Estado",
+    "sort_by": "Ordenar por",
+    "sort_timestamp": "Fecha",
+    "sort_price": "Precio",
+    "sort_volume": "Volumen",
+    "sort_amount": "Monto",
+    "sort_desc": "Descendente",
+    "sort_asc": "Ascendente",
+    "limit": "Límite de resultados",
+    "search": "Búsqueda",
+    "from": "Desde",
+    "to": "Hasta",
+    "min": "Mín",
+    "max": "Máx"
+  },
+  "export": {
+    "format": "Formato de exportación",
+    "sections": "Secciones a exportar",
+    "options": "Opciones",
+    "include_timestamp": "Incluir timestamp",
+    "format_numbers": "Formatear números",
+    "include_charts": "Incluir gráficos",
+    "custom_title": "Título personalizado",
+    "title_placeholder": "Mi reporte personalizado",
+    "total_records": "Total de registros",
+    "exporting": "Exportando...",
+    "export": "Exportar",
+    "success": "Exportación completada exitosamente",
+    "error": "Error al exportar los datos",
+    "select_sections": "Selecciona al menos una sección para exportar",
+    "metrics": "Métricas",
+    "price_history": "Historial de precios",
+    "liquidations": "Liquidaciones",
+    "positions": "Posiciones",
+    "transactions": "Transacciones",
+    "records": "registros"
+  },
+  "status": {
+    "active": "Activo",
+    "liquidated": "Liquidado",
+    "closed": "Cerrado"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información"
   },
   "admin": {
     "title": "Admin",

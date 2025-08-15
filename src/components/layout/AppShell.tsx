@@ -6,6 +6,7 @@ import { SidebarNav } from './SidebarNav'
 import { OracleStatus } from '../market/OracleStatus'
 import { LegalBanner } from './LegalBanner'
 import { useUiStore } from '../../state/useUiStore'
+import { LANGUAGES } from '../../i18n/i18n'
 
 import { useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
@@ -13,11 +14,30 @@ import { useChainId, useSwitchChain } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { setLanguage, theme } = useUiStore()
+  const { setLanguage, theme, language } = useUiStore()
   const maintenance = import.meta.env.VITE_MAINTENANCE_MSG as string | undefined
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   const [searchParams] = useSearchParams()
+
+  // Aplicar configuración RTL y dirección al inicializar
+  useEffect(() => {
+    try {
+      const config = LANGUAGES[language]
+      const root = document.documentElement
+      root.setAttribute('dir', config.direction)
+      root.setAttribute('lang', config.locale)
+      
+      // Aplicar clases CSS para RTL
+      if (config.direction === 'rtl') {
+        root.classList.add('rtl')
+        root.classList.remove('ltr')
+      } else {
+        root.classList.add('ltr')
+        root.classList.remove('rtl')
+      }
+    } catch {}
+  }, [language])
 
   // Apply querystring overrides (priority over localStorage)
   useEffect(() => {
@@ -38,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  
   // Ensure initial theme class is applied to <html>
   useEffect(() => {
     try {

@@ -14,52 +14,16 @@
   "categories": ["finance", "business", "productivity"],
   "icons": [
     {
-      "src": "/assets/icon-72x72.png",
-      "sizes": "72x72",
+      "src": "/src/assets/Logo.png",
+      "sizes": "100x100",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
     },
     {
-      "src": "/assets/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "/src/assets/Logo2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -67,74 +31,28 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "Ver tu dashboard principal",
-      "url": "/dashboard",
-      "icons": [
-        {
-          "src": "/assets/dashboard-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/dashboard"
     },
     {
       "name": "Borrow",
       "short_name": "Borrow",
       "description": "Solicitar un préstamo",
-      "url": "/borrow",
-      "icons": [
-        {
-          "src": "/assets/borrow-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/borrow"
     },
     {
       "name": "Staking",
       "short_name": "Staking",
       "description": "Gestionar tu staking",
-      "url": "/liquidity",
-      "icons": [
-        {
-          "src": "/assets/staking-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/liquidity"
     },
     {
       "name": "Remittances",
       "short_name": "Remesas",
       "description": "Enviar remesas",
-      "url": "/remittances",
-      "icons": [
-        {
-          "src": "/assets/remittances-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/remittances"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/assets/screenshot-mobile-1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Dashboard principal de DeFi Core"
-    },
-    {
-      "src": "/assets/screenshot-mobile-2.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Interfaz de préstamos"
-    },
-    {
-      "src": "/assets/screenshot-desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard desktop de DeFi Core"
-    }
-  ],
+  "screenshots": [],
   "related_applications": [],
   "prefer_related_applications": false,
   "edge_side_panel": {

@@ -19,7 +19,7 @@ const links = [
 ]
 
 export function SidebarNav() {
-  const t = useI18n()
+  const { t } = useI18n()
   const { isSidebarOpen, setSidebar } = useUiStore()
   const [isMobile, setIsMobile] = useState(false)
 

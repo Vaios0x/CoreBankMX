@@ -23,10 +23,10 @@ const EnvSchema = z.object({
   VITE_CONTRACT_DEBT_TOKEN: z.string().default('0x4fec42A17F54870d104bEf233688dc9904Bbd58d'),
   VITE_CONTRACT_COLLATERAL_TOKEN: z.string().default('0x8DDf46929c807213c2a313e69908C3c2904c30e7'),
   VITE_WALLETCONNECT_PROJECT_ID: z.string().default('demo-project-id'),
-  VITE_USE_MOCKS: z.coerce.boolean().default(false),
-  VITE_USE_ONCHAIN_ORACLE: z.coerce.boolean().default(true),
+  VITE_USE_MOCKS: z.coerce.boolean().default(true), // Cambiar a true para desarrollo
+  VITE_USE_ONCHAIN_ORACLE: z.coerce.boolean().default(false), // Cambiar a false para desarrollo
   VITE_DOCS_URL: z.string().url().default('https://docs.example.com'),
-  VITE_API_URL: z.string().url().default('https://api.example.com'),
+  VITE_API_URL: z.string().url().default('http://localhost:3001'), // Cambiar a localhost
   VITE_STATUS_URL: z.string().url().default('https://status.example.com'),
   VITE_TWITTER_URL: z.string().url().default('https://x.com/example'),
   VITE_DISCORD_URL: z.string().url().default('https://discord.gg/example'),
@@ -37,7 +37,7 @@ const EnvSchema = z.object({
   VITE_MIXPANEL_TOKEN: z.string().default(''),
   
   // Analytics Configuration
-  VITE_ANALYTICS_ENABLED: z.coerce.boolean().default(true),
+  VITE_ANALYTICS_ENABLED: z.coerce.boolean().default(false), // Deshabilitar en desarrollo
   VITE_SENTRY_DSN: z.string().default(''),
   VITE_NODE_ENV: z.string().default('development'),
   VITE_GOOGLE_ANALYTICS_ID: z.string().default(''),

@@ -2,24 +2,78 @@ import { useMarketStore } from '../state/useMarketStore'
 import { useOracle } from '../hooks/useOracle'
 import { useI18n } from '../i18n/i18n'
 import { Alert } from '../components/ui/Alert'
-import { formatUSD } from '../lib/format'
-import { useEffect, useState } from 'react'
+import { formatUSD, formatNumber } from '../lib/format'
+import { useEffect, useState, useMemo } from 'react'
 import { env } from '../lib/env'
 import { CONTRACTS } from '../lib/contracts'
 import Sparkline from '../components/ui/Sparkline'
 import ExplorerLink from '../components/web3/ExplorerLink'
 import { motion } from 'framer-motion'
+import { useWebSocket } from '../hooks/useWebSocket'
+import { useExport } from '../hooks/useExport'
+import { PriceChart } from '../components/charts/PriceChart'
+import { AdvancedFilters } from '../components/dashboard/AdvancedFilters'
+import { ExportPanel } from '../components/dashboard/ExportPanel'
+import { Badge } from '../components/ui/Badge'
+import { Card } from '../components/ui/Card'
+
+interface FilterOptions {
+  search: string
+  dateRange: {
+    start: Date | null
+    end: Date | null
+  }
+  priceRange: {
+    min: number | null
+    max: number | null
+  }
+  symbols: string[]
+  status: string[]
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
+  limit: number
+}
 
 export default function Dashboard() {
   const { tvlUsd, setParams } = useMarketStore()
   const [symbol, setSymbol] = useState<'BTC' | 'LSTBTC'>('BTC')
   const { data: priceNow, isLoading, stale, refetch } = useOracle(symbol)
-  const t = useI18n()
+  const { t } = useI18n()
   const [contracts, setContracts] = useState<any>(null)
-  const [priceHistory, setPriceHistory] = useState<number[]>([])
+  const [priceHistory, setPriceHistory] = useState<Array<{ timestamp: number; price: number; volume?: number }>>([])
   const [metrics, setMetrics] = useState<{ activePositions: number; liquidations24h: number } | null>(null)
-  const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number }>>([])
+  const [liqs, setLiqs] = useState<Array<{ tx: string; user: string; repayAmount: number; collateralSeized: number; incentive: number; blockNumber: number; timestamp: number }>>([])
   const [apiAvailable, setApiAvailable] = useState(true)
+  const [showExportPanel, setShowExportPanel] = useState(false)
+  const [filters, setFilters] = useState<FilterOptions>({
+    search: '',
+    dateRange: { start: null, end: null },
+    priceRange: { min: null, max: null },
+    symbols: [],
+    status: [],
+    sortBy: 'timestamp',
+    sortOrder: 'desc',
+    limit: 100
+  })
+
+  // WebSocket para actualizaciones en tiempo real
+  const { isConnected, isConnecting, error: wsError, messages } = useWebSocket('/dashboard', {
+    onMessage: (message) => {
+      if (message.type === 'price_update' && message.data.symbol === symbol) {
+        setPriceHistory(prev => [...prev.slice(-99), {
+          timestamp: message.timestamp,
+          price: message.data.price,
+          volume: message.data.volume
+        }])
+      } else if (message.type === 'tvl_update') {
+        setParams({ tvlUsd: message.data.tvlUsd })
+      } else if (message.type === 'liquidation_event') {
+        setLiqs(prev => [message.data, ...prev.slice(0, 99)])
+      }
+    }
+  })
+
+  const { exportDashboardData } = useExport()
   
   // Fallback contracts from centralized config
   const fallbackContracts = {
@@ -59,7 +113,6 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Failed to fetch market params:', error)
-        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -73,7 +126,6 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Failed to fetch market metrics:', error)
-        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -81,10 +133,13 @@ export default function Dashboard() {
         const res = await fetch(`${env.API_URL}/market/liquidations`, { cache: 'no-store' })
         const json = await res.json()
         if (!mounted) return
-        setLiqs(Array.isArray(json?.items) ? json.items : [])
+        const liquidationsWithTimestamp = Array.isArray(json?.items) ? json.items.map((liq: any) => ({
+          ...liq,
+          timestamp: Date.now() - Math.random() * 86400000 // Mock timestamp for demo
+        })) : []
+        setLiqs(liquidationsWithTimestamp)
       } catch (error) {
         console.error('Failed to fetch liquidations:', error)
-        // No fallback - let the UI handle the error state
       }
     })()
     ;(async () => {
@@ -92,11 +147,20 @@ export default function Dashboard() {
         const res = await fetch(`${env.API_URL}/market/history/BTC`, { cache: 'no-store' })
         const json = await res.json()
         if (!mounted) return
-        setPriceHistory((json?.points ?? []).map((p: any) => Number(p.v) || 0))
+        const historyWithTimestamp = (json?.points ?? []).map((p: any, index: number) => ({
+          timestamp: Date.now() - (24 - index) * 3600000, // Mock timestamps for demo
+          price: Number(p.v) || 0,
+          volume: Math.random() * 1000000 // Mock volume
+        }))
+        setPriceHistory(historyWithTimestamp)
       } catch {
         if (mounted) {
           const seed = Number(priceNow ?? 0) || 60000
-          const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 3) * 0.01))
+          const series = Array.from({ length: 24 }).map((_, i) => ({
+            timestamp: Date.now() - (24 - i) * 3600000,
+            price: seed * (1 + Math.sin(i / 3) * 0.01),
+            volume: Math.random() * 1000000
+          }))
           setPriceHistory(series)
         }
       }
@@ -114,11 +178,20 @@ export default function Dashboard() {
         const res = await fetch(`${env.API_URL}/market/history/${symbol}`, { cache: 'no-store' })
         const json = await res.json()
         if (!mounted) return
-        setPriceHistory((json?.points ?? []).map((p: any) => Number(p.v) || 0))
+        const historyWithTimestamp = (json?.points ?? []).map((p: any, index: number) => ({
+          timestamp: Date.now() - (24 - index) * 3600000,
+          price: Number(p.v) || 0,
+          volume: Math.random() * 1000000
+        }))
+        setPriceHistory(historyWithTimestamp)
       } catch {
         if (!mounted) return
         const seed = Number(priceNow ?? 0) || 60000
-        const series = Array.from({ length: 24 }).map((_, i) => seed * (1 + Math.sin(i / 3) * 0.01))
+        const series = Array.from({ length: 24 }).map((_, i) => ({
+          timestamp: Date.now() - (24 - i) * 3600000,
+          price: seed * (1 + Math.sin(i / 3) * 0.01),
+          volume: Math.random() * 1000000
+        }))
         setPriceHistory(series)
       }
     }
@@ -130,7 +203,66 @@ export default function Dashboard() {
     }
   }, [symbol, priceNow])
 
-  // Histórico de TVL (mock) - eliminado ya que no se usa
+  // Filtrar datos según los filtros aplicados
+  const filteredLiquidations = useMemo(() => {
+    let filtered = liqs
+
+    // Filtro de búsqueda
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase()
+      filtered = filtered.filter(liq => 
+        liq.user.toLowerCase().includes(searchLower) ||
+        liq.tx.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Filtro de fecha
+    if (filters.dateRange.start) {
+      filtered = filtered.filter(liq => liq.timestamp >= filters.dateRange.start!.getTime())
+    }
+    if (filters.dateRange.end) {
+      filtered = filtered.filter(liq => liq.timestamp <= filters.dateRange.end!.getTime())
+    }
+
+    // Filtro de precio
+    if (filters.priceRange.min) {
+      filtered = filtered.filter(liq => liq.repayAmount >= filters.priceRange.min!)
+    }
+    if (filters.priceRange.max) {
+      filtered = filtered.filter(liq => liq.repayAmount <= filters.priceRange.max!)
+    }
+
+    // Ordenamiento
+    filtered.sort((a, b) => {
+      const aValue = a[filters.sortBy as keyof typeof a]
+      const bValue = b[filters.sortBy as keyof typeof b]
+      
+      if (filters.sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1
+      } else {
+        return aValue < bValue ? 1 : -1
+      }
+    })
+
+    return filtered.slice(0, filters.limit)
+  }, [liqs, filters])
+
+  const handleExport = () => {
+    const exportData = {
+      metrics: {
+        tvlUsd,
+        activePositions: metrics?.activePositions || 0,
+        liquidations24h: metrics?.liquidations24h || 0,
+        currentPrice: priceNow || 0
+      },
+      priceHistory,
+      liquidations: liqs,
+      positions: [], // TODO: Add positions data
+      transactions: [] // TODO: Add transactions data
+    }
+    
+    exportDashboardData(exportData, 'excel')
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-0">
@@ -148,12 +280,35 @@ export default function Dashboard() {
           >
             {isLoading ? t('dashboard.loading') : t('dashboard.recalculate')}
           </button>
+          <button
+            onClick={() => setShowExportPanel(true)}
+            className="btn-primary text-xs px-2 sm:px-3 py-1 motion-press"
+          >
+            📊 {t('dashboard.export_data')}
+          </button>
           {stale && (
             <Alert variant="warning" className="w-full sm:w-auto">
               {t('dashboard.oracle_stale')}
             </Alert>
           )}
         </div>
+      </div>
+
+      {/* WebSocket Status */}
+      <div className="flex items-center gap-2 text-sm">
+        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : isConnecting ? 'bg-yellow-500' : 'bg-red-500'}`} />
+        <span className="text-gray-600 dark:text-gray-400">
+          {t('dashboard.websocket_status')}: {
+            isConnected ? t('dashboard.connected') :
+            isConnecting ? t('dashboard.connecting') :
+            t('dashboard.disconnected')
+          }
+        </span>
+        {wsError && (
+          <span className="text-red-500 text-xs">
+            Error: {wsError.message}
+          </span>
+        )}
       </div>
 
       {/* API Status Banner */}
@@ -204,10 +359,10 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Price Chart */}
+      {/* Advanced Price Chart */}
       <section className="card p-3 sm:p-4 lg:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-4">
-          <h2 className="text-lg sm:text-xl font-semibold">BTC Price (24h)</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">BTC Price Chart</h2>
           <div className="flex gap-2">
             <button
               onClick={() => setSymbol('BTC')}
@@ -223,31 +378,72 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-        <div className="h-32 sm:h-40">
-          <Sparkline values={priceHistory} width={800} height={160} />
-        </div>
+        <PriceChart
+          data={priceHistory}
+          symbol={symbol}
+          timeframe="24h"
+          height={300}
+          showVolume={true}
+          showChange={true}
+          interactive={true}
+        />
       </section>
 
-      {/* Liquidations Section */}
+      {/* Advanced Filters */}
+      <section className="card p-3 sm:p-4 lg:p-5">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('dashboard.advanced_filters')}</h2>
+        <AdvancedFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          availableSymbols={['BTC', 'LSTBTC', 'ETH']}
+          availableStatuses={['active', 'liquidated', 'closed']}
+          showDateRange={true}
+          showPriceRange={true}
+          showSymbols={false}
+          showStatus={false}
+          showSort={true}
+          showLimit={true}
+        />
+      </section>
+
+      {/* Liquidations Section with Advanced Features */}
       <section className="card p-3 sm:p-4 lg:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-4">
-          <h2 className="text-lg sm:text-xl font-semibold">{t('dashboard.liquidations_recent')}</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">
+            {t('dashboard.liquidations_recent')} ({filteredLiquidations.length})
+          </h2>
+          <div className="flex items-center gap-2">
+            <Badge variant={isConnected ? "success" : "warning"}>
+              {isConnected ? "🟢 Live" : "🟡 Offline"}
+            </Badge>
+          </div>
         </div>
-        <div className="space-y-2 sm:space-y-3">
-          {liqs.length === 0 ? (
-            <p className="text-sm text-ui-muted text-center py-4">No recent liquidations</p>
-          ) : (
-            liqs.slice(0, 5).map((liq, i) => (
+        
+        {filteredLiquidations.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-sm text-ui-muted">
+              {filters.search || filters.dateRange.start || filters.dateRange.end 
+                ? 'No se encontraron liquidaciones con los filtros aplicados'
+                : 'No hay liquidaciones recientes'
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2 sm:space-y-3">
+            {filteredLiquidations.map((liq, i) => (
               <motion.div
                 key={liq.tx}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg bg-gray-800/30 text-xs sm:text-sm"
+                transition={{ delay: i * 0.05 }}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg bg-gray-800/30 text-xs sm:text-sm hover:bg-gray-800/50 transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-red-400">💥</span>
                   <span className="font-medium">{liq.user.slice(0, 6)}…{liq.user.slice(-4)}</span>
+                  <Badge variant="warning" className="text-xs">
+                    {new Date(liq.timestamp).toLocaleTimeString()}
+                  </Badge>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4 text-xs">
                   <span>Repaid: {formatUSD(liq.repayAmount)}</span>
@@ -256,9 +452,9 @@ export default function Dashboard() {
                   <ExplorerLink type="tx" hash={liq.tx} />
                 </div>
               </motion.div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Contracts Section */}
@@ -273,6 +469,25 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
+
+      {/* Export Panel */}
+      <ExportPanel
+        isOpen={showExportPanel}
+        onClose={() => setShowExportPanel(false)}
+        data={{
+          metrics: {
+            tvlUsd,
+            activePositions: metrics?.activePositions || 0,
+            liquidations24h: metrics?.liquidations24h || 0,
+            currentPrice: priceNow || 0
+          },
+          priceHistory,
+          liquidations: liqs,
+          positions: [],
+          transactions: []
+        }}
+        title="Exportar Datos del Dashboard"
+      />
     </div>
   )
 }

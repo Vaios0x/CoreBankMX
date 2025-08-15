@@ -184,6 +184,12 @@ class BlockchainEventManager {
 
   // Iniciar polling de eventos
   private startEventPolling() {
+    // Deshabilitar polling en desarrollo para evitar errores de CORS
+    if (import.meta.env.DEV) {
+      console.log('🚫 Event polling deshabilitado en desarrollo')
+      return
+    }
+
     const pollEvents = async () => {
       if (!this.isRunning) return
 

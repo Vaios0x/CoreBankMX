@@ -4,7 +4,6 @@ import { useToastStore } from '../ui/Toast'
 import Input from '../ui/Input'
 import { env } from '../../lib/env'
 import { useI18n } from '../../i18n/i18n'
-import Logo from '../ui/Logo'
 
 export function Footer() {
   const { push } = useToastStore()

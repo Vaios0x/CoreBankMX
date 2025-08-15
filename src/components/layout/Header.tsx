@@ -9,7 +9,6 @@ import { useChainId, useSwitchChain, useDisconnect } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 import { useI18n } from '../../i18n/i18n'
 import { NetworkSelector } from './NetworkSelector'
-import Logo from '../ui/Logo'
 
 export function Header() {
   const { language, setLanguage, toggleSidebar, theme, toggleTheme } = useUiStore()

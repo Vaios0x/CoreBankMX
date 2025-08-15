@@ -3,7 +3,6 @@ import { useI18n } from '../../i18n/i18n'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUiStore } from '../../state/useUiStore'
 import { useEffect, useState } from 'react'
-import Logo from '../ui/Logo'
 
 const links = [
   { to: '/', key: 'nav.home', icon: '🏠' },

@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '../components/web3/ConnectButton'
 import { useI18n } from '../i18n/i18n'
-import Logo from '../components/ui/Logo'
 
 export default function Home() {
   const { tvlUsd, baseRate } = useMarketStore()

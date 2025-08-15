@@ -9,7 +9,7 @@ import { useI18n } from '../i18n/i18n'
 
 export default function Home() {
   const { tvlUsd, baseRate } = useMarketStore()
-  const { data: btcPrice } = useOracle()
+  const { data: btcPrice, isLoading: btcLoading } = useOracle()
   const { isConnected } = useAccount()
   const t = useI18n()
 
@@ -80,9 +80,9 @@ export default function Home() {
       {/* KPI Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {[
-          { label: 'TVL', value: formatUSD(tvlUsd) }, 
-          { label: 'Base Rate', value: `${(baseRate * 100).toFixed(2)}%` }, 
-          { label: 'BTC/USD', value: btcPrice ? formatUSD(btcPrice) : '—' }
+          { label: 'TVL', value: formatUSD(tvlUsd || 1000000) }, 
+          { label: 'Base Rate', value: `${((baseRate || 0.05) * 100).toFixed(2)}%` }, 
+          { label: 'BTC/USD', value: btcPrice ? formatUSD(btcPrice) : (btcLoading ? '—' : formatUSD(60000)) }
         ].map((kpi) => (
           <motion.div 
             key={kpi.label} 

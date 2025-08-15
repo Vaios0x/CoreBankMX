@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeFi Core - Sin Conexión</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .offline-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+    }
+
+    .offline-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .offline-subtitle {
+      font-size: 16px;
+      color: #94a3b8;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .offline-features {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .feature-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-icon {
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border-radius: 50%;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+    }
+
+    .retry-button {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .retry-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    .retry-button:active {
+      transform: translateY(0);
+    }
+
+    .connection-status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-checking {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .status-offline {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .status-online {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .offline-transactions {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .transactions-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #e2e8f0;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-info {
+      flex: 1;
+    }
+
+    .transaction-type {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .transaction-details {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .transaction-status {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .status-queued {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+
+    @media (max-width: 480px) {
+      .offline-container {
+        padding: 0 10px;
+      }
+      
+      .offline-title {
+        font-size: 24px;
+      }
+      
+      .offline-icon {
+        width: 100px;
+        height: 100px;
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">
+      📱
+    </div>
+    
+    <h1 class="offline-title">Sin Conexión</h1>
+    <p class="offline-subtitle">
+      No tienes conexión a internet en este momento. 
+      Algunas funciones están disponibles offline.
+    </p>
+
+    <div class="offline-features">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>Ver historial de transacciones</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>Consultar balances guardados</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>Preparar transacciones offline</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>Acceder a documentación</span>
+      </div>
+    </div>
+
+    <button class="retry-button" onclick="checkConnection()">
+      Reintentar Conexión
+    </button>
+
+    <div id="connectionStatus" class="connection-status status-checking">
+      Verificando conexión...
+    </div>
+
+    <div class="offline-transactions">
+      <h3 class="transactions-title">Transacciones Pendientes</h3>
+      <div id="offlineTransactions">
+        <div class="transaction-item">
+          <div class="transaction-info">
+            <div class="transaction-type">Préstamo USDT</div>
+            <div class="transaction-details">1,000 USDT • Hace 5 min</div>
+          </div>
+          <div class="transaction-status status-pending">Pendiente</div>
+        </div>
+        <div class="transaction-item">
+          <div class="transaction-info">
+            <div class="transaction-type">Staking CORE</div>
+            <div class="transaction-details">500 CORE • Hace 12 min</div>
+          </div>
+          <div class="transaction-status status-queued">En Cola</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let connectionCheckInterval;
+
+    // Verificar conexión al cargar
+    window.addEventListener('load', () => {
+      checkConnection();
+      startConnectionMonitoring();
+    });
+
+    // Función para verificar conexión
+    async function checkConnection() {
+      const statusElement = document.getElementById('connectionStatus');
+      
+      try {
+        statusElement.className = 'connection-status status-checking';
+        statusElement.textContent = 'Verificando conexión...';
+
+        // Intentar hacer una petición a un endpoint de health check
+        const response = await fetch('/api/health', { 
+          method: 'HEAD',
+          cache: 'no-cache'
+        });
+
+        if (response.ok) {
+          statusElement.className = 'connection-status status-online';
+          statusElement.textContent = '¡Conexión restaurada!';
+          
+          // Redirigir después de un breve delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          throw new Error('Server error');
+        }
+      } catch (error) {
+        statusElement.className = 'connection-status status-offline';
+        statusElement.textContent = 'Sin conexión a internet';
+      }
+    }
+
+    // Monitoreo continuo de conexión
+    function startConnectionMonitoring() {
+      connectionCheckInterval = setInterval(() => {
+        if (navigator.onLine) {
+          checkConnection();
+        }
+      }, 10000); // Verificar cada 10 segundos
+    }
+
+    // Detectar cambios en el estado de conexión
+    window.addEventListener('online', () => {
+      console.log('Conexión restaurada');
+      checkConnection();
+    });
+
+    window.addEventListener('offline', () => {
+      console.log('Conexión perdida');
+      const statusElement = document.getElementById('connectionStatus');
+      statusElement.className = 'connection-status status-offline';
+      statusElement.textContent = 'Sin conexión a internet';
+    });
+
+    // Limpiar intervalo al salir
+    window.addEventListener('beforeunload', () => {
+      if (connectionCheckInterval) {
+        clearInterval(connectionCheckInterval);
+      }
+    });
+
+    // Registrar el service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
+
+    // Cargar transacciones offline desde IndexedDB
+    async function loadOfflineTransactions() {
+      try {
+        if ('indexedDB' in window) {
+          const db = await openDB();
+          const transactions = await db.getAll('offlineTransactions');
+          
+          const container = document.getElementById('offlineTransactions');
+          container.innerHTML = '';
+          
+          if (transactions.length === 0) {
+            container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">No hay transacciones pendientes</p>';
+            return;
+          }
+          
+          transactions.forEach(tx => {
+            const txElement = document.createElement('div');
+            txElement.className = 'transaction-item';
+            txElement.innerHTML = `
+              <div class="transaction-info">
+                <div class="transaction-type">${tx.type}</div>
+                <div class="transaction-details">${tx.amount} ${tx.currency} • ${formatTime(tx.timestamp)}</div>
+              </div>
+              <div class="transaction-status status-pending">Pendiente</div>
+            `;
+            container.appendChild(txElement);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading offline transactions:', error);
+      }
+    }
+
+    // Función auxiliar para abrir IndexedDB
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('DefiAppDB', 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+      });
+    }
+
+    // Formatear tiempo
+    function formatTime(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      
+      if (minutes < 1) return 'Hace un momento';
+      if (minutes === 1) return 'Hace 1 min';
+      if (minutes < 60) return `Hace ${minutes} min`;
+      
+      const hours = Math.floor(minutes / 60);
+      if (hours === 1) return 'Hace 1 hora';
+      if (hours < 24) return `Hace ${hours} horas`;
+      
+      const days = Math.floor(hours / 24);
+      if (days === 1) return 'Hace 1 día';
+      return `Hace ${days} días`;
+    }
+
+    // Cargar transacciones al inicio
+    loadOfflineTransactions();
+  </script>
+</body>
+</html>

@@ -6,14 +6,14 @@ import { SidebarNav } from './SidebarNav'
 import { OracleStatus } from '../market/OracleStatus'
 import { LegalBanner } from './LegalBanner'
 import { useUiStore } from '../../state/useUiStore'
-import { motion, AnimatePresence } from 'framer-motion'
+
 import { useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { isSidebarOpen, setLanguage, theme } = useUiStore()
+  const { setLanguage, theme } = useUiStore()
   const maintenance = import.meta.env.VITE_MAINTENANCE_MSG as string | undefined
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()

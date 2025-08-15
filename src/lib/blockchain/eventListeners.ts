@@ -1,4 +1,4 @@
-import { createPublicClient, http, getContract, type PublicClient, type Address } from 'viem'
+import { createPublicClient, http, type PublicClient, type Address } from 'viem'
 import { CONTRACTS } from '../../lib/contracts'
 import { CACHE_KEYS, SmartCache } from '../cache'
 import { persistentActions } from '../../state/usePersistentStore'
@@ -6,11 +6,7 @@ import { optimisticUtils } from '../optimistic'
 import { env } from '../../lib/env'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 
-// Import ABIs
-import CollateralVaultAbi from '../../abi/CollateralVault.json'
-import LoanManagerAbi from '../../abi/LoanManager.json'
-import OracleRouterAbi from '../../abi/OracleRouter.json'
-import StakingVaultAbi from '../../abi/StakingVault.json'
+
 
 // Tipos para event listeners
 export interface BlockchainEvent {
@@ -68,8 +64,6 @@ class BlockchainEventManager {
   private isRunning = false
   private pollInterval = 2000 // 2 segundos
   private maxBlockRange = 1000n
-  private retryAttempts = 3
-  private retryDelay = 1000
 
   constructor() {
     const chain = env.RPC_TESTNET.includes('test') ? coreTestnet : coreMainnet
@@ -241,12 +235,6 @@ class BlockchainEventManager {
 
   // Obtener eventos del contrato
   private async getEvents(listener: EventListener, fromBlock: bigint, toBlock: bigint) {
-    const contract = getContract({
-      address: listener.contract,
-      abi: this.getAbiForContract(listener.contract),
-      client: this.client,
-    })
-
     const logs = await this.client.getLogs({
       address: listener.contract,
       event: {
@@ -433,19 +421,6 @@ class BlockchainEventManager {
   }
 
   // Utilidades
-  private getAbiForContract(address: Address) {
-    // Mapear dirección a ABI correspondiente
-    const abiMap: Record<string, any> = {
-      [CONTRACTS.CollateralVault]: CollateralVaultAbi,
-      [CONTRACTS.LoanManager]: LoanManagerAbi,
-      [CONTRACTS.LiquidationModule]: [], // LiquidationModule no tiene ABI público
-      [CONTRACTS.OracleRouter]: OracleRouterAbi,
-      [CONTRACTS.DualStakingVault]: StakingVaultAbi,
-    }
-    
-    return abiMap[address] || []
-  }
-
   private getEventInputs(eventName: string) {
     // Definir inputs para cada evento
     const eventInputs: Record<string, any[]> = {

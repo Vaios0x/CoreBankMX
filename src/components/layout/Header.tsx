@@ -1,7 +1,6 @@
 import { ConnectButton } from '../web3/ConnectButton'
 import { useUiStore } from '../../state/useUiStore'
 import { useAccount } from 'wagmi'
-import AddressTag from '../web3/AddressTag'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'

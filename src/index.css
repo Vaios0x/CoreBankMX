@@ -2,99 +2,534 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA y Mobile Optimizations */
 @layer base {
-  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  body { @apply font-sans antialiased; }
-  h1, h2, h3 { @apply font-semibold tracking-tight; }
-
-  /* RainbowKit tokens override to better match our theme */
-  [data-rk] {
-    --rk-colors-accentColor: theme('colors.brand.600');
-    --rk-colors-accentColorForeground: #ffffff;
-    --rk-colors-modalBackground: theme('colors.ui.surface');
-    --rk-colors-modalBorder: theme('colors.ui.border');
-    --rk-colors-generalBorder: theme('colors.ui.border');
-    --rk-radii-modal: 12px;
-    --rk-radii-connectButton: 8px;
-    --rk-shadows-connectButton: 0 0 0 1px theme('colors.ui.border'), 0 0 24px rgba(255,122,0,0.12);
+  /* Optimizaciones para PWA */
+  html {
+    /* Prevenir zoom en iOS */
+    -webkit-text-size-adjust: 100%;
+    /* Mejorar rendimiento de scroll */
+    -webkit-overflow-scrolling: touch;
+    /* Prevenir selección de texto no deseada */
+    -webkit-touch-callout: none;
   }
-}
 
-*:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px theme('colors.brand.500');
+  /* Permitir selección en inputs y textareas */
+  input, textarea {
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Optimizaciones para viewport móvil */
+  body {
+    /* Mejorar rendimiento de animaciones */
+    will-change: scroll-position;
+    /* Optimizar para pantallas táctiles */
+    touch-action: manipulation;
+  }
+
+  /* Mejorar rendimiento de imágenes */
+  img {
+    /* Prevenir layout shift */
+    max-width: 100%;
+    height: auto;
+    /* Optimizar para pantallas de alta densidad */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Optimizaciones para botones táctiles */
+  button, [role="button"] {
+    /* Mejorar feedback táctil */
+    -webkit-tap-highlight-color: transparent;
+    /* Prevenir zoom en doble tap */
+    touch-action: manipulation;
+  }
+
+  /* Mejorar scroll en móviles */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Optimizaciones para formularios móviles */
+  input, select, textarea {
+    /* Mejorar apariencia en móviles */
+    -webkit-appearance: none;
+  }
+
+  /* Mejorar focus en móviles */
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+  }
 }
 
 @layer components {
-  .link { @apply text-brand-400 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500; }
-  .skeleton {
-    @apply animate-pulse bg-gray-800/70 rounded;
-  }
-  .btn-sm { @apply px-3 py-1 text-xs; }
-  .btn-lg { @apply px-5 py-2 text-base; }
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-  .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-500;
-  }
-  .btn-outline {
-    @apply btn border border-ui hover:bg-gray-800 dark:hover:bg-gray-800/70 text-gray-300 dark:text-gray-200;
-  }
-  .btn-ghost {
-    @apply btn hover:bg-gray-800 text-gray-300;
-  }
+  /* Componentes base de la aplicación */
   .card {
-    @apply rounded-xl border border-ui bg-gradient-to-br from-gray-900 to-gray-900/60 p-5 shadow-sm;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6;
   }
-  .card-muted {
-    @apply rounded-md border border-ui bg-ui-surface p-3;
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .kpi-card {
-    @apply rounded-xl border border-ui bg-gradient-to-br from-gray-900 to-gray-900/60 p-5;
+
+  .btn-primary {
+    @apply btn bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500;
   }
+
+  .btn-secondary {
+    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+  }
+
+  .btn-outline {
+    @apply btn border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
+
+  .btn-ghost {
+    @apply btn text-gray-700 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600 focus:ring-red-500;
+  }
+
+  .btn-success {
+    @apply btn bg-green-500 text-white hover:bg-green-600 focus:ring-green-500;
+  }
+
+  .btn-warning {
+    @apply btn bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  }
+
   .badge {
-    @apply inline-flex items-center rounded px-2 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
-  .badge-success { @apply badge bg-green-900/30 text-green-100 border border-green-700; }
-  .badge-warning { @apply badge bg-yellow-900/30 text-yellow-100 border border-yellow-700; }
-  .badge-error { @apply badge bg-red-900/30 text-red-100 border border-red-800; }
+
+  .badge-primary {
+    @apply badge bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200;
+  }
+
+  .badge-secondary {
+    @apply badge bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
 
   .alert {
-    @apply rounded-md border px-3 py-2;
+    @apply p-4 rounded-lg border;
   }
-  .alert-success { @apply alert border-green-700 bg-green-900/30 text-green-100; }
-  .alert-warning { @apply alert border-yellow-700 bg-yellow-900/30 text-yellow-100; }
-  .alert-danger { @apply alert border-red-800 bg-red-900/30 text-red-100; }
+
+  .alert-info {
+    @apply alert bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200;
+  }
+
+  .alert-success {
+    @apply alert bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200;
+  }
+
+  .alert-warning {
+    @apply alert bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-200;
+  }
+
+  .alert-danger {
+    @apply alert bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200;
+  }
+
+  .motion-press {
+    @apply transition-transform duration-75 ease-out;
+  }
+
+  .motion-press:active {
+    @apply scale-95;
+  }
+
+  /* Componentes móviles optimizados */
+  .mobile-card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700;
+    /* Mejorar rendimiento */
+    will-change: transform;
+    /* Optimizar para pantallas táctiles */
+    touch-action: pan-y;
+  }
+
+  .mobile-button {
+    @apply px-4 py-3 rounded-lg font-medium transition-all duration-200;
+    /* Tamaño mínimo para touch */
+    min-height: 48px;
+    /* Mejorar feedback táctil */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    /* Prevenir zoom */
+    touch-action: manipulation;
+  }
+
+  .mobile-button:active {
+    @apply transform scale-95;
+  }
+
+  .mobile-input {
+    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg;
+    /* Prevenir zoom en iOS */
+    font-size: 16px;
+    /* Mejorar apariencia */
+    -webkit-appearance: none;
+    background-color: white;
+  }
+
+  .mobile-input:focus {
+    @apply ring-2 ring-blue-500 border-transparent;
+    outline: none;
+  }
+
+  /* Navegación móvil */
+  .mobile-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700;
+    /* Safe area para dispositivos con notch */
+    padding-bottom: env(safe-area-inset-bottom);
+    /* Mejorar rendimiento */
+    will-change: transform;
+  }
+
+  .mobile-nav-item {
+    @apply flex flex-col items-center justify-center py-2 px-3 text-sm;
+    /* Tamaño mínimo para touch */
+    min-height: 60px;
+    /* Mejorar feedback táctil */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Modales móviles */
+  .mobile-modal {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center;
+    /* Safe area */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-modal-content {
+    @apply bg-white dark:bg-gray-800 rounded-t-2xl w-full max-h-[90vh] overflow-hidden;
+    /* Animación suave */
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+  }
+
+  .mobile-modal-content.closing {
+    transform: translateY(100%);
+  }
+
+  /* Listas móviles */
+  .mobile-list {
+    @apply space-y-1;
+  }
+
+  .mobile-list-item {
+    @apply flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700;
+    /* Tamaño mínimo para touch */
+    min-height: 60px;
+    /* Mejorar feedback táctil */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
+  }
+
+  /* Swipe gestures */
+  .swipeable {
+    @apply relative overflow-hidden;
+    /* Mejorar rendimiento */
+    will-change: transform;
+  }
+
+  .swipeable-content {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  /* Pull to refresh */
+  .pull-to-refresh {
+    @apply relative overflow-hidden;
+  }
+
+  .pull-to-refresh-indicator {
+    @apply absolute top-0 left-0 right-0 flex items-center justify-center py-2 text-gray-500;
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-out;
+  }
+
+  .pull-to-refresh-indicator.active {
+    transform: translateY(0);
+  }
+
+  /* Optimizaciones para DeFi específicas */
+  .defi-card {
+    @apply bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg;
+    /* Mejorar rendimiento */
+    will-change: transform;
+    /* Optimizar para pantallas táctiles */
+    touch-action: pan-y;
+  }
+
+  /* Card component styles */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700;
+    /* Mejorar rendimiento */
+    will-change: transform;
+    /* Optimizar para pantallas táctiles */
+    touch-action: pan-y;
+  }
+
+  /* KPI Card styles */
+  .kpi-card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700;
+    /* Mejorar rendimiento */
+    will-change: transform;
+    /* Optimizar para pantallas táctiles */
+    touch-action: pan-y;
+  }
+
+  .defi-button {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl;
+    /* Tamaño mínimo para touch */
+    min-height: 48px;
+    /* Mejorar feedback táctil */
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+    /* Prevenir zoom */
+    touch-action: manipulation;
+    /* Sombra para profundidad */
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+
+  .defi-button:active {
+    @apply transform scale-95;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  }
+
+  /* Optimizaciones para charts y gráficos */
+  .chart-container {
+    @apply relative overflow-hidden rounded-xl;
+    /* Mejorar rendimiento */
+    will-change: transform;
+    /* Optimizar para pantallas táctiles */
+    touch-action: pan-x pan-y;
+  }
+
+  /* Optimizaciones para tablas móviles */
+  .mobile-table {
+    @apply w-full overflow-x-auto;
+    /* Mejorar scroll horizontal */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-table-content {
+    @apply min-w-full;
+  }
+
+  .mobile-table-row {
+    @apply flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700;
+    /* Tamaño mínimo para touch */
+    min-height: 60px;
+  }
+
+  /* Optimizaciones para notificaciones */
+  .mobile-notification {
+    @apply fixed top-4 left-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700;
+    /* Safe area */
+    margin-top: env(safe-area-inset-top);
+    /* Animación suave */
+    transform: translateY(0);
+    transition: all 0.3s ease-out;
+  }
+
+  .mobile-notification.entering {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  .mobile-notification.exiting {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 }
 
 @layer utilities {
-  /* UI semantic utilities backed by theme colors */
-  .border-ui { border-color: theme('colors.ui.border'); }
-  .bg-ui-surface { background-color: theme('colors.ui.surface'); }
-  .bg-ui-surface-muted { background-color: theme('colors.ui.surfaceMuted'); }
-  .text-ui-muted { color: theme('colors.ui.textMuted'); }
+  /* Utilidades móviles */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
 
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  @keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
   }
-  .animate-in { animation: fade-in 180ms ease-out both; }
-  .animate-in-up { animation: fade-in-up 180ms ease-out both; }
-  .motion-press { @apply transform transition duration-150 ease-out active:scale-95; }
-  .hover-pop { @apply transform transition duration-150 ease-out hover:scale-105; }
-  .hover-glow { @apply transition-shadow hover:shadow-brand-glow; }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Optimizaciones de rendimiento */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .touch-optimized {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Utilidades para PWA */
+  .pwa-installable {
+    /* Indicador visual para PWA instalable */
+    position: relative;
+  }
+
+  .pwa-installable::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  /* Optimizaciones para dark mode */
+  .dark .mobile-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark .mobile-button {
+    @apply bg-gray-700 text-white;
+  }
+
+  .dark .mobile-input {
+    @apply bg-gray-800 border-gray-600 text-white;
+  }
+
+  /* Utilidades para animaciones suaves */
+  .smooth-transition {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .smooth-transform {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Utilidades para scroll optimizado */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scroll-hidden::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/* Media queries específicas para móviles */
+@media (max-width: 640px) {
+  /* Optimizaciones para pantallas pequeñas */
+  .container {
+    @apply px-4;
+  }
+
+  /* Mejorar espaciado en móviles */
+  .mobile-spacing {
+    @apply space-y-4;
+  }
+
+  /* Optimizar tipografía para móviles */
+  .mobile-text {
+    @apply text-sm leading-relaxed;
+  }
+
+  .mobile-heading {
+    @apply text-xl font-semibold;
+  }
+
+  /* Mejorar botones en móviles */
+  .mobile-button {
+    @apply w-full;
+  }
+}
+
+/* Optimizaciones para tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-optimized {
+    @apply max-w-2xl mx-auto;
+  }
+}
+
+/* Optimizaciones para pantallas grandes */
+@media (min-width: 1025px) {
+  .desktop-optimized {
+    @apply max-w-6xl mx-auto;
+  }
+}
+
+/* Optimizaciones específicas para PWA */
+@media (display-mode: standalone) {
+  /* Estilos cuando la app está instalada */
+  .pwa-installed {
+    /* Ocultar elementos de navegación del navegador */
+    .browser-nav {
+      display: none;
+    }
+  }
+}
+
+/* Optimizaciones para pantallas de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .high-dpi {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Optimizaciones para dispositivos con notch */
+@supports (padding: max(0px)) {
+  .notch-safe {
+    padding-top: max(env(safe-area-inset-top), 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+    padding-left: max(env(safe-area-inset-left), 20px);
+    padding-right: max(env(safe-area-inset-right), 20px);
   }
 }

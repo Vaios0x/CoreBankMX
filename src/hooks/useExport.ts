@@ -3,7 +3,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import { format } from 'date-fns'
-import { useI18n } from '../i18n/i18n'
+import { useI18n, useI18nConfig } from '../i18n/i18n'
 
 interface ExportData {
   [key: string]: any
@@ -20,7 +20,8 @@ interface ExportOptions {
 }
 
 export function useExport() {
-  const { t, config } = useI18n()
+  const t = useI18n()
+  const { config } = useI18nConfig()
 
   const exportToCSV = useCallback((
     data: ExportData[],
@@ -211,11 +212,11 @@ export function useExport() {
       liquidations: any[]
       positions: any[]
     },
-    format: 'csv' | 'excel' | 'pdf' = 'excel'
+    exportFormat: 'csv' | 'excel' | 'pdf' = 'excel'
   ) => {
     const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss')
     
-    switch (format) {
+    switch (exportFormat) {
       case 'csv':
         // Exportar cada sección como CSV separado
         if (dashboardData.metrics) {
@@ -277,7 +278,7 @@ export function useExport() {
           doc.text('Dashboard Metrics', 20, currentY)
           currentY += 20
           
-          const metricsData = Object.entries(dashboardData.metrics).map(([key, value]) => [key, String(value)])
+          const metricsData = Object.entries(dashboardData.metrics).map(([key, value]) => [key, String(value || '')])
           autoTable(doc, {
             head: [['Metric', 'Value']],
             body: metricsData,

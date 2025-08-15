@@ -25,7 +25,7 @@ export function ExportPanel({
   onClose,
   title = 'Export Data'
 }: ExportPanelProps) {
-  const { t } = useI18n()
+  const t = useI18n()
   const { exportToCSV, exportToExcel, exportToPDF, exportDashboardData } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [selectedFormat, setSelectedFormat] = useState<'csv' | 'excel' | 'pdf'>('excel')

@@ -6,12 +6,14 @@ import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '../components/web3/ConnectButton'
 import { useI18n } from '../i18n/i18n'
+import { useState } from 'react'
 
 export default function Home() {
   const { tvlUsd, baseRate } = useMarketStore()
-  const { data: btcPrice, isLoading: btcLoading } = useOracle()
-  const { isConnected } = useAccount()
-  const { t } = useI18n()
+  const { address } = useAccount()
+  const { data: price } = useOracle()
+  const t = useI18n()
+  const [showLtvInfo, setShowLtvInfo] = useState(false)
 
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-12">
@@ -51,7 +53,7 @@ export default function Home() {
             transition={{ duration: 0.35 }} 
             className="flex flex-col sm:flex-row gap-3 sm:gap-4"
           >
-            {isConnected ? (
+            {address ? (
               <>
                 <Link to="/borrow" className="btn-primary text-sm motion-press w-full sm:w-auto text-center">
                   {t('home.start_button')}
@@ -82,7 +84,7 @@ export default function Home() {
         {[
           { label: 'TVL', value: formatUSD(tvlUsd || 1000000) }, 
           { label: 'Base Rate', value: `${((baseRate || 0.05) * 100).toFixed(2)}%` }, 
-          { label: 'BTC/USD', value: btcPrice ? formatUSD(btcPrice) : (btcLoading ? '—' : formatUSD(60000)) }
+          { label: 'BTC/USD', value: price ? formatUSD(price) : '—' }
         ].map((kpi) => (
           <motion.div 
             key={kpi.label} 

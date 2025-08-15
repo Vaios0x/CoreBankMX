@@ -31,7 +31,7 @@ interface AdvancedStatsProps {
 }
 
 export function AdvancedStats({ metrics }: AdvancedStatsProps) {
-  const { t } = useI18n()
+  const t = useI18n()
 
   const totalPositions = metrics.healthFactorDistribution.healthy + 
                         metrics.healthFactorDistribution.warning + 

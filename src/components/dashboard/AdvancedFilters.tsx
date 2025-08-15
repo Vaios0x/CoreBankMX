@@ -55,7 +55,7 @@ export function AdvancedFilters({
   showSort = true,
   showLimit = true
 }: AdvancedFiltersProps) {
-  const { t } = useI18n()
+  const t = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
   const [localFilters, setLocalFilters] = useState<FilterOptions>(filters)
 

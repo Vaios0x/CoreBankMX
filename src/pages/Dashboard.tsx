@@ -16,6 +16,7 @@ import { AdvancedFilters } from '../components/dashboard/AdvancedFilters'
 import { ExportPanel } from '../components/dashboard/ExportPanel'
 import { Badge } from '../components/ui/Badge'
 import { Card } from '../components/ui/Card'
+import { getDevConfig } from '../lib/dev-config'
 
 interface FilterOptions {
   search: string
@@ -38,7 +39,7 @@ export default function Dashboard() {
   const { tvlUsd, setParams } = useMarketStore()
   const [symbol, setSymbol] = useState<'BTC' | 'LSTBTC'>('BTC')
   const { data: priceNow, isLoading, stale, refetch } = useOracle(symbol)
-  const { t } = useI18n()
+  const t = useI18n()
   const [contracts, setContracts] = useState<any>(null)
   const [priceHistory, setPriceHistory] = useState<Array<{ timestamp: number; price: number; volume?: number }>>([])
   const [metrics, setMetrics] = useState<{ activePositions: number; liquidations24h: number } | null>(null)
@@ -56,6 +57,8 @@ export default function Dashboard() {
     limit: 100
   })
 
+  const devConfig = getDevConfig()
+
   // WebSocket para actualizaciones en tiempo real
   const { isConnected, isConnecting, error: wsError, messages } = useWebSocket('/dashboard', {
     onMessage: (message) => {
@@ -70,10 +73,16 @@ export default function Dashboard() {
       } else if (message.type === 'liquidation_event') {
         setLiqs(prev => [message.data, ...prev.slice(0, 99)])
       }
-    }
+    },
+    autoConnect: !devConfig.disableWebSocket,
+    reconnectAttempts: devConfig.websocketConfig.reconnectAttempts,
+    reconnectDelay: devConfig.websocketConfig.reconnectDelay
   })
 
   const { exportDashboardData } = useExport()
+  
+  // Memoizar el símbolo para evitar re-renders innecesarios
+  const memoizedSymbol = useMemo(() => symbol, [symbol])
   
   // Fallback contracts from centralized config
   const fallbackContracts = {
@@ -87,13 +96,16 @@ export default function Dashboard() {
     USDT: CONTRACTS.USDT
   }
   
+  // Inicialización de datos del dashboard (solo una vez)
   useEffect(() => {
     let mounted = true
-    ;(async () => {
+    
+    const fetchInitialData = async () => {
+      // Fetch status
       try {
         const res = await fetch(`${env.API_URL}/status`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         setContracts(json?.contracts ?? null)
         setApiAvailable(true)
       } catch {
@@ -102,24 +114,24 @@ export default function Dashboard() {
           setContracts(fallbackContracts)
         }
       }
-    })()
-    ;(async () => {
+
+      // Fetch market params
       try {
         const res = await fetch(`${env.API_URL}/market/params`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         if (json && typeof json.baseRate === 'number') {
           setParams({ baseRate: json.baseRate, targetLtv: json.targetLtv, liquidationLtv: json.liquidationLtv, originationFeeBps: json.originationFeeBps, minBorrowAmount: json.minBorrowAmount })
         }
       } catch (error) {
         console.error('Failed to fetch market params:', error)
       }
-    })()
-    ;(async () => {
+
+      // Fetch market metrics
       try {
         const res = await fetch(`${env.API_URL}/market/metrics`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         setMetrics({ activePositions: json?.activePositions ?? 0, liquidations24h: json?.liquidations24h ?? 0 })
         if (typeof json?.tvlUsd === 'number') {
           setParams({ tvlUsd: json.tvlUsd })
@@ -127,35 +139,35 @@ export default function Dashboard() {
       } catch (error) {
         console.error('Failed to fetch market metrics:', error)
       }
-    })()
-    ;(async () => {
+
+      // Fetch liquidations
       try {
         const res = await fetch(`${env.API_URL}/market/liquidations`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         const liquidationsWithTimestamp = Array.isArray(json?.items) ? json.items.map((liq: any) => ({
           ...liq,
-          timestamp: Date.now() - Math.random() * 86400000 // Mock timestamp for demo
+          timestamp: Date.now() - Math.random() * 86400000
         })) : []
         setLiqs(liquidationsWithTimestamp)
       } catch (error) {
         console.error('Failed to fetch liquidations:', error)
       }
-    })()
-    ;(async () => {
+
+      // Fetch initial price history
       try {
         const res = await fetch(`${env.API_URL}/market/history/BTC`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         const historyWithTimestamp = (json?.points ?? []).map((p: any, index: number) => ({
-          timestamp: Date.now() - (24 - index) * 3600000, // Mock timestamps for demo
+          timestamp: Date.now() - (24 - index) * 3600000,
           price: Number(p.v) || 0,
-          volume: Math.random() * 1000000 // Mock volume
+          volume: Math.random() * 1000000
         }))
         setPriceHistory(historyWithTimestamp)
       } catch {
         if (mounted) {
-          const seed = Number(priceNow ?? 0) || 60000
+          const seed = 60000 // Valor fijo para evitar dependencias
           const series = Array.from({ length: 24 }).map((_, i) => ({
             timestamp: Date.now() - (24 - i) * 3600000,
             price: seed * (1 + Math.sin(i / 3) * 0.01),
@@ -164,20 +176,30 @@ export default function Dashboard() {
           setPriceHistory(series)
         }
       }
-    })()
+    }
+
+    fetchInitialData()
+    
     return () => {
       mounted = false
     }
-  }, [])
+  }, []) // Sin dependencias para ejecutar solo una vez
 
   // Histórico de precios por símbolo + auto-refresco
   useEffect(() => {
+    // Evitar ejecución si no hay símbolo válido
+    if (!symbol || symbol.length === 0) return
+    
     let mounted = true
+    let intervalId: NodeJS.Timeout | null = null
+    
     const fetchHistory = async () => {
+      if (!mounted) return
+      
       try {
         const res = await fetch(`${env.API_URL}/market/history/${symbol}`, { cache: 'no-store' })
-        const json = await res.json()
         if (!mounted) return
+        const json = await res.json()
         const historyWithTimestamp = (json?.points ?? []).map((p: any, index: number) => ({
           timestamp: Date.now() - (24 - index) * 3600000,
           price: Number(p.v) || 0,
@@ -186,7 +208,7 @@ export default function Dashboard() {
         setPriceHistory(historyWithTimestamp)
       } catch {
         if (!mounted) return
-        const seed = Number(priceNow ?? 0) || 60000
+        const seed = 60000 // Valor fijo para evitar dependencias
         const series = Array.from({ length: 24 }).map((_, i) => ({
           timestamp: Date.now() - (24 - i) * 3600000,
           price: seed * (1 + Math.sin(i / 3) * 0.01),
@@ -195,13 +217,20 @@ export default function Dashboard() {
         setPriceHistory(series)
       }
     }
+    
+    // Ejecutar inmediatamente
     fetchHistory()
-    const interval = setInterval(fetchHistory, 30_000)
+    
+    // Configurar intervalo
+    intervalId = setInterval(fetchHistory, devConfig.pollingConfig.priceUpdateInterval)
+    
     return () => {
       mounted = false
-      clearInterval(interval)
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
     }
-  }, [symbol, priceNow])
+  }, [symbol]) // Solo depende del símbolo
 
   // Filtrar datos según los filtros aplicados
   const filteredLiquidations = useMemo(() => {
@@ -294,8 +323,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* WebSocket Status */}
-      <div className="flex items-center gap-2 text-sm">
+      {/* WebSocket Status - Ocultado en desarrollo */}
+      {/* <div className="flex items-center gap-2 text-sm">
         <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : isConnecting ? 'bg-yellow-500' : 'bg-red-500'}`} />
         <span className="text-gray-600 dark:text-gray-400">
           {t('dashboard.websocket_status')}: {
@@ -309,7 +338,7 @@ export default function Dashboard() {
             Error: {wsError.message}
           </span>
         )}
-      </div>
+      </div> */}
 
       {/* API Status Banner */}
       {!apiAvailable && (
@@ -447,7 +476,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4 text-xs">
                   <span>Repaid: {formatUSD(liq.repayAmount)}</span>
-                  <span>Seized: {liq.collateralSeized.toFixed(3)} BTC</span>
+                  <span>Seized: {(liq.collateralSeized || 0).toFixed(3)} BTC</span>
                   <span>Incentive: {formatUSD(liq.incentive)}</span>
                   <ExplorerLink type="tx" hash={liq.tx} />
                 </div>
@@ -457,18 +486,7 @@ export default function Dashboard() {
         )}
       </section>
 
-      {/* Contracts Section */}
-      <section className="card p-3 sm:p-4 lg:p-5">
-        <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('dashboard.deployed_contracts')}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          {contracts && Object.entries(contracts).map(([name, address]) => (
-            <div key={name} className="p-2 sm:p-3 rounded-lg bg-gray-800/30 text-xs sm:text-sm">
-              <div className="font-medium">{name}</div>
-              <ExplorerLink type="address" hash={address as string} />
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Contracts Section - Removed, now available in /docs */}
 
       {/* Export Panel */}
       <ExportPanel

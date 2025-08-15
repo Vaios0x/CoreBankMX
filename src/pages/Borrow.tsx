@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useOracle } from '../hooks/useOracle'
@@ -34,7 +34,7 @@ export default function Borrow() {
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(SecureBorrowSchema), defaultValues: { collateralAmount: 0, borrowAmount: 0 } })
   const { data: price } = useOracle()
-  const { t } = useI18n()
+  const t = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const collateral = watch('collateralAmount') || 0

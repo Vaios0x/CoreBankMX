@@ -6,6 +6,7 @@ import OracleRouterAbi from '../abi/OracleRouter.json'
 import { coreMainnet, coreTestnet } from '../lib/chains'
 import { CACHE_KEYS, CACHE_CONFIGS, SmartCache } from '../lib/cache'
 import { persistentActions } from '../state/usePersistentStore'
+import { useMemo } from 'react'
 
 async function fetchOraclePriceFromApi(symbol: string): Promise<number> {
   try {
@@ -40,28 +41,35 @@ async function fetchOraclePriceOnchain(): Promise<number> {
 export function useOracle(symbol: string = 'BTC') {
   const config = CACHE_CONFIGS.PRICE
   
+  // Memoizar la función de query para evitar recreaciones
+  const queryFn = useMemo(() => async () => {
+    const price = env.USE_ONCHAIN_ORACLE ? 
+      await fetchOraclePriceOnchain() : 
+      await fetchOraclePriceFromApi(symbol)
+    
+    // Actualizar cache persistente solo si el precio es válido
+    if (Number.isFinite(price) && price > 0) {
+      persistentActions.updatePriceCache(symbol, price, env.USE_ONCHAIN_ORACLE ? 'onchain' : 'api')
+    }
+    
+    return price
+  }, [symbol])
+  
+  // Memoizar placeholder data para evitar recreaciones
+  const placeholderData = useMemo(() => {
+    const cachedData = SmartCache.getData(CACHE_KEYS.ORACLE_PRICE(symbol))
+    return typeof cachedData === 'number' ? cachedData : undefined
+  }, [symbol])
+  
   const q = useQuery({
     queryKey: CACHE_KEYS.ORACLE_PRICE(symbol),
-    queryFn: async () => {
-      const price = env.USE_ONCHAIN_ORACLE ? 
-        await fetchOraclePriceOnchain() : 
-        await fetchOraclePriceFromApi(symbol)
-      
-      // Actualizar cache persistente
-      persistentActions.updatePriceCache(symbol, price, env.USE_ONCHAIN_ORACLE ? 'onchain' : 'api')
-      
-      return price
-    },
+    queryFn,
     staleTime: config.staleTime,
     gcTime: config.gcTime,
     retry: config.retry,
     refetchInterval: 30_000,
     refetchIntervalInBackground: config.background,
-    placeholderData: () => {
-      // Usar datos del cache persistente como fallback
-      const cachedData = SmartCache.getData(CACHE_KEYS.ORACLE_PRICE(symbol))
-      return typeof cachedData === 'number' ? cachedData : undefined
-    }
+    placeholderData,
   })
   
   const updatedAt = q.dataUpdatedAt

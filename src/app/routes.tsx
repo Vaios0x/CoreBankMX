@@ -17,6 +17,12 @@ import { OffRamp } from '../pages/OffRamp'
 import { Settings } from '../pages/Settings'
 import { Analytics } from '../pages/Analytics'
 
+// Nuevas páginas de características de negocio
+import { ReferralSystem } from '../pages/ReferralSystem'
+import { LoyaltyProgram } from '../pages/LoyaltyProgram'
+import { EducationalContent } from '../pages/EducationalContent'
+import { SupportChat } from '../pages/SupportChat'
+
 function AnimatedRoutes() {
   return (
     <Routes>
@@ -35,6 +41,13 @@ function AnimatedRoutes() {
       <Route path="/docs/status" element={<AppShell><DocsStatus /></AppShell>} />
       <Route path="/docs/api" element={<AppShell><DocsApi /></AppShell>} />
       <Route path="/docs/protocol" element={<AppShell><DocsProtocol /></AppShell>} />
+      
+      {/* Nuevas rutas de características de negocio */}
+      <Route path="/referral" element={<AppShell><ReferralSystem /></AppShell>} />
+      <Route path="/loyalty" element={<AppShell><LoyaltyProgram /></AppShell>} />
+      <Route path="/education" element={<AppShell><EducationalContent /></AppShell>} />
+      <Route path="/support" element={<AppShell><SupportChat /></AppShell>} />
+      
       <Route path="*" element={<AppShell><NotFound /></AppShell>} />
     </Routes>
   )

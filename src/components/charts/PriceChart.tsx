@@ -17,7 +17,7 @@ import {
   ReferenceArea
 } from 'recharts'
 import { format } from 'date-fns'
-import { useI18n } from '../../i18n/i18n'
+import { useI18n, useFormatters } from '../../i18n/i18n'
 import { formatUSD, formatNumber } from '../../lib/format'
 
 interface PriceData {
@@ -40,7 +40,7 @@ interface PriceChartProps {
 }
 
 const CustomTooltip = ({ active, payload, label, symbol }: any) => {
-  const { formatCurrency, formatDateTime } = useI18n()
+  const { formatCurrency, formatDateTime } = useFormatters()
   
   if (active && payload && payload.length) {
     const data = payload[0].payload
@@ -78,7 +78,7 @@ export function PriceChart({
   interactive = true,
   theme = 'dark'
 }: PriceChartProps) {
-  const { t } = useI18n()
+  const t = useI18n()
   const [chartType, setChartType] = useState<'line' | 'area' | 'candlestick'>('line')
   const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null)
 

@@ -190,7 +190,7 @@ export function useWebSocket(
     return () => {
       disconnect()
     }
-  }, [connect, disconnect, autoConnect])
+  }, [autoConnect]) // Solo depende de autoConnect, no de connect/disconnect
 
   return {
     isConnected,

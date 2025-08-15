@@ -268,9 +268,23 @@ export function useOptimisticUpdates() {
   const [updates, setUpdates] = React.useState<OptimisticUpdate[]>([])
 
   React.useEffect(() => {
-    const unsubscribe = optimisticStore.subscribe(setUpdates)
-    return unsubscribe
-  }, [])
+    // Evitar suscripciones múltiples
+    let isSubscribed = true
+    
+    const unsubscribe = optimisticStore.subscribe((newUpdates) => {
+      if (isSubscribed) {
+        setUpdates(newUpdates)
+      }
+    })
+    
+    // Obtener estado inicial
+    setUpdates(optimisticStore.getActiveUpdates())
+    
+    return () => {
+      isSubscribed = false
+      unsubscribe()
+    }
+  }, []) // Solo se ejecuta una vez al montar el componente
 
   return updates
 }

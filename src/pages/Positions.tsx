@@ -182,7 +182,7 @@ export default function Positions() {
               <span className="text-lg">💰</span>
               <span className="text-xs text-ui-muted uppercase tracking-wider">Total Collateral</span>
             </div>
-            <p className="text-lg sm:text-xl font-semibold">{totalCollateralBtc.toFixed(6)} BTC</p>
+            <p className="text-lg sm:text-xl font-semibold">{(totalCollateralBtc || 0).toFixed(6)} BTC</p>
             <p className="text-xs text-ui-muted">{formatUSD(totalCollateralUsd)}</p>
           </div>
 
@@ -191,7 +191,7 @@ export default function Positions() {
               <span className="text-lg">💳</span>
               <span className="text-xs text-ui-muted uppercase tracking-wider">Total Debt</span>
             </div>
-            <p className="text-lg sm:text-xl font-semibold">{totalDebtUsdt.toFixed(2)} USDT</p>
+            <p className="text-lg sm:text-xl font-semibold">{(totalDebtUsdt || 0).toFixed(2)} USDT</p>
             <p className="text-xs text-ui-muted">{formatUSD(totalDebtUsd)}</p>
           </div>
 
@@ -201,7 +201,7 @@ export default function Positions() {
               <span className="text-xs text-ui-muted uppercase tracking-wider">Avg LTV</span>
             </div>
             <p className={`text-lg sm:text-xl font-semibold ${getLtvColor(avgLtv)}`}>
-              {(avgLtv * 100).toFixed(1)}%
+              {((avgLtv || 0) * 100).toFixed(1)}%
             </p>
             <p className="text-xs text-ui-muted">Loan-to-Value</p>
           </div>
@@ -212,7 +212,7 @@ export default function Positions() {
               <span className="text-xs text-ui-muted uppercase tracking-wider">Avg Health</span>
             </div>
             <p className={`text-lg sm:text-xl font-semibold ${getHealthFactorColor(avgHealthFactor).split(' ')[0]}`}>
-              {avgHealthFactor.toFixed(2)}
+              {(avgHealthFactor || 0).toFixed(2)}
             </p>
             <p className="text-xs text-ui-muted">Health Factor</p>
           </div>

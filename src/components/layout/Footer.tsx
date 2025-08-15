@@ -4,11 +4,13 @@ import { useToastStore } from '../ui/Toast'
 import Input from '../ui/Input'
 import { env } from '../../lib/env'
 import { useI18n } from '../../i18n/i18n'
+import { useMarketStore } from '../../state/useMarketStore'
 
 export function Footer() {
+  const { tvlUsd } = useMarketStore()
   const { push } = useToastStore()
+  const t = useI18n()
   const [email, setEmail] = useState('')
-  const { t } = useI18n()
   
   const subscribe = (e: React.FormEvent) => {
     e.preventDefault()

@@ -66,15 +66,21 @@ const dict = { en, es }
 // Hook principal de internacionalización
 export function useI18n() {
   const { language } = useUiStore()
+  
+  return (path: string): string | string[] => {
+    const parts = path.split('.')
+    let cur: any = dict[language]
+    for (const p of parts) cur = cur?.[p]
+    return cur ?? path
+  }
+}
+
+// Hook para obtener configuración de idioma
+export function useI18nConfig() {
+  const { language } = useUiStore()
   const config = LANGUAGES[language]
   
   return {
-    t: (path: string): string | string[] => {
-      const parts = path.split('.')
-      let cur: any = dict[language]
-      for (const p of parts) cur = cur?.[p]
-      return cur ?? path
-    },
     config,
     language,
     direction: config.direction,
@@ -97,7 +103,7 @@ export function useTranslation() {
 
 // Funciones de formateo localizado
 export function useFormatters() {
-  const { config } = useI18n()
+  const { config } = useI18nConfig()
   
   const formatNumber = (value: number | bigint, options?: Intl.NumberFormatOptions): string => {
     const num = typeof value === 'bigint' ? Number(value) : value
@@ -191,7 +197,7 @@ export function useFormatters() {
 
 // Hook para manejo de dirección RTL
 export function useRTL() {
-  const { direction } = useI18n()
+  const { direction } = useI18nConfig()
   
   return {
     direction,

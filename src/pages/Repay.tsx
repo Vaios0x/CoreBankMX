@@ -15,6 +15,7 @@ import { useHealth } from '../hooks/useHealth'
 import { formatUSD } from '../lib/format'
 import { Badge } from '../components/ui/Badge'
 import { track } from '../lib/telemetry'
+import { useAccount } from 'wagmi'
 
 const Schema = z.object({
   repayAmount: z.coerce.number().positive(),
@@ -25,13 +26,14 @@ type FormValues = z.infer<typeof Schema>
 
 export default function Repay() {
   const { handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({ resolver: zodResolver(Schema), defaultValues: { repayAmount: 0, withdrawAmount: 0 } })
+  const { address } = useAccount()
+  const { data: price } = useOracle()
   const t = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
   const repayAmount = watch('repayAmount') || 0
   const withdrawAmount = watch('withdrawAmount') || 0
   const { push } = useToastStore()
   const { repay, withdraw } = useTx() as any
-  const { data: price } = useOracle()
   const { positions } = usePositionsStore()
   const current = positions[0] || { collateralBtc: 0, debtUsdt: 0 }
 
@@ -152,15 +154,15 @@ export default function Repay() {
         <h3 className="text-sm font-medium text-ui-muted">{t('repay.summary_title') as string}</h3>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
-          <div className="flex justify-between">
+          <div key="collateral" className="flex justify-between">
             <span className="text-ui-muted">{t('repay.after_collateral_usd') as string}:</span>
             <span className="font-medium">{formatUSD(afterCollateralUsd)}</span>
           </div>
-          <div className="flex justify-between">
+          <div key="ltv" className="flex justify-between">
             <span className="text-ui-muted">{t('repay.after_ltv') as string}:</span>
             <span className="font-medium">{(healthAfter.ltv * 100).toFixed(2)}%</span>
           </div>
-          <div className="flex justify-between">
+          <div key="health" className="flex justify-between">
             <span className="text-ui-muted">{t('repay.after_health') as string}:</span>
             <span className={`font-medium ${healthAfter.status === 'danger' ? 'text-red-400' : healthAfter.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`}>
               {healthAfter.hf.toFixed(2)}
@@ -192,6 +194,7 @@ export default function Repay() {
         {/* Secondary Actions */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
+            key="copy-link"
             type="button"
             className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
             aria-label={t('repay.copy_link') as string}
@@ -205,6 +208,7 @@ export default function Repay() {
             {t('repay.copy_link') as string}
           </button>
           <button
+            key="reset-filters"
             type="button"
             className="btn-outline motion-press text-xs sm:text-sm flex-1 sm:flex-none"
             onClick={() => {

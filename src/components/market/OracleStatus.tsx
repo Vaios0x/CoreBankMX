@@ -4,7 +4,7 @@ import { Alert } from '../ui/Alert'
 
 export function OracleStatus() {
   const { stale, isLoading, source } = useOracle()
-  const { t } = useI18n()
+  const t = useI18n()
   if (isLoading || !stale) return null
   return <Alert variant="warning" className="mx-4 mt-2 text-xs">{t('dashboard.oracle_stale')} ({source})</Alert>
 }

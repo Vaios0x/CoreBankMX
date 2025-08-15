@@ -5,20 +5,20 @@ import { usePersistentStore, persistentActions } from '../state/usePersistentSto
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Cache por defecto
-      staleTime: 30 * 1000, // 30 segundos
-      gcTime: 10 * 60 * 1000, // 10 minutos
-      retry: 3,
+      // Cache por defecto - más conservador en desarrollo
+      staleTime: import.meta.env.DEV ? 60 * 1000 : 30 * 1000, // 1 minuto en dev, 30 segundos en prod
+      gcTime: import.meta.env.DEV ? 5 * 60 * 1000 : 10 * 60 * 1000, // 5 minutos en dev, 10 minutos en prod
+      retry: import.meta.env.DEV ? 1 : 3, // Menos retries en desarrollo
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       
       // Configuración de red
       networkMode: 'online',
       
-      // Optimistic updates
-      placeholderData: (previousData) => previousData,
+      // Optimistic updates - deshabilitar en desarrollo si es necesario
+      placeholderData: (previousData: any) => previousData,
     },
     mutations: {
-      retry: 1,
+      retry: import.meta.env.DEV ? 0 : 1, // Sin retries en desarrollo
       retryDelay: 1000,
     },
   },
@@ -38,6 +38,7 @@ export interface CacheConfig {
 export const CACHE_CONFIGS = {
   // Precios - Cache corto, actualización frecuente
   PRICE: {
+    key: 'price',
     staleTime: 15 * 1000, // 15 segundos
     gcTime: 5 * 60 * 1000, // 5 minutos
     retry: 2,
@@ -46,6 +47,7 @@ export const CACHE_CONFIGS = {
   
   // Datos de usuario - Cache medio
   USER_DATA: {
+    key: 'user-data',
     staleTime: 60 * 1000, // 1 minuto
     gcTime: 15 * 60 * 1000, // 15 minutos
     retry: 3,
@@ -54,6 +56,7 @@ export const CACHE_CONFIGS = {
   
   // Posiciones - Cache medio, actualización en background
   POSITIONS: {
+    key: 'positions',
     staleTime: 30 * 1000, // 30 segundos
     gcTime: 10 * 60 * 1000, // 10 minutos
     retry: 2,
@@ -62,6 +65,7 @@ export const CACHE_CONFIGS = {
   
   // Allowances - Cache largo, cambios poco frecuentes
   ALLOWANCES: {
+    key: 'allowances',
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 30 * 60 * 1000, // 30 minutos
     retry: 1,
@@ -70,6 +74,7 @@ export const CACHE_CONFIGS = {
   
   // Parámetros del protocolo - Cache largo
   PROTOCOL_PARAMS: {
+    key: 'protocol-params',
     staleTime: 10 * 60 * 1000, // 10 minutos
     gcTime: 60 * 60 * 1000, // 1 hora
     retry: 3,
@@ -78,6 +83,7 @@ export const CACHE_CONFIGS = {
   
   // Métricas del mercado - Cache medio
   MARKET_METRICS: {
+    key: 'market-metrics',
     staleTime: 60 * 1000, // 1 minuto
     gcTime: 15 * 60 * 1000, // 15 minutos
     retry: 2,
@@ -86,6 +92,7 @@ export const CACHE_CONFIGS = {
   
   // Transacciones - Cache corto, datos críticos
   TRANSACTIONS: {
+    key: 'transactions',
     staleTime: 10 * 1000, // 10 segundos
     gcTime: 5 * 60 * 1000, // 5 minutos
     retry: 3,
@@ -281,9 +288,17 @@ export const cacheMiddleware = {
 }
 
 // Configuración global del cache
+let globalCacheInitialized = false
+
 export const setupGlobalCache = () => {
+  // Evitar inicialización múltiple
+  if (globalCacheInitialized) return
+  globalCacheInitialized = true
+  
+  console.log('🔧 Configurando cache global...')
+  
   // Limpiar cache expirado cada 5 minutos
-  setInterval(() => {
+  const cacheCleanupInterval = setInterval(() => {
     SmartCache.clearExpired()
     persistentActions.clearExpiredCache()
   }, 5 * 60 * 1000)
@@ -311,5 +326,11 @@ export const setupGlobalCache = () => {
     prefetchCriticalData()
   } else {
     window.addEventListener('load', prefetchCriticalData)
+  }
+  
+  // Cleanup function para limpiar el intervalo
+  return () => {
+    clearInterval(cacheCleanupInterval)
+    globalCacheInitialized = false
   }
 }

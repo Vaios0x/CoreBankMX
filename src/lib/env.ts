@@ -26,7 +26,7 @@ const EnvSchema = z.object({
   VITE_USE_MOCKS: z.coerce.boolean().default(true), // Cambiar a true para desarrollo
   VITE_USE_ONCHAIN_ORACLE: z.coerce.boolean().default(false), // Cambiar a false para desarrollo
   VITE_DOCS_URL: z.string().url().default('https://docs.example.com'),
-  VITE_API_URL: z.string().url().default('http://localhost:3001'), // Cambiar a localhost
+  VITE_API_URL: z.string().url().default('http://localhost:8080'), // Puerto correcto del API
   VITE_STATUS_URL: z.string().url().default('https://status.example.com'),
   VITE_TWITTER_URL: z.string().url().default('https://x.com/example'),
   VITE_DISCORD_URL: z.string().url().default('https://discord.gg/example'),
@@ -45,6 +45,11 @@ const EnvSchema = z.object({
   VITE_HOTJAR_ID: z.string().default(''),
   VITE_AMPLITUDE_API_KEY: z.string().default(''),
   VITE_SEGMENT_WRITE_KEY: z.string().default(''),
+  
+  // Development Configuration
+  VITE_DISABLE_BLOCKCHAIN_EVENTS: z.coerce.boolean().default(true), // Deshabilitar eventos blockchain en desarrollo
+  VITE_DISABLE_OPTIMISTIC_UPDATES: z.coerce.boolean().default(false), // Deshabilitar updates optimísticos si es necesario
+  VITE_DISABLE_WEBSOCKET: z.coerce.boolean().default(false), // Deshabilitar WebSocket si es necesario
 })
 
 const parsed = EnvSchema.parse(import.meta.env)
@@ -85,6 +90,11 @@ export const env = {
   HOTJAR_ID: parsed.VITE_HOTJAR_ID,
   AMPLITUDE_API_KEY: parsed.VITE_AMPLITUDE_API_KEY,
   SEGMENT_WRITE_KEY: parsed.VITE_SEGMENT_WRITE_KEY,
+  
+  // Development Configuration
+  DISABLE_BLOCKCHAIN_EVENTS: parsed.VITE_DISABLE_BLOCKCHAIN_EVENTS,
+  DISABLE_OPTIMISTIC_UPDATES: parsed.VITE_DISABLE_OPTIMISTIC_UPDATES,
+  DISABLE_WEBSOCKET: parsed.VITE_DISABLE_WEBSOCKET,
 }
 
 

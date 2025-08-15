@@ -126,6 +126,19 @@
     "note_prices": "Precio BTC/USD actual",
     "note_prices_suffix": "(referencial para calcular LTV/HF)"
   },
+  "liquidity": {
+    "subtitle": "Bóveda de Staking Dual (ERC4626) - Gana rendimiento en tus activos",
+    "description": "Staking Dual (ERC4626) — Vista previa de APR y simulación de compound.",
+    "amount_label": "Cantidad",
+    "approve": "Aprobar",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "compound_preview": "Vista previa compound",
+    "info_title": "Acerca del Staking Dual",
+    "info_erc4626": "Bóveda compatible con ERC4626 para máxima compatibilidad",
+    "info_apr": "APR competitivo con compound automático",
+    "info_compound": "Compound de recompensas automáticamente vía servicio Keeper"
+  },
   "dashboard": {
     "subtitle": "Resumen de salud del mercado y métricas clave",
     "oracle_stale": "Datos del oráculo potencialmente desactualizados",

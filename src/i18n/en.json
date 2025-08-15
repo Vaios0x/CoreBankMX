@@ -126,6 +126,19 @@
     "note_prices": "Current BTC/USD price",
     "note_prices_suffix": "(reference for LTV/HF calculation)"
   },
+  "liquidity": {
+    "subtitle": "Dual Staking Vault (ERC4626) - Earn yield on your assets",
+    "description": "Dual Staking (ERC4626) — APR preview and compound simulation.",
+    "amount_label": "Amount",
+    "approve": "Approve",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "compound_preview": "Compound preview",
+    "info_title": "About Dual Staking",
+    "info_erc4626": "ERC4626 compliant vault for maximum compatibility",
+    "info_apr": "Competitive APR with automatic compounding",
+    "info_compound": "Compound rewards automatically via Keeper service"
+  },
   "dashboard": {
     "subtitle": "Market health and key metrics",
     "oracle_stale": "Oracle data may be stale",

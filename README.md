@@ -234,6 +234,11 @@ pnpm deploy:testnet2
 
 ![Banobs Logo](https://img.shields.io/badge/Banobs-Obsidiana_Digital_Banking-FF6B35?style=for-the-badge&logo=bank&logoColor=white)
 
+### 🏦 **Brand Identity**
+- **Logo**: Obsidian crystal with glowing teal blockchain symbol
+- **Colors**: Core DAO orange (#ff7a00) + volcanic obsidian
+- **Theme**: Mexican heritage meets Web3 innovation
+
 </div>
 
 

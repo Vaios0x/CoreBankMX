@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '../components/web3/ConnectButton'
 import { useI18n } from '../i18n/i18n'
+import Logo from '../components/ui/Logo'
 
 export default function Home() {
   const { tvlUsd, baseRate } = useMarketStore()
@@ -18,14 +19,17 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden card rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
         <div className="relative z-10 flex flex-col gap-4 sm:gap-6 lg:max-w-3xl">
-          <motion.span 
+          <motion.div 
             initial={{ opacity: 0, y: 6 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.2 }} 
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-ui bg-ui-surface px-2 py-1 sm:px-3 sm:py-1 text-xs text-ui-muted"
+            className="flex items-center gap-3"
           >
-            {t('home.badge')}
-          </motion.span>
+            <img src="/src/assets/Logo2.svg" alt="Banobs Logo" className="h-16 w-16 sm:h-20 sm:w-20" />
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-ui bg-ui-surface px-2 py-1 sm:px-3 sm:py-1 text-xs text-ui-muted">
+              {t('home.badge')}
+            </span>
+          </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 8 }} 
             animate={{ opacity: 1, y: 0 }} 

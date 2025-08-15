@@ -9,6 +9,7 @@ import { useChainId, useSwitchChain, useDisconnect } from 'wagmi'
 import { coreMainnet, coreTestnet } from '../../lib/chains'
 import { useI18n } from '../../i18n/i18n'
 import { NetworkSelector } from './NetworkSelector'
+import Logo from '../ui/Logo'
 
 export function Header() {
   const { language, setLanguage, toggleSidebar, theme, toggleTheme } = useUiStore()
@@ -51,9 +52,11 @@ export function Header() {
               <span aria-hidden className="text-xs sm:text-base">☰</span>
             </motion.button>
             <motion.div whileHover={{ scale: 1.01 }} className="flex items-center gap-1 sm:gap-2">
-              <span className="inline-block h-4 w-4 sm:h-6 sm:w-6 rounded bg-brand-500" aria-hidden />
-              <Link to="/" className="font-semibold tracking-tight hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs sm:text-base">
-                Banobs
+              <Link to="/" className="flex items-center gap-2 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <img src="/src/assets/Logo2.svg" alt="Banobs Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
+                <span className="font-semibold tracking-tight text-xs sm:text-base">
+                  Banobs
+                </span>
               </Link>
             </motion.div>
           </div>

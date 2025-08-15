@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n/i18n'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUiStore } from '../../state/useUiStore'
 import { useEffect, useState } from 'react'
+import Logo from '../ui/Logo'
 
 const links = [
   { to: '/', key: 'nav.home', icon: '🏠' },
@@ -106,7 +107,10 @@ export function SidebarNav() {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-ui">
-              <h2 className="text-lg font-semibold">{t('nav.title') as string}</h2>
+              <div className="flex items-center gap-2">
+                <img src="/src/assets/Logo2.svg" alt="Banobs Logo" className="h-8 w-8" />
+                <h2 className="text-lg font-semibold">{t('nav.title') as string}</h2>
+              </div>
               <button
                 onClick={() => setSidebar(false)}
                 className="p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-500"

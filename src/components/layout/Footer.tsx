@@ -4,6 +4,7 @@ import { useToastStore } from '../ui/Toast'
 import Input from '../ui/Input'
 import { env } from '../../lib/env'
 import { useI18n } from '../../i18n/i18n'
+import Logo from '../ui/Logo'
 
 export function Footer() {
   const { push } = useToastStore()
@@ -25,8 +26,8 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8 grid grid-cols-1 gap-8 md:grid-cols-5">
         <div>
           <div className="mb-2 flex items-center gap-2">
-            <span className="inline-block h-6 w-6 rounded bg-brand-500" aria-hidden />
-            <span className="font-semibold tracking-tight">Banobs</span>
+            <img src="/src/assets/Logo2.svg" alt="Banobs Logo" className="h-12 w-12" />
+            <span className="font-semibold tracking-tight text-base">Banobs</span>
           </div>
           <p className="text-ui-muted">
             {t('footer.description') as string}
